@@ -1,0 +1,92 @@
+# Local development stack for OffLeash.
+#
+# One Postgres instance hosts two databases (offleash, keycloak) with
+# separate owning roles; see db/docker-init/01-create-databases.sql.
+# Keycloak runs in dev mode against its own database. NATS has
+# JetStream enabled so worker queues can be modeled without a later
+# rebuild. Valkey uses AOF persistence.
+#
+# Host ports are parameterized so OffLeash can coexist with other local
+# stacks that use the same canonical defaults (Postgres 5432, Keycloak
+# 8080, NATS 4222/8222, Valkey 6379). Override by setting the variables
+# in a local `.env` file; see `.env.example` for the alt-port scheme.
+#
+# This file is not intended for production. Production infrastructure
+# is defined under infra/ (Terraform).
+
+name: offleash
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: offleash-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "${OFFLEASH_POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./db/docker-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.6.1
+    container_name: offleash-keycloak
+    restart: unless-stopped
+    command: ["start-dev"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+    ports:
+      - "${OFFLEASH_KEYCLOAK_PORT:-8080}:8080"
+
+  nats:
+    image: nats:2.12-alpine
+    container_name: offleash-nats
+    restart: unless-stopped
+    command:
+      - "--name=offleash-nats"
+      - "--jetstream"
+      - "--store_dir=/data"
+      - "--http_port=8222"
+    ports:
+      - "${OFFLEASH_NATS_CLIENT_PORT:-4222}:4222"
+      - "${OFFLEASH_NATS_HTTP_PORT:-8222}:8222"
+    volumes:
+      - nats-data:/data
+
+  valkey:
+    image: valkey/valkey:9-alpine
+    container_name: offleash-valkey
+    restart: unless-stopped
+    command: ["valkey-server", "--appendonly", "yes"]
+    ports:
+      - "${OFFLEASH_VALKEY_PORT:-6379}:6379"
+    volumes:
+      - valkey-data:/data
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  postgres-data:
+  nats-data:
+  valkey-data:
