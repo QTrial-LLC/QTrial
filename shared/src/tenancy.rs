@@ -47,9 +47,14 @@ pub async fn begin_as_tenant(
 ) -> Result<Transaction<'static, Postgres>, sqlx::Error> {
     let mut tx = pool.begin().await?;
 
-    // set_config(name, value, is_local=true) is the parameterizable
-    // equivalent of `SET LOCAL name = value;`. We cannot bind
-    // parameters into a bare SET statement, so this form is required.
+    // `SET LOCAL app.current_user_id = $1` is rejected by Postgres:
+    // SET statements do not accept bind parameters. Interpolating the
+    // UUID into the SQL string would work for UUIDs (their format is
+    // fixed) but sets a bad precedent for other session variables
+    // that might be strings. `set_config(name, value, is_local)` is
+    // the function form that takes bind parameters; the third
+    // argument `true` scopes the setting to the current transaction,
+    // equivalent to `SET LOCAL`.
     sqlx::query("SELECT set_config('app.current_user_id', $1, true)")
         .bind(user_id.to_string())
         .execute(&mut *tx)
@@ -68,6 +73,75 @@ pub async fn begin_as_tenant(
         .await?;
 
     Ok(tx)
+}
+
+/// Parent-entity kinds understood by [`parent_club_id`]. Enumerating
+/// the supported tables as a typed variant keeps the helper free of
+/// string-based table-name handling and therefore free of SQL
+/// injection risk. New entries land here whenever a new tenant child
+/// table needs cross-table club_id propagation.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum ParentEntity {
+    Event,
+    EventDay,
+    Trial,
+    TrialClassOffering,
+}
+
+impl ParentEntity {
+    fn table_name(self) -> &'static str {
+        match self {
+            Self::Event => "events",
+            Self::EventDay => "event_days",
+            Self::Trial => "trials",
+            Self::TrialClassOffering => "trial_class_offerings",
+        }
+    }
+}
+
+/// Errors that arise when looking up a parent's club_id. Kept
+/// separate from `sqlx::Error` so callers can distinguish "row does
+/// not exist or is soft-deleted" from transport-level failures.
+#[derive(Debug, thiserror::Error)]
+pub enum ParentClubIdError {
+    #[error("parent {entity:?} with id {id} was not found or has been soft-deleted")]
+    NotFound { entity: ParentEntity, id: Uuid },
+    #[error(transparent)]
+    Sqlx(#[from] sqlx::Error),
+}
+
+/// Look up the `club_id` of a parent row so an app inserting into a
+/// child table can denormalize the same value onto the new row.
+/// Skips soft-deleted parents by filtering `deleted_at IS NULL`;
+/// inserting a child under a soft-deleted parent is almost always a
+/// bug in the caller.
+///
+/// Every tenant child table in OffLeash carries its own `club_id`
+/// directly (per DATA_MODEL's multi-tenancy convention); this helper
+/// is the canonical way for app code to fetch that value from the
+/// parent at write time. RLS WITH CHECK gives us belt-and-suspenders
+/// against a bad club_id reaching the row, but the helper keeps the
+/// happy path correct by construction.
+pub async fn parent_club_id<'c, E>(
+    executor: E,
+    parent: ParentEntity,
+    parent_id: Uuid,
+) -> Result<Uuid, ParentClubIdError>
+where
+    E: sqlx::Executor<'c, Database = sqlx::Postgres>,
+{
+    let sql = format!(
+        "SELECT club_id FROM {} WHERE id = $1 AND deleted_at IS NULL",
+        parent.table_name()
+    );
+    let result: Option<Uuid> = sqlx::query_scalar(&sql)
+        .bind(parent_id)
+        .fetch_optional(executor)
+        .await?;
+    result.ok_or(ParentClubIdError::NotFound {
+        entity: parent,
+        id: parent_id,
+    })
 }
 
 /// Run a closure against a tenant-scoped transaction. Commits on Ok,
