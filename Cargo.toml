@@ -22,4 +22,5 @@ sqlx = { version = "0.8", default-features = false, features = [
 ] }
 uuid = { version = "1", features = ["v4", "serde"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+thiserror = "2"
 testcontainers-modules = { version = "0.14", features = ["postgres"] }

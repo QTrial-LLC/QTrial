@@ -24,6 +24,7 @@ tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
 sqlx = { workspace = true }
 uuid = { workspace = true }
+thiserror = { workspace = true }
 
 # Feature-gated: only pulled in when the `testing` feature is enabled.
 testcontainers-modules = { workspace = true, optional = true }
@@ -42,4 +43,9 @@ required-features = ["testing"]
 [[test]]
 name = "reference_seed"
 path = "tests/reference_seed.rs"
+required-features = ["testing"]
+
+[[test]]
+name = "event_setup_rls"
+path = "tests/event_setup_rls.rs"
 required-features = ["testing"]
