@@ -9,6 +9,37 @@ publish.workspace = true
 [lib]
 path = "src/lib.rs"
 
+[features]
+# The `testing` feature activates the in-crate testcontainers fixture
+# plus the reusable test helpers it builds on. Off by default so release
+# builds do not pull the Docker-dependent dev stack into production
+# binaries. Enable it in downstream crates' [dev-dependencies] (not
+# [dependencies]) and in the root workspace test invocation:
+#
+#   cargo test -p offleash-shared --features testing
+testing = ["dep:testcontainers-modules", "dep:tokio"]
+
 [dependencies]
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
+sqlx = { workspace = true }
+uuid = { workspace = true }
+
+# Feature-gated: only pulled in when the `testing` feature is enabled.
+testcontainers-modules = { workspace = true, optional = true }
+tokio = { workspace = true, optional = true }
+
+[dev-dependencies]
+# Tests always need the async runtime, independent of the `testing`
+# feature.
+tokio = { workspace = true }
+
+[[test]]
+name = "tenancy_rls"
+path = "tests/tenancy_rls.rs"
+required-features = ["testing"]
+
+[[test]]
+name = "reference_seed"
+path = "tests/reference_seed.rs"
+required-features = ["testing"]

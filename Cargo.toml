@@ -12,3 +12,14 @@ publish = false
 [workspace.dependencies]
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+sqlx = { version = "0.8", default-features = false, features = [
+    "postgres",
+    "runtime-tokio-rustls",
+    "uuid",
+    "chrono",
+    "macros",
+    "migrate",
+] }
+uuid = { version = "1", features = ["v4", "serde"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+testcontainers-modules = { version = "0.14", features = ["postgres"] }
