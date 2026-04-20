@@ -86,6 +86,10 @@ pub enum ParentEntity {
     EventDay,
     Trial,
     TrialClassOffering,
+    Owner,
+    Dog,
+    Entry,
+    EntryLine,
 }
 
 impl ParentEntity {
@@ -95,6 +99,10 @@ impl ParentEntity {
             Self::EventDay => "event_days",
             Self::Trial => "trials",
             Self::TrialClassOffering => "trial_class_offerings",
+            Self::Owner => "owners",
+            Self::Dog => "dogs",
+            Self::Entry => "entries",
+            Self::EntryLine => "entry_lines",
         }
     }
 }
