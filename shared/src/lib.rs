@@ -9,6 +9,7 @@
 //!   and helpers for writing integration tests against a real
 //!   migrated Postgres instance.
 
+pub mod fk_validation;
 pub mod tenancy;
 pub mod tracing_init;
 
