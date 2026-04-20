@@ -29,6 +29,11 @@ docs/          Architecture, requirements, domain glossary
   run `cargo` in this repo.
 - Node.js 20 or newer, npm 10 or newer.
 - Docker 25 or newer with the Compose v2 plugin.
+- `sqlx-cli` for running database migrations:
+
+  ```
+  cargo install sqlx-cli --no-default-features --features postgres,rustls
+  ```
 
 ## Local stack
 
@@ -56,6 +61,22 @@ read the same `.env` file, so no other changes are needed.
 
 Tear the stack down with `docker compose down`. Add `-v` to also drop
 the named volumes and start fresh next time.
+
+## Database migrations
+
+Schema and reference-data seeds live under `db/migrations/` and are
+applied with `sqlx-cli` via a small wrapper:
+
+```
+scripts/db-migrate.sh              # apply pending migrations
+scripts/db-migrate.sh info         # show applied vs pending
+scripts/db-migrate.sh revert       # revert the last applied migration
+scripts/db-migrate.sh add <name>   # scaffold a new reversible migration
+```
+
+The wrapper sources `.env` so port overrides match what Compose used
+to start the stack. Override the full connection string by exporting
+`DATABASE_URL` before invoking.
 
 ## Build and run the Rust crates
 
