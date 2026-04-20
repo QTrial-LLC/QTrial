@@ -49,3 +49,8 @@ required-features = ["testing"]
 name = "event_setup_rls"
 path = "tests/event_setup_rls.rs"
 required-features = ["testing"]
+
+[[test]]
+name = "entry_layer_rls"
+path = "tests/entry_layer_rls.rs"
+required-features = ["testing"]
