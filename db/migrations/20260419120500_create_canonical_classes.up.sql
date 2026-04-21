@@ -1,6 +1,6 @@
 -- Canonical class catalog.
 --
--- The master list of every competition class OffLeash supports per
+-- The master list of every competition class QTrial supports per
 -- registry per sport. Per-event class offerings (trial_class_offerings,
 -- created in a later migration) FK here so a class definition change
 -- lands in one place. Registry-scoped reference data; no tenant
@@ -87,7 +87,7 @@ CREATE TABLE canonical_classes (
     -- 'none'.
     ab_eligibility_title_code    TEXT,
     -- Self-FK retained for migration compatibility with the Access
-    -- schema's "Transfer to X" rows. OffLeash models transfer intent
+    -- schema's "Transfer to X" rows. QTrial models transfer intent
     -- on entry_lines, not via parallel class rows, so this field stays
     -- NULL in modern seed data.
     parent_class_id              UUID REFERENCES canonical_classes(id),

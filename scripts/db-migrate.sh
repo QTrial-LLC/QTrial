@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run sqlx migrations against the local OffLeash dev database.
+# Run sqlx migrations against the local QTrial dev database.
 #
 # Thin wrapper so developers never have to remember the DATABASE_URL
 # shape or where the migrations directory lives. Reads the same `.env`
@@ -23,8 +23,8 @@ if [[ -f "$repo_root/.env" ]]; then
     set +a
 fi
 
-postgres_port="${OFFLEASH_POSTGRES_PORT:-5432}"
-database_url="${DATABASE_URL:-postgres://offleash:offleash@localhost:${postgres_port}/offleash}"
+postgres_port="${QTRIAL_POSTGRES_PORT:-5432}"
+database_url="${DATABASE_URL:-postgres://qtrial:qtrial@localhost:${postgres_port}/qtrial}"
 
 export DATABASE_URL="$database_url"
 
