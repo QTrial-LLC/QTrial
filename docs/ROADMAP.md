@@ -1,4 +1,4 @@
-# OffLeash - Roadmap
+# QTrial - Roadmap
 
 **Status:** Draft v0.1
 **Last updated:** 2026-04-19
@@ -7,7 +7,7 @@
 
 ## Philosophy
 
-OffLeash is being built by one engineer (Robare) on evenings and weekends, with Claude Code doing most of the typing. The constraint on the roadmap is not feature ambition - it's time, cognitive load, and the ability to ship working software without breaking Deborah's trust on her first real trial.
+QTrial is being built by one engineer (Robare) on evenings and weekends, with Claude Code doing most of the typing. The constraint on the roadmap is not feature ambition - it's time, cognitive load, and the ability to ship working software without breaking Deborah's trust on her first real trial.
 
 Three principles guide the roadmap:
 
@@ -25,7 +25,7 @@ Goal: a running project with the right shape, no functionality yet.
 - CI/CD pipeline running: build, test, lint, type-check on PRs
 - Database schema for reference data (AKC canonical classes, breeds, titles, groups, jump heights) in migrations
 - Seed data loaded and verified against the extracted data from Deborah's `ObedienceData.mde`
-- Keycloak deployed to staging with OffLeash as a registered client
+- Keycloak deployed to staging with QTrial as a registered client
 - Rust API skeleton with health check, OIDC authentication middleware, and Postgres connectivity with row-level security template
 - Next.js frontend skeleton with sign-in flow working end-to-end
 - One smoke test covering the full sign-in flow
@@ -36,7 +36,7 @@ Goal: a running project with the right shape, no functionality yet.
 
 ## Phase 1: Club and Event Setup (Weeks 5-8)
 
-Goal: Deborah can set up a Glens Falls Kennel Club trial in OffLeash.
+Goal: Deborah can set up a Glens Falls Kennel Club trial in QTrial.
 
 - Club creation and configuration
 - User management (invite, grant roles)
@@ -46,7 +46,7 @@ Goal: Deborah can set up a Glens Falls Kennel Club trial in OffLeash.
 - Fee configuration
 - Basic premium list generation (HTML preview and PDF export)
 
-**Deliverable:** Deborah can configure her fall 2026 Rally/Obedience trial, end to end, in OffLeash (alongside her existing Access setup). The premium list PDF is acceptable to her eye.
+**Deliverable:** Deborah can configure her fall 2026 Rally/Obedience trial, end to end, in QTrial (alongside her existing Access setup). The premium list PDF is acceptable to her eye.
 
 **Checkpoint:** Deborah reviews the event setup UX. Any friction identified here is fixed before Phase 2.
 
@@ -68,13 +68,13 @@ Goal: exhibitors can enter the trial online.
 
 **Deliverable:** the entry page is live for Deborah's fall 2026 trial. Entries are accepted online. Exhibitors receive confirmation emails. Deborah can process paper entries.
 
-**Checkpoint:** Deborah processes 5-10 real entries in shadow mode (entering them both in OffLeash and her Access tool). Discrepancies are investigated and fixed.
+**Checkpoint:** Deborah processes 5-10 real entries in shadow mode (entering them both in QTrial and her Access tool). Discrepancies are investigated and fixed.
 
 ---
 
 ## Phase 3: Pre-Trial Paperwork (Weeks 15-18)
 
-Goal: OffLeash produces all the paper Deborah needs to run a trial.
+Goal: QTrial produces all the paper Deborah needs to run a trial.
 
 - Catalog generation (PDF, with proper AKC registered name formatting)
 - Judge's book generation (PDF, per judge, per class)
@@ -83,15 +83,15 @@ Goal: OffLeash produces all the paper Deborah needs to run a trial.
 - Running order generation with jump-height sorting
 - Ring-assignment view
 
-**Deliverable:** Deborah can print all pre-trial paperwork from OffLeash. Content is verified against the equivalent documents from her Access system.
+**Deliverable:** Deborah can print all pre-trial paperwork from QTrial. Content is verified against the equivalent documents from her Access system.
 
-**Checkpoint:** Deborah compares OffLeash-generated documents to her old ones. Formatting issues, missing fields, and AKC compliance gaps are identified and closed.
+**Checkpoint:** Deborah compares QTrial-generated documents to her old ones. Formatting issues, missing fields, and AKC compliance gaps are identified and closed.
 
 ---
 
 ## Phase 4: Move-ups, Transfers, and Day-of (Weeks 19-22)
 
-Goal: OffLeash handles the post-closing and trial-day workflows.
+Goal: QTrial handles the post-closing and trial-day workflows.
 
 - Move-up request, approval, and propagation to all downstream documents
 - Transfer workflow (A↔B)
@@ -99,7 +99,7 @@ Goal: OffLeash handles the post-closing and trial-day workflows.
 - Day-of change tools (absent, excused, DQ, scratched)
 - Quick-entry scoring UI
 
-**Deliverable:** OffLeash handles every realistic scenario Deborah has encountered in her last 5 trials.
+**Deliverable:** QTrial handles every realistic scenario Deborah has encountered in her last 5 trials.
 
 **Checkpoint:** Deborah and Robare run through a mock trial-day operations scenario, including move-ups, a bitch-in-season refund, and a judge excusal. Friction is measured and fixed.
 
@@ -107,7 +107,7 @@ Goal: OffLeash handles the post-closing and trial-day workflows.
 
 ## Phase 5: Scoring and Awards (Weeks 23-26)
 
-Goal: OffLeash handles scoring and awards computation.
+Goal: QTrial handles scoring and awards computation.
 
 - Score entry for Obedience (exercise-by-exercise) and Rally (total + time)
 - Validation (score ranges, placement eligibility)
@@ -117,15 +117,15 @@ Goal: OffLeash handles scoring and awards computation.
 - OTCH point and OM point calculation
 - Marked catalog generation (catalog + results)
 
-**Deliverable:** OffLeash can take a fully-scored trial and produce the marked catalog.
+**Deliverable:** QTrial can take a fully-scored trial and produce the marked catalog.
 
-**Checkpoint:** Deborah re-scores one of her historical trials from 2025 into OffLeash and compares results to her Access system. Any discrepancies are investigated.
+**Checkpoint:** Deborah re-scores one of her historical trials from 2025 into QTrial and compares results to her Access system. Any discrepancies are investigated.
 
 ---
 
 ## Phase 6: AKC Submission (Weeks 27-30)
 
-Goal: OffLeash generates the AKC results submission.
+Goal: QTrial generates the AKC results submission.
 
 - AKC XML generation conforming to the current schema
 - CSV export fallback
@@ -133,15 +133,15 @@ Goal: OffLeash generates the AKC results submission.
 - Submission record tracking and archiving
 - **Engagement with AKC** - contact the Performance Events or Agility department to verify current submission format and mechanism
 
-**Deliverable:** OffLeash produces an AKC submission that passes validation (ideally by AKC, or at minimum by the schema we have).
+**Deliverable:** QTrial produces an AKC submission that passes validation (ideally by AKC, or at minimum by the schema we have).
 
-**Checkpoint:** If AKC engagement goes well, we submit Deborah's next trial via OffLeash. If AKC has changed formats or is unreachable, we ship the CSV fallback and she submits manually as before.
+**Checkpoint:** If AKC engagement goes well, we submit Deborah's next trial via QTrial. If AKC has changed formats or is unreachable, we ship the CSV fallback and she submits manually as before.
 
 ---
 
 ## Phase 7: Migration Tooling (Weeks 31-32)
 
-Goal: Deborah's historical data from Access is visible in OffLeash.
+Goal: Deborah's historical data from Access is visible in QTrial.
 
 - Access file reader (server-side; accepts `.mde`/`.mdb` upload)
 - Parsing of all relevant tables
@@ -150,7 +150,7 @@ Goal: Deborah's historical data from Access is visible in OffLeash.
 - Import execution
 - Historical event view (read-only)
 
-**Deliverable:** Deborah's Glens Falls data (and any other club she works with) is migrated to OffLeash. Historical entries are queryable.
+**Deliverable:** Deborah's Glens Falls data (and any other club she works with) is migrated to QTrial. Historical entries are queryable.
 
 **Checkpoint:** Deborah validates the migration by looking up dogs and owners she knows.
 
@@ -169,7 +169,7 @@ Goal: MVP is ready for a real trial.
 - Backup and disaster recovery verified
 - Documentation: user-facing help articles for the workflows Deborah will use
 
-**Deliverable:** Deborah runs her spring 2027 trial (or whatever the target trial is) on OffLeash as her primary system. Her Access system is the backup.
+**Deliverable:** Deborah runs her spring 2027 trial (or whatever the target trial is) on QTrial as her primary system. Her Access system is the backup.
 
 **Checkpoint:** Post-trial retrospective. What worked, what didn't, what needs to change for the next trial.
 
@@ -233,8 +233,8 @@ A native app is probably not needed even in P2 (the web experience can be excell
 - **First Deborah-usable release:** end of Phase 1, ~week 8. She can set up a trial. Not usable end-to-end, but the foundation she can give feedback on.
 - **First entries released release:** end of Phase 2, ~week 14. Exhibitors can enter. Shadow mode.
 - **First pre-trial paperwork release:** end of Phase 3, ~week 18. Documents are AKC-acceptable.
-- **First full shadow trial:** end of Phase 5, ~week 26. Deborah runs a trial on OffLeash alongside her Access system.
-- **First real trial on OffLeash:** end of Phase 8, ~week 36 (approximately 9 months from kickoff, which targets a spring 2027 trial).
+- **First full shadow trial:** end of Phase 5, ~week 26. Deborah runs a trial on QTrial alongside her Access system.
+- **First real trial on QTrial:** end of Phase 8, ~week 36 (approximately 9 months from kickoff, which targets a spring 2027 trial).
 
 This is aggressive for a single evening-and-weekend engineer. Slippage is expected. The discipline is to let features fall back without moving the first-real-trial date.
 
@@ -268,18 +268,18 @@ These are things we want but will actively refuse to build during the MVP phase:
 - **Deborah's availability.** She's a volunteer. If she's overwhelmed with her real trial secretary work, feedback cycles slow down.
 - **Stripe Connect approval delays.** Some business categories take weeks to approve. We should start the Stripe application early.
 - **Multi-tenancy bugs.** RLS bypasses or bugs that leak data between clubs are catastrophic. Heavy testing required.
-- **Robare's AmpThink situation.** If Robare's day-job situation escalates (per the Miami Freedom Park / Yankee Stadium conflict context), OffLeash evenings become rarer.
+- **Robare's AmpThink situation.** If Robare's day-job situation escalates (per the Miami Freedom Park / Yankee Stadium conflict context), QTrial evenings become rarer.
 
 ### Risks to the product
 
 - **AKC doesn't cooperate.** If AKC's response to Robare's outreach is slow or unhelpful, electronic submission becomes a Phase 2 feature after all.
 - **Deborah's workflow reveals requirements we haven't imagined.** Likely. Mitigation: narrative walkthrough + shadow mode early and often.
-- **A competitor beats us to market** with a feature Deborah strongly prefers. Mitigation: the competitor stack being surveyed doesn't look like it will leap ahead on the architectural fundamentals OffLeash is investing in.
+- **A competitor beats us to market** with a feature Deborah strongly prefers. Mitigation: the competitor stack being surveyed doesn't look like it will leap ahead on the architectural fundamentals QTrial is investing in.
 
 ### Risks to the business
 
-- **No one else wants OffLeash.** Deborah's happiness is the primary goal; broader adoption is a secondary aspiration. If OffLeash serves only her and a handful of other clubs, that's still a success.
-- **IP entanglement with AmpThink.** Robare has an active IP protection engagement. OffLeash should be developed on Robare's personal hardware and infrastructure, with no overlap with AmpThink resources.
+- **No one else wants QTrial.** Deborah's happiness is the primary goal; broader adoption is a secondary aspiration. If QTrial serves only her and a handful of other clubs, that's still a success.
+- **IP entanglement with AmpThink.** Robare has an active IP protection engagement. QTrial should be developed on Robare's personal hardware and infrastructure, with no overlap with AmpThink resources.
 - **Legal issues around migration from competitor products.** Mitigated by using migration only for direct customer onboarding, not marketing.
 
 ---
@@ -294,4 +294,4 @@ A few anti-patterns to avoid:
 - Optimizing for scale before anyone is using it
 - Writing blog posts before shipping code
 
-The MVP success criterion is narrow: Deborah says "I used OffLeash for my trial, and it worked." Everything else is later.
+The MVP success criterion is narrow: Deborah says "I used QTrial for my trial, and it worked." Everything else is later.

@@ -1,4 +1,4 @@
-# OffLeash - Architecture
+# QTrial - Architecture
 
 **Status:** Draft v0.1
 **Last updated:** 2026-04-19
@@ -7,7 +7,7 @@
 
 ## Summary
 
-OffLeash is a web application with a Rust backend, PostgreSQL database, Keycloak identity provider, and a Next.js frontend. The stack is deliberately aligned with Robare's Mediacast Platform to maximize shared infrastructure, shared mental models, and shared operational experience.
+QTrial is a web application with a Rust backend, PostgreSQL database, Keycloak identity provider, and a Next.js frontend. The stack is deliberately aligned with Robare's Mediacast Platform to maximize shared infrastructure, shared mental models, and shared operational experience.
 
 The product is delivered as a multi-tenant SaaS. Tenancy is enforced at the database layer via PostgreSQL row-level security. Authentication is handled by Keycloak; authorization is handled in application code and via RLS policies.
 
@@ -20,7 +20,7 @@ Stack consistency with Mediacast Platform is the primary reason. Secondary reaso
 Row-level security for multi-tenancy, robust JSON support for flexible fields (audit diffs, template variables), mature full-text search, first-class timestamp and money types, excellent operational tooling.
 
 **Keycloak**
-Single sign-on across Robare's projects (OffLeash, Mediacast Platform, Mediacaster). OIDC standard. Handles password policies, 2FA, account recovery, session management, and social login without OffLeash reimplementing any of it. Adds operational overhead (another service to run), but that cost is paid once across all of Robare's projects.
+Single sign-on across Robare's projects (QTrial, Mediacast Platform, Mediacaster). OIDC standard. Handles password policies, 2FA, account recovery, session management, and social login without QTrial reimplementing any of it. Adds operational overhead (another service to run), but that cost is paid once across all of Robare's projects.
 
 **React + TypeScript + Next.js**
 Server-side rendering for speed and SEO on public pages (event listings, club pages, premium lists). Client-side rendering for the secretary's app. Good ecosystem for forms, tables, print-to-PDF workflows, and accessibility.
@@ -29,7 +29,7 @@ Server-side rendering for speed and SEO on public pages (event listings, club pa
 Consistent with Mediacast Platform. In MVP, most operations are synchronous HTTP; NATS is reserved for email dispatch, PDF generation offload, and submission processing. Valkey caches rendered catalogs and long-running queries.
 
 **Stripe**
-Payment processing with Connect for routing funds to club bank accounts. Handles PCI, fraud detection, and refunds. OffLeash collects platform fees via Connect's application fee mechanism.
+Payment processing with Connect for routing funds to club bank accounts. Handles PCI, fraud detection, and refunds. QTrial collects platform fees via Connect's application fee mechanism.
 
 ## System decomposition
 
@@ -37,9 +37,9 @@ Payment processing with Connect for routing funds to club bank accounts. Handles
 
 Intentionally small. Three services total:
 
-1. **`offleash-api`** - the core Rust backend serving the web, exhibitor, and internal APIs. Handles all business logic, validation, and direct database access. Issues signed URLs for S3 assets.
-2. **`offleash-workers`** - a Rust worker process consuming NATS jobs for email dispatch, PDF generation (catalog, judge's books, etc.), AKC XML generation, and batch jobs (overnight reconciliation, report aggregation).
-3. **`offleash-web`** - the Next.js frontend serving HTML to users and calling `offleash-api` for data.
+1. **`qtrial-api`** - the core Rust backend serving the web, exhibitor, and internal APIs. Handles all business logic, validation, and direct database access. Issues signed URLs for S3 assets.
+2. **`qtrial-workers`** - a Rust worker process consuming NATS jobs for email dispatch, PDF generation (catalog, judge's books, etc.), AKC XML generation, and batch jobs (overnight reconciliation, report aggregation).
+3. **`qtrial-web`** - the Next.js frontend serving HTML to users and calling `qtrial-api` for data.
 
 Infrastructure services (not written by us):
 
@@ -55,11 +55,11 @@ Microservices are seductive but the operational cost is high for a small team. T
 
 ## Multi-tenancy approach
 
-OffLeash is a pooled multi-tenant SaaS: one database, one set of services, all tenants share them. Tenant isolation happens at three layers:
+QTrial is a pooled multi-tenant SaaS: one database, one set of services, all tenants share them. Tenant isolation happens at three layers:
 
 ### 1. Request routing and authentication
 
-Every request arriving at `offleash-api` is authenticated via a Keycloak-issued JWT. The JWT contains the user's OffLeash user ID (`sub` claim). From the URL or request body, the request's target `club_id` is determined. The API validates that the authenticated user has a valid role at that club (or is a platform admin).
+Every request arriving at `qtrial-api` is authenticated via a Keycloak-issued JWT. The JWT contains the user's QTrial user ID (`sub` claim). From the URL or request body, the request's target `club_id` is determined. The API validates that the authenticated user has a valid role at that club (or is a platform admin).
 
 ### 2. Database session scoping
 
@@ -68,10 +68,10 @@ Before executing queries for a request, the API opens a transaction and sets ses
 ```sql
 SET LOCAL app.current_user_id = '<user uuid>';
 SET LOCAL app.current_club_id = '<club uuid>';
-SET LOCAL ROLE offleash_tenant;
+SET LOCAL ROLE qtrial_tenant;
 ```
 
-The `offleash_tenant` role has SELECT/INSERT/UPDATE/DELETE permissions on all tables, but RLS policies on each table restrict rows to those with `club_id = current_setting('app.current_club_id')::uuid`.
+The `qtrial_tenant` role has SELECT/INSERT/UPDATE/DELETE permissions on all tables, but RLS policies on each table restrict rows to those with `club_id = current_setting('app.current_club_id')::uuid`.
 
 ### 3. Row-level security policies
 
@@ -101,7 +101,7 @@ Keycloak handles:
 - Sessions and refresh tokens
 - Social login (Google, Apple) - P2, nice to have
 
-OffLeash web and API consume standard OIDC flows. Tokens are short-lived JWTs signed by Keycloak.
+QTrial web and API consume standard OIDC flows. Tokens are short-lived JWTs signed by Keycloak.
 
 ### Authorization (what can you do?)
 
@@ -135,7 +135,7 @@ The API exposes three surface areas:
 2. **Exhibitor API** - limited to an exhibitor's own data
 3. **Judge API** - limited to a judge's own assignments
 
-All three are served from `offleash-api` but use different authorization scopes.
+All three are served from `qtrial-api` but use different authorization scopes.
 
 ## PDF generation
 
@@ -158,8 +158,8 @@ Alternative considered: typst (Rust-native typesetter), which produces beautiful
 ### MVP target
 
 - Single environment to start: production, deployed on AWS
-- `offleash-api` and `offleash-workers` run as ECS tasks or on Fargate
-- `offleash-web` served via Vercel or as an ECS task behind CloudFront
+- `qtrial-api` and `qtrial-workers` run as ECS tasks or on Fargate
+- `qtrial-web` served via Vercel or as an ECS task behind CloudFront
 - PostgreSQL via Amazon RDS (Postgres 16)
 - Keycloak via ECS task backed by its own RDS instance
 - NATS via self-hosted ECS task (single node is fine for MVP volumes)
@@ -183,14 +183,14 @@ Deferred until we have paying customers. Until then, Deborah's first real trial 
 
 ### PII handling
 
-OffLeash holds real names, home addresses, phone numbers, email addresses, and payment methods. We are not processing credit card numbers directly (Stripe handles those), but we still hold sensitive personal data.
+QTrial holds real names, home addresses, phone numbers, email addresses, and payment methods. We are not processing credit card numbers directly (Stripe handles those), but we still hold sensitive personal data.
 
 Controls:
 - TLS 1.3 everywhere, HSTS enforced
 - Database encryption at rest (RDS default)
 - S3 bucket encryption
 - No PII in logs (enforced via a logging middleware that strips known PII fields)
-- Password hashes in Keycloak, never in OffLeash
+- Password hashes in Keycloak, never in QTrial
 - Access audit log for platform admin actions
 
 ### Financial data
@@ -215,10 +215,10 @@ Junior handlers can be as young as 9 years old. We restrict:
 
 ### Repository layout
 
-Single monorepo (`offleash/`):
+Single monorepo (`qtrial/`):
 
 ```
-offleash/
+qtrial/
 ├── api/          (Rust: axum + tokio + sqlx)
 ├── workers/      (Rust: background jobs)
 ├── web/          (Next.js)
@@ -254,5 +254,5 @@ offleash/
 1. **PDF generation: Rust HTML-to-PDF vs Node service vs typst.** Leaning Rust + headless Chrome for MVP, but worth a quick prototype comparison.
 2. **Hot path performance for the entry-open rush.** Events can have 100+ exhibitors all submitting at entry opening. Needs rate limiting and queue-based ordering. TBD in implementation.
 3. **How do we handle trial-day offline scenarios?** Many trials are in areas with poor internet. For MVP we assume internet is available; P2 may need a progressive web app with offline support or a desktop fallback for critical trial-day operations.
-4. **Where does the AKC XML generation live?** In `offleash-api` for simplicity, or in `offleash-workers` for isolation? Leaning workers because submission is inherently async.
-5. **Keycloak administration UI** - do club admins have a Keycloak admin UI or do they manage users via OffLeash's own UI? Leaning OffLeash UI (keep Keycloak as an invisible identity backend).
+4. **Where does the AKC XML generation live?** In `qtrial-api` for simplicity, or in `qtrial-workers` for isolation? Leaning workers because submission is inherently async.
+5. **Keycloak administration UI** - do club admins have a Keycloak admin UI or do they manage users via QTrial's own UI? Leaning QTrial UI (keep Keycloak as an invisible identity backend).

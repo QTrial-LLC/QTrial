@@ -1,8 +1,8 @@
-# OffLeash - Domain Glossary
+# QTrial - Domain Glossary
 
 **Status:** Draft v0.1
 **Last updated:** 2026-04-19
-**Purpose:** Precise definitions of dog-sport and AKC terminology used throughout OffLeash. LLMs and new contributors consistently guess these terms wrong if they are not explicitly defined. This document is authoritative; if code, comments, or other docs use a term differently, they are wrong and must be corrected.
+**Purpose:** Precise definitions of dog-sport and AKC terminology used throughout QTrial. LLMs and new contributors consistently guess these terms wrong if they are not explicitly defined. This document is authoritative; if code, comments, or other docs use a term differently, they are wrong and must be corrected.
 
 ---
 
@@ -21,7 +21,7 @@ A single competition unit within a day for a single sport. A day can contain mul
 The overall discipline. Examples: Obedience, Rally, Agility, Scent Work, Conformation, FastCAT, Barn Hunt, Lure Coursing, Herding, Tracking, Field Trial. A single event can host trials for multiple sports concurrently (e.g., Obedience trial and Rally trial on the same day, same location, different rings).
 
 **Cluster**
-An informal term for a series of events held at the same site over several consecutive days, often by different clubs. "The St. Louis cluster" might run for a full week with different clubs hosting different days. OffLeash does not need first-class cluster modeling in MVP; clusters are just sequential events from the system's perspective.
+An informal term for a series of events held at the same site over several consecutive days, often by different clubs. "The St. Louis cluster" might run for a full week with different clubs hosting different days. QTrial does not need first-class cluster modeling in MVP; clusters are just sequential events from the system's perspective.
 
 ## Classes, levels, and divisions
 
@@ -212,7 +212,7 @@ The AKC-affiliated or AKC-licensed dog club hosting the event. Clubs have member
 Sometimes synonymous with Trial Chair.
 
 **Superintendent**
-A paid professional who runs large events for clubs. Large conformation shows use superintendents. Smaller trials use volunteer trial secretaries. OffLeash's primary market is the trial secretary segment, not the superintendent segment.
+A paid professional who runs large events for clubs. Large conformation shows use superintendents. Smaller trials use volunteer trial secretaries. QTrial's primary market is the trial secretary segment, not the superintendent segment.
 
 ## AKC-specific identifiers and codes
 
@@ -255,12 +255,12 @@ The per-entry fee AKC charges to the club for each entry (typically $3.50 first 
 A per-event fee the club pays to AKC.
 
 **HIT, HC, and placement awards**
-Ribbons, trophies, or small cash awards for placement. OffLeash tracks whether they are awarded, not the physical distribution.
+Ribbons, trophies, or small cash awards for placement. QTrial tracks whether they are awarded, not the physical distribution.
 
 **Coupon / discount**
 Club-issued credits against entry fees, often for members or to rectify prior refund issues.
 
-## File and document formats OffLeash must produce
+## File and document formats QTrial must produce
 
 This is a quick index. Details live in `REQUIREMENTS.md` and `WORKFLOWS.md`.
 

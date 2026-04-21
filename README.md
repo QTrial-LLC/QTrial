@@ -1,4 +1,4 @@
-# OffLeash
+# QTrial
 
 Multi-tenant SaaS for managing AKC dog sport trials. Background, scope,
 and schedule live under [docs/](./docs/); start with
@@ -10,8 +10,8 @@ the product, read the docs first.
 ## Repository layout
 
 ```
-api/           Rust: axum + tokio + sqlx (offleash-api binary)
-workers/       Rust: NATS consumer and offline jobs (offleash-workers binary)
+api/           Rust: axum + tokio + sqlx (qtrial-api binary)
+workers/       Rust: NATS consumer and offline jobs (qtrial-workers binary)
 shared/        Rust: types and helpers used by both binaries
 web/           Next.js 16 (App Router, TypeScript strict, Tailwind v4)
 db/migrations/ sqlx-managed SQL migrations
@@ -44,7 +44,7 @@ Default exposed ports on `localhost`:
 
 | Service  | Port | Notes                                                  |
 |----------|------|--------------------------------------------------------|
-| Postgres | 5432 | `postgres/postgres` superuser; app DB `offleash/offleash` |
+| Postgres | 5432 | `postgres/postgres` superuser; app DB `qtrial/qtrial` |
 | Keycloak | 8080 | Admin console at `/`, bootstrap admin `admin/admin`    |
 | NATS     | 4222 | Client port; monitoring on 8222                        |
 | Valkey   | 6379 | No auth                                                |
@@ -64,13 +64,13 @@ From the repository root:
 ```
 cargo check --workspace           # fast feedback while editing
 cargo build --workspace           # produce debug binaries
-cargo run -p offleash-api         # logs "starting" and exits
-cargo run -p offleash-workers     # logs "starting" and exits
+cargo run -p qtrial-api         # logs "starting" and exits
+cargo run -p qtrial-workers     # logs "starting" and exits
 cargo fmt --all
 cargo clippy --workspace --all-targets
 ```
 
-Log format defaults to structured JSON. Set `OFFLEASH_LOG_FORMAT=text`
+Log format defaults to structured JSON. Set `QTRIAL_LOG_FORMAT=text`
 for a human readable format during local work. `RUST_LOG` applies as
 usual, for example `RUST_LOG=debug`.
 

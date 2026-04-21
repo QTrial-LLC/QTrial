@@ -1,4 +1,4 @@
-# OffLeash - Data Model
+# QTrial - Data Model
 
 **Status:** Draft v0.1 - **provisional**; derived from Deborah's `ObedienceData.mde` schema with modernization and multi-tenancy layered in.
 **Last updated:** 2026-04-19
@@ -210,7 +210,7 @@ Note: judges are club-scoped in the sense that clubs track them in their judge d
 |---|---|---|
 | `id` | UUID | PK |
 | `club_id` | UUID | tenant root (see note above) |
-| `user_id` | UUID | FK, nullable - present if the judge has an OffLeash account |
+| `user_id` | UUID | FK, nullable - present if the judge has an QTrial account |
 | `last_name`, `first_name` | TEXT | |
 | `akc_judge_number` | TEXT | |
 | `address_line1`, `city`, `state`, `postal_code`, `country_code` | TEXT | |
@@ -276,7 +276,7 @@ A dog can have many earned titles. We store each as a row to enable calculating 
 | `title_code` | TEXT | e.g., "CD", "CDX", "OTCH" |
 | `title_category` | ENUM | `prefix` or `suffix` |
 | `earned_at` | DATE | nullable |
-| `source` | ENUM | `owner_entered`, `registry_verified`, `earned_in_offleash` |
+| `source` | ENUM | `owner_entered`, `registry_verified`, `earned_in_qtrial` |
 
 #### `dog_sport_participation`
 
@@ -464,7 +464,7 @@ For breeds that compete by variety (Poodles, Dachshunds, Cocker Spaniels, etc.)
 | `code` | TEXT | "CH", "GCH", "OTCH", "CD", "CDX", ... |
 | `sport_scope` | TEXT | for suffixes: "O" (Obedience), "R" (Rally), "T" (Tracking), "F" (Field), "H" (Herding), etc. |
 | `display_order` | INT | |
-| `earning_rules` | JSONB | computed rules for when OffLeash can infer title earned (e.g., "3 Qs in Novice with 2+ judges → CD") |
+| `earning_rules` | JSONB | computed rules for when QTrial can infer title earned (e.g., "3 Qs in Novice with 2+ judges → CD") |
 
 Seeded from `tblAKCTitlesPrefix` and `tblAKCTitlesSuffix`.
 
@@ -558,9 +558,9 @@ A general-purpose audit table. Entries are written by the backend for sensitive 
 
 ## Migration considerations from Deborah's Access schema
 
-Key mappings from `ObedienceData.mde` → OffLeash:
+Key mappings from `ObedienceData.mde` → QTrial:
 
-| Access table | OffLeash table(s) | Notes |
+| Access table | QTrial table(s) | Notes |
 |---|---|---|
 | `tblEventData` | `events` | `Organization` maps to `registries`; `ConfLetter`/`WaitList` memo templates migrated to `event_templates` (P2 - for MVP use defaults) |
 | `tblEventDayData` | `event_days` + `trials` | Each row in EventDayData is really a day-trial combo and maps to one `trials` row plus its parent `event_day` |
@@ -574,10 +574,10 @@ Key mappings from `ObedienceData.mde` → OffLeash:
 | `tblJudges` | `judges` | |
 | `tblPayments` | `payments` | |
 | `tblRevenue` | Not directly - computed as a view over `entries.total_paid` and related | Access denormalized this; we'll compute |
-| `tblClubInfo` | `clubs` | Per-club record; this Access file had three `clubs` rows but it's really one club with two license statuses (GFKC Member and GFKC Licensed). OffLeash models this as a single `clubs.akc_status`. |
+| `tblClubInfo` | `clubs` | Per-club record; this Access file had three `clubs` rows but it's really one club with two license statuses (GFKC Member and GFKC Licensed). QTrial models this as a single `clubs.akc_status`. |
 | `tblSecretaryInfo` | `users` with `user_club_roles` | The secretary is a user; their role is a club-scoped grant |
 | `tblPremiumMailingList` | `mailing_list_entries` (not yet detailed above - defined in REQUIREMENTS §15) | |
-| `tblAKCxmlResults` | `submission_records` + per-record generation logic | The Access schema stores the last submission as a flat table; OffLeash generates XML on demand |
+| `tblAKCxmlResults` | `submission_records` + per-record generation logic | The Access schema stores the last submission as a flat table; QTrial generates XML on demand |
 | `tblAKCxmlDefaults` | Configuration loaded from environment + registry metadata | |
 | `tblAKCxmlClassNames` | `canonical_classes.akc_xml_primary_code` column (to be added) | Critical for XML submission |
 | `tblAKCTitlesPrefix` / `tblAKCTitlesSuffix` | `title_prefixes` / `title_suffixes` | Seed data |
@@ -591,8 +591,8 @@ Key mappings from `ObedienceData.mde` → OffLeash:
 ## Open questions / pending decisions
 
 1. **Judge record scoping**: club-scoped contact records or a shared cross-club judge registry? MVP: club-scoped. Revisit if it becomes friction.
-2. **Title earning automation**: should OffLeash auto-advance titles when a dog accumulates qualifying legs? MVP: no - let the owner self-manage. P2: yes, based on `canonical_classes.qualifying_for_title_code` + `title_prefixes.earning_rules`.
-3. **Dog dedup across tenants**: if the same dog is entered at Club A and Club B via OffLeash, should they be the same dog record? MVP: separate records per tenant to simplify RLS. Consider a global `registered_dogs` shared table in P2.
+2. **Title earning automation**: should QTrial auto-advance titles when a dog accumulates qualifying legs? MVP: no - let the owner self-manage. P2: yes, based on `canonical_classes.qualifying_for_title_code` + `title_prefixes.earning_rules`.
+3. **Dog dedup across tenants**: if the same dog is entered at Club A and Club B via QTrial, should they be the same dog record? MVP: separate records per tenant to simplify RLS. Consider a global `registered_dogs` shared table in P2.
 4. **How are co-owners structured for title-earning purposes?** Current schema uses free-text `CoOwners` on the dog. For catalog rendering this is fine; for title verification it may not be. **[PENDING]**
 5. **Confirmation email template storage**: per-event memo field (current Access) or per-club template with per-event override (proposed)? Proposed is cleaner.
 
