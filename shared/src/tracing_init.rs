@@ -1,8 +1,8 @@
-//! Tracing subscriber setup shared by every OffLeash binary.
+//! Tracing subscriber setup shared by every QTrial binary.
 //!
 //! ARCHITECTURE.md commits us to structured JSON logs in every deployed
 //! environment, so JSON is the default. Local development gets human
-//! readable output by setting `OFFLEASH_LOG_FORMAT=text`. The usual
+//! readable output by setting `QTRIAL_LOG_FORMAT=text`. The usual
 //! `RUST_LOG` filter applies in both cases.
 
 use tracing_subscriber::EnvFilter;
@@ -18,7 +18,7 @@ pub fn init(service_name: &'static str) {
     let env_filter = EnvFilter::try_from_default_env()
         .unwrap_or_else(|_| EnvFilter::new("info"));
 
-    let format_choice = std::env::var("OFFLEASH_LOG_FORMAT").unwrap_or_default();
+    let format_choice = std::env::var("QTRIAL_LOG_FORMAT").unwrap_or_default();
 
     let registry = tracing_subscriber::registry().with(env_filter);
 

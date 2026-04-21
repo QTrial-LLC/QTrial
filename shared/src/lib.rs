@@ -1,4 +1,4 @@
-//! Shared types and utilities for the OffLeash API and workers.
+//! Shared types and utilities for the QTrial API and workers.
 //!
 //! Phase 0 contains only the tracing initializer so both binaries emit
 //! logs in the same shape. Domain types and tenancy helpers will land
