@@ -1,7 +1,7 @@
 # QTrial - Project Charter
 
-**Status:** Draft v0.1 (foundational; revise as the product definition firms up)
-**Last updated:** 2026-04-19
+**Status:** Draft v0.2 (integrates Deborah's Q&A 2026-04-19 / 2026-04-20 and artifact review)
+**Last updated:** 2026-04-20
 **Owner:** Robare Pruyn
 **Primary stakeholder:** Deborah Pruyn (trial secretary; first real user)
 
@@ -50,7 +50,7 @@ An MVP release is successful if:
 1. **Deborah can run a real Glens Falls Kennel Club Rally/Obedience trial on QTrial end-to-end without falling back to her old Access tools.** This is the primary acceptance test.
 2. **Exhibitors can enter online, pay by credit card, and receive confirmation emails** without the secretary manually touching their entries.
 3. **The trial catalog, judge's books, running order, armband sheet, and scribe sheets all print correctly** and are acceptable to AKC.
-4. **Results can be submitted electronically to AKC** (in the 2004 XML format, or whatever format AKC accepts in 2026), or failing that, exported to a format the secretary can upload manually.
+4. **Results can be submitted to AKC** in the 2026 format that AKC currently accepts for Obedience and Rally: a PDF package consisting of the marked catalog, judges books (carbon copies), and the populated AKC Report of Rally Trial (Form JOVRY8) or Obedience equivalent, emailed to `rallyresults@akc.org` (or mailed). XML submission is Agility-only and is deferred until QTrial adds Agility support post-MVP.
 5. **A second club can be onboarded** without code changes - multi-tenancy must actually work in practice, not just on paper.
 6. **Total operational cost is low enough** that QTrial can be comped for Deborah's trials and remain viable at reasonable per-entry or per-class pricing for paid clubs.
 
@@ -89,7 +89,7 @@ Based on a survey of Secreterrier, EagerDog, DogShow.com, ShowEntries, MyK9T, Pr
 
 ## Working assumptions that may need validation
 
-- AKC still accepts the 2004-era XML schema that Deborah's current software targets, or a documented successor format.
+- AKC continues to accept the PDF package format documented in WORKFLOWS.md §9 for Obedience and Rally through at least 2026-2027. (Confirmed current as of 2026-04-19 via Deborah; Form JOVRY8 03/23 v1.0 Edit is the current revision; rallyresults@akc.org is the current destination.)
 - Stripe will accept a high-risk-adjacent merchant category (dog-show events are legitimate but not always recognized) without friction.
 - Row-level security in Postgres is sufficient for tenant isolation at the scale we'll reach.
 - Deborah is willing to be the design partner for the whole MVP cycle.

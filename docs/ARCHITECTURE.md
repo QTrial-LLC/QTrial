@@ -1,7 +1,7 @@
 # QTrial - Architecture
 
-**Status:** Draft v0.1
-**Last updated:** 2026-04-19
+**Status:** Draft v0.2
+**Last updated:** 2026-04-20
 
 ---
 
@@ -38,7 +38,7 @@ Payment processing with Connect for routing funds to club bank accounts. Handles
 Intentionally small. Three services total:
 
 1. **`qtrial-api`** - the core Rust backend serving the web, exhibitor, and internal APIs. Handles all business logic, validation, and direct database access. Issues signed URLs for S3 assets.
-2. **`qtrial-workers`** - a Rust worker process consuming NATS jobs for email dispatch, PDF generation (catalog, judge's books, etc.), AKC XML generation, and batch jobs (overnight reconciliation, report aggregation).
+2. **`qtrial-workers`** - a Rust worker process consuming NATS jobs for email dispatch, PDF generation (catalog, judges books, AKC submission package, etc.) and batch jobs (overnight reconciliation, report aggregation). AKC XML generation is deferred until Agility support is added post-MVP.
 3. **`qtrial-web`** - the Next.js frontend serving HTML to users and calling `qtrial-api` for data.
 
 Infrastructure services (not written by us):
@@ -125,7 +125,7 @@ Capability checks are implemented as functions (`can_edit_event`, `can_record_pa
 - **Keycloak** - identity (listed above)
 - **S3 or compatible object storage** - asset storage for PDFs and logos
 - **Email provider** - for confirmation emails and mailing list dispatch; likely SES or Postmark (no decision yet)
-- **AKC** - for electronic results submission; mechanism to be determined (email attachment, manual upload, or API if one emerges)
+- **AKC** - for results submission. For MVP (Obedience/Rally), the mechanism is PDF package via mail or email (default `rallyresults@akc.org` for Rally). Post-MVP (Agility) adds XML submission conforming to AKC's current Agility schema.
 
 ### Internal boundaries
 
@@ -139,19 +139,26 @@ All three are served from `qtrial-api` but use different authorization scopes.
 
 ## PDF generation
 
-Several documents need to be produced as PDFs:
+The document catalog has grown as artifact review progressed. The PDFs QTrial produces for a single trial:
 
-- Premium list
-- Catalog (pre-trial and marked post-trial)
-- Judge's books
-- Scribe sheets
-- Armband cards
-- Confirmation emails (HTML, with PDF attachment option)
-- Report of Trial
+1. **Premium list** - pre-trial, public
+2. **Entry confirmation** - one per dog, sent when entry is processed (REQ-ENTRY-010); reference: `Confirmation_Letter*.pdf`
+3. **Running schedule / judging schedule** - per day, pre-trial; reference: `Nov_2025_AKC_Rally_Trial_Judging_schedule.pdf`
+4. **Catalog (pre-trial)** - per trial day
+5. **Marked catalog** - post-trial, one of the three AKC submission artifacts (REQ-SUB-001); reference: `Nov_2025_Sat_Marked_Catalog.pdf`
+6. **Judges books** - pre-trial with cover, post-trial with scores (REQ-SUB-002); reference: `Judges_Book_Cover_Sat.pdf`
+7. **Form JOVRY8 / Obedience equivalent** - post-trial, one of the three AKC submission artifacts (REQ-SUB-003); reference: `Trial_Summary_report.pdf`
+8. **Steward board** - per class, pre-trial; reference: `Stewards_BOard_Sat.pdf`
+9. **Scribe sheets** - Obedience exercise-by-exercise scoring
+10. **Armband cards** - printed, distributed at check-in
 
-Approach: server-side HTML rendering to PDF via a headless Chrome instance (puppeteer/playwright-equivalent) running in the workers service. Templates are HTML with Tailwind CSS, rendered in Rust using a templating engine (`askama` or `minijinja`), then converted to PDF.
+These artifacts share ~80% of their data (same dogs, same entries, same classes) but differ in structure and audience. A shared rendering layer is therefore architecturally called for.
 
-Alternative considered: typst (Rust-native typesetter), which produces beautiful output but has a smaller ecosystem for template sharing. Reserved for P2 consideration.
+Approach: server-side HTML rendering to PDF via a headless Chrome instance (puppeteer/playwright-equivalent) running in the workers service. Templates are HTML with Tailwind CSS, rendered in Rust using a templating engine (`askama` or `minijinja`), then converted to PDF. A shared data-fetching layer loads the per-trial data once and passes it to each renderer.
+
+Form JOVRY8 (and the Obedience equivalent) is a different shape: it's a fixed AKC-published PDF form that QTrial populates via PDF form-field fill rather than HTML-to-PDF. This is a distinct code path using a PDF manipulation library (leading candidate: `pdf-lib` via a Node helper, or `lopdf` in Rust) rather than the HTML pipeline.
+
+Alternative considered for HTML-based PDFs: typst (Rust-native typesetter), which produces beautiful output but has a smaller ecosystem for template sharing. Reserved for P2 consideration.
 
 ## Deployment
 
@@ -252,7 +259,8 @@ qtrial/
 ## Open architecture questions
 
 1. **PDF generation: Rust HTML-to-PDF vs Node service vs typst.** Leaning Rust + headless Chrome for MVP, but worth a quick prototype comparison.
-2. **Hot path performance for the entry-open rush.** Events can have 100+ exhibitors all submitting at entry opening. Needs rate limiting and queue-based ordering. TBD in implementation.
-3. **How do we handle trial-day offline scenarios?** Many trials are in areas with poor internet. For MVP we assume internet is available; P2 may need a progressive web app with offline support or a desktop fallback for critical trial-day operations.
-4. **Where does the AKC XML generation live?** In `qtrial-api` for simplicity, or in `qtrial-workers` for isolation? Leaning workers because submission is inherently async.
-5. **Keycloak administration UI** - do club admins have a Keycloak admin UI or do they manage users via QTrial's own UI? Leaning QTrial UI (keep Keycloak as an invisible identity backend).
+2. **AKC PDF form-fill library.** Form JOVRY8 is a fillable PDF. Evaluating `lopdf` (Rust) vs a Node `pdf-lib` helper service. Decision before Phase 6 kicks off.
+3. **Hot path performance for the entry-open rush.** Events can have 100+ exhibitors all submitting at entry opening. Needs rate limiting and queue-based ordering. TBD in implementation.
+4. **How do we handle trial-day offline scenarios?** Many trials are in areas with poor internet. For MVP we assume internet is available; P2 may need a progressive web app with offline support or a desktop fallback for critical trial-day operations.
+5. **Where do the PDF generation jobs live?** All in `qtrial-workers` for isolation (leaning this way; submission is inherently async and PDF generation is CPU-heavy enough to benefit from running off the request path).
+6. **Keycloak administration UI** - do club admins have a Keycloak admin UI or do they manage users via QTrial's own UI? Leaning QTrial UI (keep Keycloak as an invisible identity backend).

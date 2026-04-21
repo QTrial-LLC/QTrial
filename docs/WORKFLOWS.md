@@ -1,7 +1,7 @@
 # QTrial - Workflows
 
-**Status:** Draft v0.1 - **provisional**; narrative workflows derived from Deborah's outline, the Access schema, and typical AKC trial secretary practices. Will be refined once Deborah provides a trial-weekend walkthrough.
-**Last updated:** 2026-04-19
+**Status:** Draft v0.2 - integrates Deborah's Q&A (2026-04-19 / 2026-04-20) and confirmation-letter artifact review.
+**Last updated:** 2026-04-20
 
 ---
 
@@ -161,13 +161,25 @@ For each day, the secretary configures the trials for that day.
    - Class still has space (atomic check against the trial's entry limit)
 2. If everything validates:
    - `entries`, `entry_lines`, `payments` rows are created
-   - Armband is assigned (if the club's scheme is per-entry; otherwise assigned later in bulk)
-   - Confirmation email is queued to `qtrial-workers`
+   - `dog_trial_jump_heights` row is created or updated from the handler's elected height
+   - `armband_assignments` rows are created per (dog, trial, series) the dog is entered in; entry lines are linked via `entry_lines.armband_assignment_id`. A dog running Advanced B + Excellent B + Master (all in the 500 series) gets ONE armband; the same dog also running Rally Choice (800 series) gets a SECOND armband.
+   - Entry confirmation PDF is generated (REQ-ENTRY-010) and archived
+   - `entry_confirmation` email is queued to `qtrial-workers` using the club's template (REQ-EMAIL-001)
    - Worker sends the email and marks `confirmation_email_sent_at`
 3. If the class is full, the entry is placed on waitlist:
    - Payment is captured or authorized per club policy **[PENDING]**
    - Waitlist email is sent
 4. Exhibitor sees a confirmation page with entry details and an option to add another dog or another entry.
+
+### 3.6 Post-closing confirmation email (~1 week pre-trial)
+
+Approximately one week before the trial, QTrial sends a `post_closing_reminder` email consolidated per owner (REQ-ENTRY-011, REQ-ENTRY-014). Unlike the per-dog per-entry confirmation PDF in §3.5, this email batches all of an owner's dogs and entries for the trial and includes the day-by-day running schedule.
+
+Example (from Susan Brownell artifact): one email listing three dogs × multiple classes × two days, with the subject line including all three registration numbers for email threading.
+
+1. Scheduler detects that a trial is 7 days out and all entries have been processed (the closing date has passed).
+2. For each owner with one or more active entries at the trial, QTrial renders the `post_closing_reminder` template with `{{dogs}}`, `{{entries_by_day}}`, `{{schedule}}`, and `{{registration_numbers}}` variables.
+3. QTrial sends the email and marks `entries.post_closing_email_sent_at` for every included entry.
 
 ---
 
@@ -305,6 +317,8 @@ Once entries are closed (or close to closing), the secretary generates the paper
 2. QTrial produces a per-class running order with armband numbers, jump heights, and handler names.
 3. Exhibitors can (P2) see their own running-order position via their account.
 
+Pacing note: Rally and Obedience default to 3 minutes per dog for schedule estimation (per Deborah's Q5 2026-04-20). Actual pacing is class-dependent - Nov 2025 Glens Falls data showed Rally Choice running ~4.3 min/dog, Rally Master ~3.5, Rally Excellent B ~3.0-3.2. Secretaries can override the platform default per class via `events.dogs_per_hour_override` JSONB. The override shape is `{"rally-choice": 4.3, "rally-master": 3.5}`; absent entries fall back to `sport_time_defaults`.
+
 ### 7.5 Scribe sheets
 
 1. Secretary clicks "Generate scribe sheets."
@@ -330,12 +344,30 @@ Once entries are closed (or close to closing), the secretary generates the paper
 ### 8.2 Running the trial
 
 1. Classes run per the running order.
-2. Judges use their printed judge's books to record scores.
+2. Judges use their printed judge's books to record scores AND times. The judges book cover has `Time Started` and `Time Finished` fields; the judge fills both for every dog.
 3. At the end of each class (or throughout the day), judges hand completed books to the secretary.
 4. Secretary enters scores into QTrial, one class at a time:
-   - For each entry in the class: score, Q/NQ, placement, time (if applicable)
-   - Special flags: absent, excused, DQ
+   - For each entry in the class: score, `time_started`, `time_finished`, Q/NQ, placement, and special flags (absent, excused, DQ)
+   - QTrial computes `time_on_course` from the two timestamps or accepts a directly-entered interval
 5. QTrial validates scores and computes placements and awards.
+
+### 8.2.1 Tie-breaking by time
+
+When two dogs in the same class earn identical scores, placement is determined by time on course (lower time wins). Example from the Nov 2025 marked catalog, Rally Excellent B: armband 512 and armband 524 both scored 100; placement was 1st and 2nd respectively based on time on course.
+
+Placement SQL logic: `ORDER BY score DESC, time_on_course ASC`. This applies to both Obedience and Rally in MVP.
+
+### 8.2.2 Judge-measurement override (rare)
+
+If a judge doubts the submitted jump height for a dog in-ring, they can trigger a measurement override in the judge-facing app (REQ-ENTRY-015):
+
+1. Judge taps "Re-measure dog" in the judge-facing app.
+2. Judge enters the measured height (one of 4, 8, 12, 16, 20).
+3. QTrial updates the dog's `dog_trial_jump_heights` row: `was_judge_measured=true`, `judge_measured_at=now()`, `judge_measured_by_contact_id`, and the new height.
+4. The updated height applies to ALL of the dog's remaining entries at the current trial, not just the class being judged.
+5. Running order for subsequent classes is recomputed if it was height-sorted.
+
+Deborah reports this has happened approximately once in her entire trial-secretary career, so it is a cold path UX-wise; correctness matters, polish does not.
 
 ### 8.3 Awards
 
@@ -353,7 +385,7 @@ Once entries are closed (or close to closing), the secretary generates the paper
 1. All classes complete. All scores entered. All awards recorded.
 2. Secretary clicks "Mark trial complete."
 3. QTrial generates the marked catalog (catalog + results) and archives it.
-4. QTrial generates the AKC submission package (XML + supporting documents).
+4. QTrial generates the AKC submission package (PDF marked catalog, judges books, and populated Form JOVRY8 for Rally or Obedience equivalent) per §9 below.
 
 ---
 
@@ -361,34 +393,50 @@ Once entries are closed (or close to closing), the secretary generates the paper
 
 **Actor:** Trial secretary.
 
-### 9.1 Review submission
+For MVP (Obedience and Rally), AKC submission is PDF-based. Trial secretaries enter scores in real-time during the trial; after the trial, QTrial generates the three-artifact submission package and the secretary mails or emails it to AKC.
 
-1. Secretary reviews the generated AKC XML/CSV submission in QTrial.
-2. QTrial highlights any records with validation warnings (e.g., missing reg number, score out of range, etc.).
-3. Secretary corrects issues and regenerates.
+### 9.1 Generate the PDF submission package
 
-### 9.2 Submit to AKC
+Once all scores are entered and the secretary marks the trial complete (see §8.4):
 
-1. Secretary clicks "Submit to AKC."
-2. **[PENDING]** What is the actual submission mechanism in 2026? Email? Upload portal? API? The Access schema references a 2004 XSD, which suggests email-attached XML is the historical method. QTrial needs to support whatever current AKC expects.
-3. QTrial records the submission attempt in `submission_records`.
-4. If AKC accepts/rejects the submission (either immediately via API or later via email), the secretary updates the status in QTrial.
+1. QTrial generates the **marked catalog PDF** - the trial catalog with scores and placements annotated on each entry (REQ-SUB-001). Reference format: `Nov_2025_Sat_Marked_Catalog.pdf`.
+2. QTrial generates (or confirms that scores are recorded onto) the **judges books** - one per class with the judge's own carbon-copy pages. The pink carbon copy goes to AKC per AKC distribution rules. White stays with AKC's records, Yellow with the club, Gold posted (REQ-SUB-002).
+3. QTrial generates the **AKC Report of Rally Trial (Form JOVRY8 (03/23) v1.0 Edit)** or Obedience equivalent, auto-populated with event number, event date, dog counts, fee calculations per REQ-SUB-005 ($3.50 first entry + $3.00 additional per dog per trial + $10 secretary fee when applicable), and secretary contact info (REQ-SUB-003). Reference format: `Trial_Summary_report.pdf`.
 
-### 9.3 Exhibitor results
+All three artifacts are archived in `submission_records` with their S3 object keys.
+
+### 9.2 Review
+
+1. Secretary reviews the generated PDFs side by side in QTrial.
+2. QTrial highlights any entries with validation warnings (missing reg number, score out of range, missing time for tied placements, etc.).
+3. Secretary corrects source data and regenerates.
+
+### 9.3 Send to AKC
+
+1. Secretary downloads the package (or uses QTrial's "draft AKC email" helper to compose an email with the PDFs attached).
+2. Secretary mails a physical package to AKC Event Operations (PO Box 900051, Raleigh NC 27675-9051), or emails the package to `rallyresults@akc.org` for Rally / the Obedience equivalent for Obedience (REQ-SUB-004). Payment accompanies the submission (check or credit card info on the form).
+3. QTrial records the submission attempt in `submission_records` with the destination (`akc_destination_email` or `mail`), status `submitted`, and the fee total.
+4. When AKC acknowledges acceptance (email reply), the secretary updates the status in QTrial to `accepted`.
+
+### 9.4 Exhibitor results
 
 1. QTrial sends results emails to exhibitors (entries marked with `results_email_sent_at`).
 2. Exhibitors can view their results via their account.
 3. P2: dog title progress tracking is automatically updated.
 
-### 9.4 Financial reconciliation
+### 9.5 Financial reconciliation
 
 1. Secretary runs the event financial report:
    - Total revenue collected
-   - AKC fees owed
+   - AKC fees owed (computed from REQ-SUB-005; this matches what went on Form JOVRY8)
    - Refunds issued
    - Expected bank deposits (for checks)
    - Stripe payouts (automatic via Connect)
 2. Secretary uses this report to reconcile the club's books.
+
+### 9.6 Post-MVP: XML submission for Agility
+
+When QTrial adds Agility support, submission moves to an XML-based workflow conforming to the current AKC Agility schema. The `submission_records` table's `submission_type = 'xml'` branch covers this; `xml_payload_object_key` holds the generated XML. Deferred from MVP.
 
 ---
 
@@ -410,8 +458,30 @@ Once entries are closed (or close to closing), the secretary generates the paper
 ### 10.3 Individual communication
 
 - Confirmation, waitlist, refund, and results emails are template-driven.
-- Templates are editable per club.
+- Templates are editable per club (see REQ-EMAIL-001 and `email_templates` table).
 - Each outgoing email records its delivery status and can be viewed in the exhibitor's communication log.
+
+### 10.4 Template keys and variables
+
+MVP template keys (stored in `email_templates.template_key`):
+
+| Key | Trigger | Audience |
+|---|---|---|
+| `entry_confirmation` | Entry processed | Exhibitor (one email per entry) |
+| `post_closing_reminder` | ~1 week pre-trial after closing | Owner (consolidated across all their dogs at the trial) |
+| `cancellation_notice` | Trial cancelled | All exhibitors at the trial |
+| `refund_confirmation` | Refund issued | Exhibitor who received the refund |
+
+Variable substitution is simple `{{variable_name}}`. Jinja-style conditionals are post-MVP.
+
+Variables available per template:
+
+- **`entry_confirmation`**: `{{exhibitor_name}}`, `{{dog_call_name}}`, `{{dog_registered_name}}`, `{{classes_entered}}` (list), `{{armbands}}` (list, one per series), `{{jump_height}}`, `{{fees_breakdown}}`, `{{total_paid}}`, `{{trial_dates}}`, `{{venue}}`, `{{club_contact}}`, `{{secretary_signature}}`
+- **`post_closing_reminder`**: `{{owner_name}}`, `{{dogs}}` (list of `{call_name, registered_name, entries_by_day, armbands}`), `{{schedule}}` (per-day running schedule), `{{registration_numbers}}` (for subject-line threading), `{{trial_dates}}`, `{{venue}}`, `{{club_contact}}`
+- **`cancellation_notice`**: `{{exhibitor_name}}`, `{{trial_dates}}`, `{{cancellation_reason}}`, `{{refund_policy}}`, `{{club_contact}}`
+- **`refund_confirmation`**: `{{exhibitor_name}}`, `{{dog_call_name}}`, `{{refund_amount}}`, `{{refund_reason}}`, `{{original_payment_method}}`, `{{club_contact}}`
+
+Default templates are seeded on club creation; clubs override via the settings UI.
 
 ---
 
@@ -437,13 +507,16 @@ Once entries are closed (or close to closing), the secretary generates the paper
 
 ## Open questions / pending artifacts
 
-The following workflow areas need Deborah's input:
+The following workflow areas still need Deborah's input:
 
 1. **A trial-weekend walkthrough narrative** - exactly what she does Friday setup through Sunday wrap-up. Voice memo is ideal.
 2. **The paper-entry physical workflow** - what happens to the paper after she enters it? How does she track check deposit status?
 3. **The move-up timing rules** - what specific AKC regulation version governs move-up deadlines for Obedience and Rally in 2026?
 4. **The judge communication pattern** - how does she currently send judges their schedules and books? Email? Mail?
 5. **Print logistics** - does she print catalogs herself or use a print shop? What are the quality expectations?
-6. **The AKC submission mechanism in 2026** - email attachment? Upload portal? API? We need to confirm with an AKC contact.
-7. **Trial-day contingencies** - what does she do when a judge is late? When a dog bites another dog? These are edge cases but the software should stay out of her way while she handles them.
-8. **Refund handling for check payments** - when a check refund is needed, does she write a check by hand or does QTrial integrate with some bill-payment service?
+6. **Trial-day contingencies** - what does she do when a judge is late? When a dog bites another dog? These are edge cases but the software should stay out of her way while she handles them.
+7. **Refund handling for check payments** - when a check refund is needed, does she write a check by hand or does QTrial integrate with some bill-payment service?
+
+Resolved as of 2026-04-20:
+
+- **AKC submission mechanism for Obedience/Rally in 2026**: PDF package (marked catalog + judges books + Form JOVRY8), sent via mail to PO Box 900051, Raleigh NC 27675-9051 or emailed to `rallyresults@akc.org`. Payment accompanies. See §9.
