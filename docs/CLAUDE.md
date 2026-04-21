@@ -1,10 +1,10 @@
 # CLAUDE.md
 
-Conventions and guidance for Claude (and Claude Code) working on OffLeash.
+Conventions and guidance for Claude (and Claude Code) working on QTrial.
 
 ## Project context
 
-OffLeash is a multi-tenant SaaS for managing AKC dog sport trials. Before doing anything substantive, read:
+QTrial is a multi-tenant SaaS for managing AKC dog sport trials. Before doing anything substantive, read:
 
 1. `docs/PROJECT_CHARTER.md` - what we're building and why
 2. `docs/DOMAIN_GLOSSARY.md` - dog-sport terminology. **Read this before writing any code that touches the domain.** Getting terms like "trial", "class", "level", "Q", "leg", or "HIT" wrong will produce convincing-looking code that is factually broken.

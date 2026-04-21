@@ -1,8 +1,8 @@
-# OffLeash
+# QTrial
 
 **Status:** Pre-development. This repository currently contains foundational documentation only. Code begins after document review.
 
-OffLeash is a cloud-hosted, multi-tenant platform for managing AKC (and eventually UKC) dog sport trials. It is being built to replace the Microsoft Access-based tools that volunteer trial secretaries have been using since the early 2000s.
+QTrial is a cloud-hosted, multi-tenant platform for managing AKC (and eventually UKC) dog sport trials. It is being built to replace the Microsoft Access-based tools that volunteer trial secretaries have been using since the early 2000s.
 
 The primary user is Deborah Pruyn, trial secretary for Glens Falls Kennel Club. The first real use is targeted for a spring 2027 trial.
 
@@ -10,17 +10,17 @@ The primary user is Deborah Pruyn, trial secretary for Glens Falls Kennel Club. 
 
 Read in this order:
 
-1. **[PROJECT_CHARTER.md](./PROJECT_CHARTER.md)** - why OffLeash exists, who it's for, what success looks like, and what it explicitly is not.
+1. **[PROJECT_CHARTER.md](./PROJECT_CHARTER.md)** - why QTrial exists, who it's for, what success looks like, and what it explicitly is not.
 2. **[DOMAIN_GLOSSARY.md](./DOMAIN_GLOSSARY.md)** - precise definitions of dog-sport and AKC terminology. Every contributor should read this before writing code.
-3. **[REQUIREMENTS.md](./REQUIREMENTS.md)** - what OffLeash must do, tagged by phase (MVP, P2, P3) and by certainty (confirmed, pending, assumed).
-4. **[DATA_MODEL.md](./DATA_MODEL.md)** - the database schema, with mappings from Deborah's current Access schema to the OffLeash model.
+3. **[REQUIREMENTS.md](./REQUIREMENTS.md)** - what QTrial must do, tagged by phase (MVP, P2, P3) and by certainty (confirmed, pending, assumed).
+4. **[DATA_MODEL.md](./DATA_MODEL.md)** - the database schema, with mappings from Deborah's current Access schema to the QTrial model.
 5. **[ARCHITECTURE.md](./ARCHITECTURE.md)** - the technical stack, multi-tenancy approach, and deployment model.
 6. **[WORKFLOWS.md](./WORKFLOWS.md)** - narrative walkthroughs of user-facing operations, from a new club signing up through submitting results to AKC.
 7. **[ROADMAP.md](./ROADMAP.md)** - phased delivery plan with dates keyed to Deborah's real trials.
 
 ## Quick reference
 
-**Product name:** OffLeash (working name, pending trademark clearance before monetization)
+**Product name:** QTrial (pending trademark clearance before monetization)
 
 **Tagline (TBD):** something around "the trial secretary's best friend," but deliberately not generic dog-software copy.
 

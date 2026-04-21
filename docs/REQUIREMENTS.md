@@ -1,4 +1,4 @@
-# OffLeash - Requirements
+# QTrial - Requirements
 
 **Status:** Draft v0.1 - **provisional**; will be updated once additional artifacts (PDF examples, screen grabs, trial-weekend walkthrough) are received from Deborah.
 **Last updated:** 2026-04-19
@@ -8,7 +8,7 @@
 
 ## How to read this document
 
-This document consolidates what OffLeash must do, grouped by functional area. Requirements are stated as behaviors the system must support, not implementation. Implementation lives in `ARCHITECTURE.md` and the codebase.
+This document consolidates what QTrial must do, grouped by functional area. Requirements are stated as behaviors the system must support, not implementation. Implementation lives in `ARCHITECTURE.md` and the codebase.
 
 Requirements are tagged:
 - **[MVP]** - Required for first real-world use by Deborah.
@@ -39,7 +39,7 @@ Each club has:
 Each user of the system has a user account independent of any club. Users are then granted roles within specific clubs.
 
 **Roles [MVP]:**
-- **Platform Administrator** - OffLeash staff. Can see all tenants. Used for support and diagnostics only, not day-to-day operations.
+- **Platform Administrator** - QTrial staff. Can see all tenants. Used for support and diagnostics only, not day-to-day operations.
 - **Club Administrator** - Can manage the club's profile, invite other users, configure default settings, view financial reports. There can be multiple club administrators per club.
 - **Trial Secretary** - Can create and manage events, process entries, generate documents, enter scores, submit results. A secretary can be attached to multiple clubs (a common real-world pattern).
 - **Judge** - Can view their own assignments and judge's books. Cannot see other judges' data or the full event dashboard.
@@ -136,7 +136,7 @@ For each (day × trial) combination, the secretary selects which classes are off
 - Regular Rally (Rally Novice A/B, Rally Intermediate, Rally Advanced A/B, Rally Excellent A/B, Rally Master)
 - Nonregular Rally (Rally Pairs Novice/Advanced/Excellent, Rally T Challenge, Rally T Challenge Team, Rally Team Novice/Advanced/Excellent, Rally Plus, Rally Intro)
 
-The canonical class definitions (including whether the class has jumps, whether it allows multiple entries per dog, default dogs-per-hour, and related metadata) are seeded into OffLeash's reference data, derived from the `tblkAKCObedClassInfo` data in Deborah's current system.
+The canonical class definitions (including whether the class has jumps, whether it allows multiple entries per dog, default dogs-per-hour, and related metadata) are seeded into QTrial's reference data, derived from the `tblkAKCObedClassInfo` data in Deborah's current system.
 
 ### 2.6 Jump heights
 
@@ -474,7 +474,7 @@ This moved from Phase 2 to MVP based on the discovery of the AKC XML structure i
 
 ### 14.1 Electronic submission
 
-The system produces an XML document conforming to the AKC schema (the 2004 schema `xmlschema_12032004.xsd` is the known starting point; OffLeash must validate against the current AKC schema as of the MVP release date - **[PENDING: obtain current schema from AKC or from Deborah's workstation].**
+The system produces an XML document conforming to the AKC schema (the 2004 schema `xmlschema_12032004.xsd` is the known starting point; QTrial must validate against the current AKC schema as of the MVP release date - **[PENDING: obtain current schema from AKC or from Deborah's workstation].**
 
 The XML document contains:
 - Sender information (club, club number, secretary identity, schema version)
@@ -516,7 +516,7 @@ Per `tblPremiumMailingList` in the current schema and typical club workflow.
 
 ## 16. Data migration from Access [MVP]
 
-A tool that imports data from a Lab Tested Databases–style Access `.mde`/`.mdb` file into an OffLeash club:
+A tool that imports data from a Lab Tested Databases–style Access `.mde`/`.mdb` file into an QTrial club:
 - Dogs (`tblDogData`)
 - Owners (`tblOwnerData`)
 - Judges (`tblJudges`)
@@ -530,7 +530,7 @@ Deduplication logic (especially for dogs and owners that span years) is critical
 ## 17. Exhibitor-facing results and history [P2]
 
 Post-MVP: exhibitors can view:
-- Their dogs' full trial history across all events entered via OffLeash
+- Their dogs' full trial history across all events entered via QTrial
 - Accumulated Q's toward titles (with explicit "this dog has earned 2 of 3 legs for CDX" indicators)
 - OTCH and OM points accumulated
 - Event photos (if the club uploads them)
@@ -546,19 +546,19 @@ Post-MVP: real-time run order management on trial day:
 
 ## 19. Billing and revenue [MVP for basic, P2 for sophisticated]
 
-OffLeash as a business:
+QTrial as a business:
 
 **MVP:**
 - Each event's entry-processing fees are calculated per the pricing model (free under a threshold, per-class above)
 - Stripe Connect for routing payments to the club's bank account
-- OffLeash's fees are automatically withheld from the exhibitor's payment at checkout
+- QTrial's fees are automatically withheld from the exhibitor's payment at checkout
 - Simple invoicing for clubs that choose alternative arrangements
 
 **P2:**
 - Club dashboards with usage and spend
 - Promotional pricing and discount codes
 - Enterprise / superintendent tier pricing
-- Revenue reporting for OffLeash's operators
+- Revenue reporting for QTrial's operators
 
 ## 20. Out-of-scope for MVP (stated explicitly)
 

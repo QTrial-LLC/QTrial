@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verify the local OffLeash development stack is not just up, but healthy.
+# Verify the local QTrial development stack is not just up, but healthy.
 #
 # "Running" and "accepting requests" are different standards. This script
 # exercises each service at the protocol layer: Postgres accepts auth,
@@ -26,10 +26,10 @@ fi
 
 # Port overrides use the same names as docker-compose.yml so a single
 # `.env` file configures both the stack and the smoke check.
-readonly POSTGRES_PORT="${OFFLEASH_POSTGRES_PORT:-5432}"
-readonly KEYCLOAK_PORT="${OFFLEASH_KEYCLOAK_PORT:-8080}"
-readonly NATS_HTTP_PORT="${OFFLEASH_NATS_HTTP_PORT:-8222}"
-readonly VALKEY_PORT="${OFFLEASH_VALKEY_PORT:-6379}"
+readonly POSTGRES_PORT="${QTRIAL_POSTGRES_PORT:-5432}"
+readonly KEYCLOAK_PORT="${QTRIAL_KEYCLOAK_PORT:-8080}"
+readonly NATS_HTTP_PORT="${QTRIAL_NATS_HTTP_PORT:-8222}"
+readonly VALKEY_PORT="${QTRIAL_VALKEY_PORT:-6379}"
 
 readonly DEFAULT_TIMEOUT_SECONDS=120
 readonly KEYCLOAK_TIMEOUT_SECONDS=240
@@ -94,7 +94,7 @@ check_valkey() {
         valkey_ping
 }
 
-printf "smoke-compose: checking OffLeash local stack...\n"
+printf "smoke-compose: checking QTrial local stack...\n"
 
 check_postgres || true
 check_keycloak || true

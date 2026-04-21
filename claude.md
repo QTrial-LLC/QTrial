@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This repository is OffLeash. Before doing anything substantive, read the
+This repository is QTrial. Before doing anything substantive, read the
 documents under `docs/` in the order listed in `docs/README.md`. The
 domain glossary in `docs/DOMAIN_GLOSSARY.md` is mandatory reading before
 writing any code that touches the domain - getting terms wrong produces

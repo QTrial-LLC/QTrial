@@ -1,4 +1,4 @@
-# OffLeash - Project Charter
+# QTrial - Project Charter
 
 **Status:** Draft v0.1 (foundational; revise as the product definition firms up)
 **Last updated:** 2026-04-19
@@ -7,19 +7,19 @@
 
 ---
 
-## What OffLeash is
+## What QTrial is
 
-OffLeash is a cloud-hosted, multi-tenant software platform for managing AKC and (eventually) UKC dog sport trials. It replaces the volunteer trial secretary's patchwork of desktop Access databases, email clients, Word templates, PDF forms, and Excel spreadsheets with a single integrated system that handles the complete lifecycle of a trial - from the club's application to AKC through the final electronic results submission.
+QTrial is a cloud-hosted, multi-tenant software platform for managing AKC and (eventually) UKC dog sport trials. It replaces the volunteer trial secretary's patchwork of desktop Access databases, email clients, Word templates, PDF forms, and Excel spreadsheets with a single integrated system that handles the complete lifecycle of a trial - from the club's application to AKC through the final electronic results submission.
 
-OffLeash is built for the volunteer running the trial, not for the national registry or the big show superintendent. The target user is a person who loves the sport, has full-time responsibilities elsewhere, and wants the software to stay out of the way.
+QTrial is built for the volunteer running the trial, not for the national registry or the big show superintendent. The target user is a person who loves the sport, has full-time responsibilities elsewhere, and wants the software to stay out of the way.
 
-## Why OffLeash exists
+## Why QTrial exists
 
 Running a dog sport trial is a volunteer undertaking that currently requires mastery of software tooling that was modern in 2003. The dominant products are Microsoft Access applications that require Windows, require a separate file per club, have no real multi-user support, and force trial secretaries to email PDFs and copy data between systems. The newer cloud-based competitors are better but still leave gaps around the full lifecycle - most handle online entry or trial management but not both, and few integrate electronic results submission to AKC.
 
 The volunteer running the trial deserves software that respects their time, their domain knowledge, and their club's money.
 
-## Who OffLeash is for
+## Who QTrial is for
 
 ### Primary users (in order of workflow centrality)
 
@@ -31,12 +31,12 @@ The volunteer running the trial deserves software that respects their time, thei
 
 ### Secondary personas
 
-- **Platform administrator** - Anthropic-style staff role for OffLeash itself (handling cross-tenant issues, abuse, migrations).
+- **Platform administrator** - Anthropic-style staff role for QTrial itself (handling cross-tenant issues, abuse, migrations).
 - **AKC** - not a direct user, but a structural stakeholder whose data formats and regulations we must respect.
 
-## What OffLeash explicitly is not
+## What QTrial explicitly is not
 
-- **Not a conformation superintendent platform.** The large conformation shows (Westminster, national specialties) are managed by professional superintendents with different software requirements. OffLeash could theoretically grow in that direction, but not in the foreseeable roadmap.
+- **Not a conformation superintendent platform.** The large conformation shows (Westminster, national specialties) are managed by professional superintendents with different software requirements. QTrial could theoretically grow in that direction, but not in the foreseeable roadmap.
 - **Not a training management tool.** We are not tracking training logs, lesson plans, or student progress.
 - **Not a pedigree database.** We record the dog's registered name, sire, and dam for catalog purposes; we are not building a pedigree tool.
 - **Not a social network.** We are not building exhibitor-to-exhibitor messaging, forums, or competition leaderboards as core features.
@@ -47,16 +47,16 @@ The volunteer running the trial deserves software that respects their time, thei
 
 An MVP release is successful if:
 
-1. **Deborah can run a real Glens Falls Kennel Club Rally/Obedience trial on OffLeash end-to-end without falling back to her old Access tools.** This is the primary acceptance test.
+1. **Deborah can run a real Glens Falls Kennel Club Rally/Obedience trial on QTrial end-to-end without falling back to her old Access tools.** This is the primary acceptance test.
 2. **Exhibitors can enter online, pay by credit card, and receive confirmation emails** without the secretary manually touching their entries.
 3. **The trial catalog, judge's books, running order, armband sheet, and scribe sheets all print correctly** and are acceptable to AKC.
 4. **Results can be submitted electronically to AKC** (in the 2004 XML format, or whatever format AKC accepts in 2026), or failing that, exported to a format the secretary can upload manually.
 5. **A second club can be onboarded** without code changes - multi-tenancy must actually work in practice, not just on paper.
-6. **Total operational cost is low enough** that OffLeash can be comped for Deborah's trials and remain viable at reasonable per-entry or per-class pricing for paid clubs.
+6. **Total operational cost is low enough** that QTrial can be comped for Deborah's trials and remain viable at reasonable per-entry or per-class pricing for paid clubs.
 
 ## Success criteria for the product longer term
 
-- Multiple unaffiliated clubs are actively using OffLeash in production.
+- Multiple unaffiliated clubs are actively using QTrial in production.
 - Electronic results submission is trusted by AKC and by secretaries.
 - Support load is manageable by a very small team (initially one part-time maintainer).
 - The product's reputation in the dog-sport community is "it just works."
@@ -77,11 +77,11 @@ An MVP release is successful if:
 - Payment processing fees are either passed to exhibitors transparently or absorbed by clubs at the club's choice.
 - No long-term contracts. Pay-as-you-go.
 
-## What makes OffLeash different from the competition
+## What makes QTrial different from the competition
 
-Based on a survey of Secreterrier, EagerDog, DogShow.com, ShowEntries, MyK9T, Prestige Pedigrees, Lab Tested Databases, Paw Tap, and TopDogWebDesigns, the specific differentiation OffLeash is pursuing:
+Based on a survey of Secreterrier, EagerDog, DogShow.com, ShowEntries, MyK9T, Prestige Pedigrees, Lab Tested Databases, Paw Tap, and TopDogWebDesigns, the specific differentiation QTrial is pursuing:
 
-1. **True multi-tenancy from day one.** Your mom has been running one Access file per club for years. Every competitor we surveyed is either single-tenant desktop or cloud-with-club-isolation-as-an-afterthought. OffLeash treats multi-tenancy as a first-class concern, meaning one secretary can cleanly serve many clubs.
+1. **True multi-tenancy from day one.** Your mom has been running one Access file per club for years. Every competitor we surveyed is either single-tenant desktop or cloud-with-club-isolation-as-an-afterthought. QTrial treats multi-tenancy as a first-class concern, meaning one secretary can cleanly serve many clubs.
 2. **Modern stack, modern uptime.** No dependencies on Microsoft Access or Microsoft Excel. Works on any device with a browser. No "Windows-only" footnotes.
 3. **Lifecycle coverage.** Online entry, trial management, AKC electronic submission, and exhibitor-facing results - all in one product, not stitched across three vendors.
 4. **Migration as a supported workflow.** Clubs leaving their Access-based software can bring their dog, owner, and historical event data with them.
