@@ -20,7 +20,7 @@ Read in this order:
 
 ## Quick reference
 
-**Product name:** QTrial (pending trademark clearance before monetization)
+**Product name:** QTrial. Domain `qtrial.app` registered 2026-04-20. USPTO TESS clearance pending before monetization; no direct conflicts found in initial search.
 
 **Tagline (TBD):** something around "the trial secretary's best friend," but deliberately not generic dog-software copy.
 

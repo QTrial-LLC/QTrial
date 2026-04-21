@@ -1,7 +1,7 @@
 # QTrial - Roadmap
 
-**Status:** Draft v0.1
-**Last updated:** 2026-04-19
+**Status:** Draft v0.2
+**Last updated:** 2026-04-20
 
 ---
 
@@ -125,17 +125,22 @@ Goal: QTrial handles scoring and awards computation.
 
 ## Phase 6: AKC Submission (Weeks 27-30)
 
-Goal: QTrial generates the AKC results submission.
+Goal: QTrial generates the PDF-based AKC results submission package for Obedience and Rally.
 
-- AKC XML generation conforming to the current schema
-- CSV export fallback
-- Report of Trial generation
+Per Deborah's Q4 answer (2026-04-19), AKC Obedience and Rally submission in 2026 is PDF-based, not XML. The MVP scope is therefore:
+
+- Marked catalog PDF generation (REQ-SUB-001) - the catalog with final scores annotated per entry
+- Judges book PDF generation with cover sheet and per-class score/time pages (REQ-SUB-002)
+- Form JOVRY8 PDF form-fill (REQ-SUB-003) for Rally; Obedience equivalent form for Obedience
+- Fee calculation per REQ-SUB-005: $3.50 first entry + $3.00 additional per dog per trial + $10 secretary fee after 12 trials/year
+- "Draft AKC email" helper that composes an email with the three PDFs attached to `rallyresults@akc.org` (or the Obedience equivalent) - but does not auto-send; the secretary reviews and sends themselves for MVP (REQ-SUB-004)
 - Submission record tracking and archiving
-- **Engagement with AKC** - contact the Performance Events or Agility department to verify current submission format and mechanism
 
-**Deliverable:** QTrial produces an AKC submission that passes validation (ideally by AKC, or at minimum by the schema we have).
+XML-based electronic submission is Agility-only and deferred until post-MVP. AKC's Agility XML schema will drive that work when Agility support lands.
 
-**Checkpoint:** If AKC engagement goes well, we submit Deborah's next trial via QTrial. If AKC has changed formats or is unreachable, we ship the CSV fallback and she submits manually as before.
+**Deliverable:** QTrial produces the three-artifact PDF submission package matching the format AKC expects today (reference PDFs: `Nov_2025_Sat_Marked_Catalog.pdf`, `Judges_Book_Cover_Sat.pdf`, `Trial_Summary_report.pdf`).
+
+**Checkpoint:** Deborah submits her next trial using the QTrial-generated package. If AKC accepts it, we are done for MVP. If there are format issues, we iterate on the PDF rendering.
 
 ---
 
@@ -264,7 +269,8 @@ These are things we want but will actively refuse to build during the MVP phase:
 
 ### Risks to the schedule
 
-- **AKC submission format changes.** If AKC has moved off the 2004 XML schema to something else, we may need significant Phase 6 rework.
+- **AKC PDF form format changes.** If AKC updates Form JOVRY8 or its Obedience equivalent between now and MVP, the form-fill layer needs to be updated. Mitigation: treat the form-fill as data-driven templates, re-verified before each release.
+- **PDF rendering fidelity.** The marked catalog and judges books have specific layout expectations that AKC reviewers are used to. Mitigation: compare side-by-side with Deborah's reference PDFs during Phase 6.
 - **Deborah's availability.** She's a volunteer. If she's overwhelmed with her real trial secretary work, feedback cycles slow down.
 - **Stripe Connect approval delays.** Some business categories take weeks to approve. We should start the Stripe application early.
 - **Multi-tenancy bugs.** RLS bypasses or bugs that leak data between clubs are catastrophic. Heavy testing required.
@@ -272,7 +278,7 @@ These are things we want but will actively refuse to build during the MVP phase:
 
 ### Risks to the product
 
-- **AKC doesn't cooperate.** If AKC's response to Robare's outreach is slow or unhelpful, electronic submission becomes a Phase 2 feature after all.
+- **AKC rejects a submission for formatting reasons.** Mitigation: the secretary retains the ability to hand-edit and resubmit, and Deborah reviews every Phase 6 artifact against her reference PDFs before QTrial is used for a real trial.
 - **Deborah's workflow reveals requirements we haven't imagined.** Likely. Mitigation: narrative walkthrough + shadow mode early and often.
 - **A competitor beats us to market** with a feature Deborah strongly prefers. Mitigation: the competitor stack being surveyed doesn't look like it will leap ahead on the architectural fundamentals QTrial is investing in.
 

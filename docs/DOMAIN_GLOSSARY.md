@@ -1,7 +1,7 @@
 # QTrial - Domain Glossary
 
-**Status:** Draft v0.1
-**Last updated:** 2026-04-19
+**Status:** Draft v0.2
+**Last updated:** 2026-04-20
 **Purpose:** Precise definitions of dog-sport and AKC terminology used throughout QTrial. LLMs and new contributors consistently guess these terms wrong if they are not explicitly defined. This document is authoritative; if code, comments, or other docs use a term differently, they are wrong and must be corrected.
 
 ---
@@ -44,7 +44,18 @@ A class that awards an AKC title but is not one of the main progression classes.
 A class that mirrors a Regular class but offers modifications (typically jump height reductions) for dogs that benefit from them. Earns a different title than the Regular class.
 
 **Nonregular class**
-A class that does not award AKC titles but is offered for variety, team competition, or fun. Veterans, Sub-Novice, Wildcard, Brace, Team, Rally Pairs are nonregular.
+A class that does not award AKC titles but is offered for variety, team competition, or fun. Veterans, Sub-Novice, Wildcard, Brace, Team, Rally Pairs, Random Reward are nonregular. Modeled in `canonical_classes` with `class_type = 'Nonregular'`; some nonregular classes also have `is_sanctioned = false` (e.g., Random Reward - a novelty class that doesn't earn AKC titles).
+
+**Canonical class catalog**
+The seeded 75-row master list of Obedience + Rally classes in `canonical_classes`. Spans:
+
+- Regular Obedience: Novice A/B, Open A/B, Utility A/B
+- Optional Titling Obedience: Beginner Novice, Graduate Novice, Graduate Open, Versatility, Preferred variants
+- Nonregular Obedience: Brace, Team, Sub-Novice, Veterans, Wildcard, Random Reward (Novice/Open/Utility)
+- Regular Rally: Novice A/B, Intermediate, Advanced A/B, Excellent A/B, Master, Choice
+- Nonregular Rally: Pairs, Team variants, T Challenge, Plus, Intro
+
+Additional sports (Agility, Scent Work, etc.) extend this catalog post-MVP.
 
 ## Qualifying, scoring, and titles
 
@@ -99,13 +110,13 @@ The person entering the dog. Not always the legal owner.
 The person or people on the dog's AKC registration. May not be the exhibitor.
 
 **Co-owner**
-A secondary name on the AKC registration, printed in catalogs alongside the primary owner.
+A person listed as an owner of a dog alongside one or more other owners. Recorded on the dog record (not the entry) via `dog_ownerships`. Only one owner is designated as primary; others are co-owners. Co-ownership is common in real AKC trial data.
 
 **Handler**
-The person actually taking the dog into the ring on trial day. Can be the owner, an exhibitor who isn't the owner, or a professional handler.
+The person actually taking the dog into the ring on trial day. In AKC performance events (Obedience, Rally), handler and owner(s) are the same person for approximately 99% of entries. The common exception is a junior handler (typically a family member of the owner). Professional handlers do NOT exist in AKC performance events (they exist in conformation, which is out of QTrial's scope). QTrial does not expose a professional-handler flag.
 
 **Junior Handler**
-A handler under the age of 18. Juniors often have reduced entry fees and may enter via a "Junior Showmanship number" or junior handler program.
+A minor (typically a family member of the owner) handling a dog in competition. Marked with a special checkbox and an AKC-issued junior handler number on the entry; that number must be submitted to AKC with the trial results. Junior handler paperwork is sent by AKC directly to the kennel club; QTrial does not generate it. Rare in performance events.
 
 **Senior Handler**
 In some contexts, a handler over a specified age; some clubs offer Senior Handler classes.
@@ -114,10 +125,18 @@ In some contexts, a handler over a specified age; some clubs offer Senior Handle
 The order in which dogs are printed in the event catalog. Typically alphabetical by owner or by breed/class/armband.
 
 **Armband**
-The numbered band worn by the handler during competition, identifying the dog for the judge and ring crew. Armbands are assigned before the trial and printed for the secretary to distribute. Armband numbering schemes vary (sequential per trial, sequential per event, per class, or across all classes).
+The identification number a dog wears during its class run, written on a fabric band worn on the handler's left arm. Assigned at entry processing; remains with the dog for the trial. Numbered in series by class grouping (100s = Novice A, 200s = Novice B, 300s = Intermediate, 400s = Advanced A, 500s = Advanced B + Excellent B + Master shared series, 700s = Excellent A, 800s = Rally Choice - conventional AKC Rally scheme). Armband numbering schemes are configurable per club but default to this convention.
+
+**Armband series**
+A block of armband numbers shared across classes that are judged together. When a dog runs multiple classes in the same series, it uses one armband for all of them; if it runs classes in a different series, it gets a separate armband. Modeled as `armband_assignments` keyed by `(dog, trial, armband_series)` in QTrial. See REQ-ENTRY-012.
 
 **Jump height**
-The height of the jump the dog must clear. In Obedience, jump heights are determined by the dog's shoulder height and are typically 4, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36 inches. In Rally, heights are 4, 8, 12, or 16 inches. The dog's jump height is registered with AKC (jump height card) or measured at the first trial.
+The height of the jump the dog must clear. In Obedience, heights are typically 4, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36 inches. In Rally, heights are 4, 8, 12, or 16 inches. Rally Choice does not use a jump.
+
+Jump height in QTrial is a per-(dog, trial) election (the `dog_trial_jump_heights` table), not a per-entry-line attribute. The same height applies to every class the dog runs at that trial. Chosen by the handler at entry time based on the dog's height and condition; may be lower than the breed default for older or injured dogs. A judge who doubts the submitted height can measure the dog in-ring and override the recorded value for the rest of the trial (see Judge-measurement override). The dog's AKC jump-height card, when present, provides a default at entry time but does not constrain what the handler may elect.
+
+**Judge-measurement override**
+Rare in-ring action where a judge measures a dog whose submitted jump height seems inaccurate and updates the recorded height. The updated height applies to all of that dog's remaining classes at the current trial. Happens approximately once per trial-secretary career (Deborah's reported frequency). QTrial models this on `dog_trial_jump_heights` via `was_judge_measured`, `judge_measured_at`, and `judge_measured_by_contact_id`.
 
 ## Trial-day operations
 
@@ -223,16 +242,16 @@ A unique number assigned by AKC to each approved event (technically each trial-d
 A 4-digit identifier for the hosting club.
 
 **AKC registration number / AKC #**
-The dog's individual AKC identifier. Formatted as two letters followed by up to 8 digits (e.g., "DN12345678"). The letter prefix relates to the breed group - see `tblAKCGroups` in Deborah's current schema for the prefix-to-group mapping.
+The dog's individual AKC identifier. Formatted as two letters followed by up to 8 digits (e.g., `DN12345678`, `SS22371305`, `SR95697401`). The letter prefix relates to the breed group - see `tblAKCGroups` in Deborah's current schema for the prefix-to-group mapping. Registration numbers in QTrial are stored as TEXT (not INT); leading zeros matter and the prefix may vary.
 
-**PAL / ILP number**
-Purebred Alternative Listing (formerly Indefinite Listing Privilege) for unregistered purebreds. Assigned to dogs whose registration is not complete but that are eligible to compete in companion events.
+**PAL (Purebred Alternative Listing)**
+AKC registration category for spayed or neutered purebred dogs whose owners lack registration papers. PAL-registered dogs can compete in AKC performance events (Obedience, Rally) but not in conformation. Formerly called ILP (Indefinite Listing Privilege). Registration-number prefix is "PAL" (e.g., `PAL282370`).
 
-**Canine Partners number**
-AKC's registration for mixed-breed dogs, allowing them to compete in companion events. Prefix "MA" or "MB".
+**Canine Partners**
+AKC's registration program for mixed-breed dogs, allowing them to compete in companion events. Listed as breed "All American Dog" in catalogs. Registration-number prefix "MA" or "MB" (e.g., `MB11524001`, `MA92798101`).
 
-**FSS number**
-Foundation Stock Service for breeds not yet fully recognized.
+**FSS (Foundation Stock Service)**
+AKC's registration program for breeds working toward full AKC recognition. FSS breeds compete in the Miscellaneous group.
 
 **Judge number**
 AKC's identifier for each approved judge. Required on AKC reports.
@@ -265,16 +284,41 @@ Club-issued credits against entry fees, often for members or to rectify prior re
 This is a quick index. Details live in `REQUIREMENTS.md` and `WORKFLOWS.md`.
 
 - **Premium list** - PDF, mailed/posted pre-trial
-- **Confirmation email** - per exhibitor, per entry, upon entry submission or acceptance
-- **Waitlist email** - when an entry lands on the waitlist
+- **Entry confirmation** - PDF, one per dog per trial, sent after entry is processed (REQ-ENTRY-010). Shows registered name with titles, registration number, DOB, sex, breed, breeder, sire, dam, owner, and per-class per-day entry status with armband numbers and jump heights.
+- **Post-closing confirmation email** - Email sent by the trial secretary approximately 1 week before the trial, consolidated per owner, listing all the owner's dogs' entries along with the running schedule (REQ-ENTRY-014).
+- **Confirmation / waitlist / cancellation / refund email** - template-driven per club (REQ-EMAIL-001)
 - **Catalog** - PDF, printed for distribution on trial day
-- **Judge's book** - PDF, per judge per class, for in-ring scoring
+- **Marked catalog** - PDF, the trial catalog with final scores annotated on each entry. One of the three required AKC submission artifacts for Obedience/Rally (REQ-SUB-001). Reference: `Nov_2025_Sat_Marked_Catalog.pdf`.
+- **Judges book** - Per-class scoring book with armband, dog info, score, and Time Started / Time Finished fields. Carbonless four-part form (White: AKC, Yellow: Club, Pink: Judge, Gold: Post). One of the three required AKC submission artifacts (REQ-SUB-002). Reference: `Judges_Book_Cover_Sat.pdf`.
+- **Steward board** - Large-print ringside posting showing class armband order and scores for spectator and handler reference during the trial.
 - **Scribe sheet** - PDF, for Obedience exercise-by-exercise scoring
-- **Running order** - per class per trial, updated as move-ups and scratches occur
+- **Running order / judging schedule** - per class per trial, updated as move-ups and scratches occur
 - **Armband assignment sheet** - internal document for secretary
 - **Armband cards** - printed, distributed at check-in
-- **AKC Report of Trial / Results submission** - either the older printed Form 1 or the modern XML/CSV electronic submission
+- **Form JOVRY8** - AKC's official Report of Rally Trial form (current version: 03/23 v1.0 Edit). One of the three required AKC submission artifacts (REQ-SUB-003). An Obedience equivalent form exists. Reference: `Trial_Summary_report.pdf`.
 - **Financial report** - per event, for club accounting
+
+## AKC submission (Obedience and Rally, MVP)
+
+**rallyresults@akc.org**
+AKC's electronic submission destination for Rally trial results packages. Obedience has a parallel address. Submission package is three PDFs (marked catalog + judges books + Form JOVRY8) plus payment. Alternative: mail to AKC Event Operations, PO Box 900051, Raleigh NC 27675-9051. See WORKFLOWS.md §9.
+
+**AKC recording fee**
+The per-entry fee AKC charges to the club. Current schedule: $3.50 for the first entry per dog per trial, $3.00 for each additional entry per dog per trial, plus a $10 event-secretary fee after 12 trials in a calendar year. Always verify current rates via AKC Rally Regulations Chapter 1 Section 4 before using (see CLAUDE.md). QTrial calculates this per REQ-SUB-005 by grouping entries by `(dog_id, trial_id)`.
+
+## Entry and name parsing
+
+**Entry confirmation**
+PDF document sent by the trial secretary to each exhibitor after their entry is processed, showing what's been entered for each of their dogs at this trial, with armband numbers and jump heights. One PDF per dog.
+
+**Post-closing confirmation email**
+Email sent by the trial secretary approximately 1 week before the trial, consolidated per-owner, listing all the owner's dogs' entries along with the running schedule.
+
+**Unparsed title token**
+A string appearing in a registered dog name that looks like a title but is not recognized in QTrial's title catalog (49 prefix + 244 AKC suffix + 5 legacy compound + 10 Barn Hunt). Preserved verbatim in the dog record's `unparsed_title_tokens` array for trial-secretary review; rendered verbatim in catalog output. QTrial does NOT auto-create catalog entries from unparsed tokens; the trial secretary decides whether they are typos (to be corrected) or non-AKC titles (to be ignored). Real-data examples of unparsed tokens: `UCGC` (likely a typo for `CGCU`), `WCCC?` (has a literal question mark in the source), `CGUWCX` (likely a concatenation error).
+
+**Email template**
+A per-kennel-club, per-purpose message body with `{{variable_name}}` substitution. Each club configures their own `entry_confirmation`, `post_closing_reminder`, `cancellation_notice`, and `refund_confirmation` templates. Stored in the `email_templates` table; default templates are seeded when a club is created.
 
 ## Things that are easy to get wrong
 

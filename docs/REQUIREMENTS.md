@@ -1,8 +1,8 @@
 # QTrial - Requirements
 
-**Status:** Draft v0.1 - **provisional**; will be updated once additional artifacts (PDF examples, screen grabs, trial-weekend walkthrough) are received from Deborah.
-**Last updated:** 2026-04-19
-**Primary sources:** Deborah's `Outline_of_Online_Trial_software.pdf`; schema extract from `ObedienceData.mde`; competitive research.
+**Status:** Draft v0.2 - integrates Deborah's Q&A (2026-04-19 and 2026-04-20) and confirmation-letter artifact review.
+**Last updated:** 2026-04-20
+**Primary sources:** Deborah's `Outline_of_Online_Trial_software.pdf`; schema extract from `ObedienceData.mde`; Nov 2025 Glens Falls Rally trial artifacts (judging schedule, marked catalog, judges book cover, steward board, Trial Summary report, confirmation letters); Deborah Q&A answers; competitive research.
 
 ---
 
@@ -140,7 +140,9 @@ The canonical class definitions (including whether the class has jumps, whether 
 
 ### 2.6 Jump heights
 
-For classes that involve jumps, jump heights must be selectable per dog per class. Jump heights available for Obedience: 4, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36 inches. For Rally: 4, 8, 12, 16 inches. The running order can be sorted short-to-tall or tall-to-short; this is configurable per event (or even per class).
+Jump height is an attribute of a dog at a given trial, not per individual entry line. A dog running multiple jumping classes on the same trial jumps the same height in all of them. Heights available for Obedience: 4, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36 inches. For Rally: 4, 8, 12, 16 inches. Rally Choice does not use a jump; dogs entered in Rally Choice have no jump height for that class.
+
+The handler elects the dog's jump height at entry time. A judge who doubts the submitted height may measure the dog in-ring and override it for the rest of the trial. Running order can be sorted short-to-tall or tall-to-short; this is configurable per event (or per class).
 
 ## 3. Entry submission [MVP]
 
@@ -160,21 +162,21 @@ An exhibitor can add dogs to their account:
 - Call name (the nickname used day-to-day)
 - Breed (with variety and division where applicable - Poodles have varieties; some breeds have divisions)
 - Sex
-- AKC registered name
-- AKC registration number (or PAL, Canine Partners, or FSS equivalent)
+- Registered name (verbatim as submitted; may contain embedded title tokens that the name parser extracts on save)
+- Registration type (one of: `AKC_PUREBRED`, `PAL`, `CANINE_PARTNERS`, `FSS`, `MISC`)
+- Registration number (TEXT, preserving verbatim formatting including leading zeros; formats vary by type, e.g., `DN71750607`, `SS22371305`, `SR95697401`, `PAL282370`, `MB11524001`)
 - Country of registration (default US, but Canadian, UK, etc. supported)
-- Prefix titles (editable list, selected from canonical AKC prefix title set)
-- Suffix titles (editable list, selected from canonical AKC suffix title set)
+- Prefix titles (editable list, selected from canonical prefix title set; auto-populated from the name parser)
+- Suffix titles (editable list, selected from canonical suffix title set; auto-populated from the name parser)
+- Unparsed title tokens (preserved verbatim for trial secretary review; see REQ-NAME-001)
 - Breeder name
-- Sire: prefix titles, registered name, suffix titles
-- Dam: prefix titles, registered name, suffix titles
-- Co-owners (free text for catalog rendering)
-- Owner (the exhibitor's account, or a named co-owner)
+- Sire: registered name with embedded titles (free text, parsed at display time)
+- Dam: registered name with embedded titles (free text, parsed at display time)
+- Owners (one or more contacts, with exactly one designated as primary; see REQ-ENTRY-016)
 - Birthdate
-- AKC jump height measurement (for dogs with a height card)
 - Sport participation flags (Obedience, Rally, Agility, etc. - used for mailing preferences)
 
-Dogs are shared across events - an exhibitor enters the same dog record in multiple trials without re-typing.
+Dogs are shared across events - an exhibitor enters the same dog record in multiple trials without re-typing. Jump height is recorded per-(dog, trial), not on the dog record itself (see REQ-ENTRY-013).
 
 ### 3.3 Entry flow
 
@@ -183,18 +185,19 @@ For a given event:
 2. Exhibitor selects which dog to enter.
 3. Exhibitor selects one or more classes, specifying:
    - Class (from those offered at the trial)
-   - Jump height (if the class has jumps)
    - Day / trial (one entry per class per trial)
-4. System calculates fees (first-entry vs. additional, junior-handler rate if applicable, team/brace/pairs surcharges).
-5. System validates entry eligibility:
+   - Handler (defaults to the dog's primary owner; may differ; junior handler AKC number where applicable)
+4. For jumping classes, exhibitor selects a single jump height that applies to the dog across all its entries at each trial (4, 8, 12, 16, or 20 inches for Rally; see §2.6 for Obedience heights). Rally Choice entries do not prompt for jump height.
+5. System calculates fees, grouping by `(dog, trial)` to apply first-entry vs. additional-entry rates per AKC convention (see REQ-SUB-005). Junior-handler rates and team/brace/pairs surcharges are added as applicable.
+6. System validates entry eligibility:
    - The class is offered on that day/trial
    - The dog is eligible for the class (per AKC rules - dog too advanced for "A" class, etc. - basic checks only in MVP)
    - The entry is before the closing date
    - Neither the class nor the trial's limit is exceeded (otherwise the entry goes on waitlist)
-6. Exhibitor pays via credit card (Stripe).
-7. System generates armband assignment (either at entry-time or deferred until after closing - configurable per club).
-8. System sends confirmation email with entry details.
-9. If the class or trial is full, entry is placed on waitlist and a waitlist email is sent.
+7. Exhibitor pays via credit card (Stripe).
+8. System assigns armband numbers by series (see REQ-ENTRY-012): a single dog running multiple classes in the same armband series (e.g., Advanced B + Excellent B + Master in the 500 series) shares one armband; a class in a different series (e.g., Rally Choice in the 800 series) gets a separate armband. Assignment may happen at entry-time or be deferred until after closing, configurable per club.
+9. System generates a per-dog entry confirmation PDF (see REQ-ENTRY-010) and sends a confirmation email with entry details using the club's `entry_confirmation` email template.
+10. If the class or trial is full, entry is placed on waitlist and a waitlist email is sent.
 
 ### 3.4 Paper entry processing [MVP]
 
@@ -228,6 +231,25 @@ Each state transition must be timestamped and (for transfers, move-ups, withdraw
 - **Rally T Challenge Team** - Rally-specific team format.
 - **Veteran** - entries in Veteran-class variants (marked on the entry).
 - **Junior Handler** - entry handled by a registered junior; affects fee calculation.
+
+### 3.7 Armband assignment by series [MVP]
+
+- **REQ-ENTRY-012:** QTrial shall assign armband numbers by series. A single dog running multiple classes in the same series (e.g., Advanced B + Excellent B + Master in the 500 series) shall share one armband across those classes. A dog running a class in a different series (e.g., Rally Choice in the 800 series) shall receive a separate armband.
+
+The conventional AKC Rally series mapping is documented in `DOMAIN_GLOSSARY.md` under "Armband series." The series-to-class mapping is configurable per club but defaults to the AKC convention.
+
+### 3.8 Jump height model [MVP]
+
+- **REQ-ENTRY-013:** QTrial shall store each dog's jump height as a per-(dog, trial) attribute (4, 8, 12, 16, or 20 inches for Rally; see §2.6 for Obedience heights). The same height applies across all of that dog's entries at the trial. Rally Choice does not jump.
+- **REQ-ENTRY-015:** QTrial shall support a judge-measurement override flow in the judge-facing app that allows a judge to update a dog's jump height in-ring when they doubt the submitted height is accurate. The updated height shall propagate to all of the dog's remaining entries at the current trial. This override is rare (Deborah: approximately once per trial-secretary career) but must be supported.
+
+### 3.9 Handler and junior handler identity [MVP]
+
+- **REQ-ENTRY-016:** QTrial shall allow an entry's handler to differ from the dog's owner(s), and shall support marking an entry as a junior-handler entry with an associated AKC junior handler number. In performance events, handler and owner(s) are the same person for ~99% of entries; junior handlers are the common exception. Professional handlers do not exist in AKC performance events; QTrial shall not expose a professional-handler flag. Junior handler paperwork is sent by AKC directly to the kennel club; QTrial does not generate it.
+
+### 3.10 Registered name parsing [MVP]
+
+- **REQ-NAME-001:** QTrial shall parse registered dog names to extract recognized prefix and suffix titles against the title catalog (currently 49 prefix titles + 259 suffix titles including the 244 AKC core suffixes, 5 legacy compound suffixes, and 10 Barn Hunt titles). Unrecognized tokens shall be preserved verbatim in an `unparsed_title_tokens` field for trial secretary review. QTrial shall NOT auto-create title catalog entries from unrecognized tokens. Real data contains typos (e.g., `UCGC` for `CGCU`, `WCCC?` with a literal `?`, garbled concatenations like `CGUWCX`); the parser must handle these gracefully without rejecting the name.
 
 ## 4. Waitlist management [MVP]
 
@@ -424,21 +446,32 @@ Though not explicitly in Deborah's outline, the premium list is a required pre-t
 
 Seeded from event setup data; the secretary can add club-specific content via a template editor.
 
-## 12. Confirmation emails [MVP]
+## 12. Confirmation emails and entry confirmations [MVP]
 
-Matches Deborah's outline section 2d.
+Matches Deborah's outline section 2d, extended by confirmation-letter artifact review (2026-04-20).
 
-For each entry, an email is generated from a template with variable substitution:
-- Exhibitor name and address
-- Dog call name and registered name
-- List of classes entered with jump heights and fees
-- Total fees owed and paid
-- Entry status (active or waitlist)
-- Trial dates, location, and relevant venue info
-- Club contact information
-- Signature block from the secretary
+QTrial produces two distinct confirmation artifacts at two points in the entry lifecycle:
+
+### 12.1 Entry confirmation (per-dog PDF, sent when entry is processed)
+
+- **REQ-ENTRY-010:** QTrial shall generate an entry confirmation PDF for each dog upon entry processing, showing: registered name with titles rendered, registration number, DOB, sex, breed, breeder, sire, dam, owner(s), and per-class per-day entry status with armband numbers and jump heights. One PDF per dog.
+
+Reference format: the two `Confirmation_Letter*.pdf` artifacts Deborah provided.
+
+### 12.2 Post-closing confirmation email (per-owner consolidated, ~1 week pre-trial)
+
+- **REQ-ENTRY-014:** QTrial shall send a post-closing confirmation email to each exhibitor approximately 1 week before the trial, including all the owner's dogs' entries and the day-by-day running schedule.
+- **REQ-ENTRY-011:** QTrial shall support multi-dog-per-owner batch entry and generate consolidated per-owner confirmation emails listing all their dogs' entries. Subject lines shall include the involved registration numbers for email threading and search.
+
+### 12.3 Email templates
+
+- **REQ-EMAIL-001:** QTrial shall support per-kennel-club email templates for the following template keys: `entry_confirmation`, `post_closing_reminder`, `cancellation_notice`, `refund_confirmation`. Templates shall support simple `{{variable_name}}` substitution. Default templates are seeded at club creation; clubs may override via the settings UI. Template variables available per template key are documented in `WORKFLOWS.md` §10.
 
 Templates are editable by the club administrator and per-event by the secretary.
+
+### 12.4 Email variables provided to every template
+
+Standard variables include: exhibitor name and address, dog call name and registered name, list of classes entered with jump heights and fees, total fees owed and paid, entry status (active or waitlist), trial dates, location, venue info, club contact info, and a signature block from the secretary.
 
 ## 13. Financial tracking [MVP]
 
@@ -470,39 +503,31 @@ Reports:
 
 ## 14. AKC results submission [MVP]
 
-This moved from Phase 2 to MVP based on the discovery of the AKC XML structure in Deborah's current schema.
+For MVP (Obedience and Rally), AKC submission is PDF-based. XML-based electronic submission is used today only for Agility and is deferred until QTrial adds Agility support post-MVP.
 
-### 14.1 Electronic submission
+### 14.1 PDF submission package
 
-The system produces an XML document conforming to the AKC schema (the 2004 schema `xmlschema_12032004.xsd` is the known starting point; QTrial must validate against the current AKC schema as of the MVP release date - **[PENDING: obtain current schema from AKC or from Deborah's workstation].**
+After the trial, the secretary assembles a submission package consisting of three artifacts:
 
-The XML document contains:
-- Sender information (club, club number, secretary identity, schema version)
-- Event information (AKC event number, event date, club name)
-- For each class:
-  - Class identifier (primaryClass code like `AGNOVA`, `AGOPEN`, etc. - Obedience and Rally codes to be confirmed)
-  - Number of entries, number of starters
-  - Secondary class type (e.g., jump height code)
-- For each result:
-  - Dog name, AKC reg number
-  - Owner name and address
-  - Result code (Q, NQ, Abs, Exc, DQ, Withdrawn)
-  - Score, time
-  - Placement
-  - Amateur handler indicator, second-entry indicator
-  - Disqualification reason code if applicable
-  - Junior handler info if applicable
+1. **Marked catalog PDF** (REQ-SUB-001) - the trial catalog with judge scores annotated on each entry. Reference format: `Nov_2025_Sat_Marked_Catalog.pdf`.
+2. **Judges books** - one per class, with armband + registered name + breed + score + time columns and a cover sheet with judge certification checkboxes. The pink carbon copy goes to AKC per distribution rules (see REQ-SUB-002). Reference: `Judges_Book_Cover_Sat.pdf`.
+3. **AKC Report of Rally Trial (Form JOVRY8 (03/23) v1.0 Edit)** or Obedience equivalent (REQ-SUB-003), populated with event number, date, dog counts, fee calculations, and secretary contact info. Reference: `Trial_Summary_report.pdf`.
 
-### 14.2 CSV fallback
+Submission requirements:
 
-If XML submission encounters schema issues, the system also exports a CSV of results suitable for AKC's manual upload process or for the secretary to email to AKC.
+- **REQ-SUB-001:** QTrial shall generate a marked catalog PDF with judge scores annotated on each entry, in the AKC-accepted format.
+- **REQ-SUB-002:** QTrial shall generate pre-printed judges books per class for judge use during trials, with armband + registered name + breed + score + time columns, and a cover sheet with judge certification checkboxes.
+- **REQ-SUB-003:** QTrial shall populate a PDF version of AKC Report of Rally Trial (Form JOVRY8) with event number, date, dog counts, fee calculations, and secretary contact info. An Obedience equivalent form shall be supported the same way.
+- **REQ-SUB-004:** QTrial shall support emailing the submission package to AKC. The destination email is configurable, defaulting to `rallyresults@akc.org` for Rally and the Obedience equivalent for Obedience. The secretary may alternatively mail a physical package to AKC Event Operations (PO Box 900051, Raleigh NC 27675-9051).
+- **REQ-SUB-005:** QTrial shall calculate AKC recording fees per the current rate schedule ($3.50 first entry per dog per trial, $3.00 each additional entry per dog per trial, plus a $10 event secretary fee after 12 trials per year). Fee calculations shall group by `(dog_id, trial_id)` and charge first-entry vs. additional-entry rates accordingly.
 
-### 14.3 Report of Trial
+### 14.2 Deferred: XML-based electronic submission [P2]
 
-Regardless of electronic submission, the system generates the club-facing Report of Trial document (AKC Form JOVOB7 or equivalent) showing:
-- Complaints or issues during the event
-- Judges who did not officiate and reasons
-- Summary of any regulatory violations or incidents
+XML-based electronic submission to AKC (conforming to AKC's Agility schema or any later successor) is deferred post-MVP. It becomes relevant when QTrial adds Agility support, since Agility submission today is XML-based.
+
+### 14.3 Deferred: AKC email integration [P2]
+
+Automated API or SMTP integration with `rallyresults@akc.org` is deferred. For MVP, QTrial produces the submission package as downloadable PDFs and the secretary attaches them to an email she sends herself. A templated "send to AKC" draft-email workflow may be added at the secretary's request.
 
 ## 15. Mailing list management [MVP]
 
@@ -572,12 +597,24 @@ QTrial as a business:
 - Group-specialty shows
 - Junior Showmanship class management (beyond junior handler fee tracking)
 
-## Artifacts still needed
+## Artifacts received and still needed
 
-Marking explicit dependencies on forthcoming materials from Deborah:
+### Received (2026-04-19 / 2026-04-20)
 
-1. **PDF examples of outputs:** premium list, catalog, confirmation email, waitlist email, judge's book, scribe sheet, armband sheet, AKC Report of Trial. Needed to validate exact formatting requirements for sections 9, 10, 11, 12, 14.
-2. **Screen grabs of the current software:** especially the main entry screen, scoring screen, and the AKC XML generation screen. Needed to validate sections 3, 8, 14.
-3. **The current AKC XML schema file** (or equivalent current format). Critical for section 14.1.
-4. **Walkthrough of a trial weekend** (narrative or voice memo). Needed for `WORKFLOWS.md`, but will surface gaps here.
-5. **Other clubs' data** (if Deborah has `.mde` files for other clubs she's worked with). Would reveal configuration variety relevant to sections 1.3 and 2.
+Reference artifacts now in the project for downstream development:
+
+- `Nov_2025_AKC_Rally_Trial_Judging_schedule.pdf` - reference judging-schedule format
+- `Nov_2025_Sat_Marked_Catalog.pdf` - reference marked-catalog format (critical for REQ-SUB-001 PDF generation)
+- `Judges_Book_Cover_Sat.pdf` - reference judges-book cover format
+- `Stewards_BOard_Sat.pdf` - reference steward-board format
+- `Trial_Summary_report.pdf` - reference AKC Form JOVRY8 population (critical for REQ-SUB-003 PDF form-fill)
+- `Confirmation_Letter.pdf`, `Confirmation_Letter2.pdf` - reference entry-confirmation PDF format (REQ-ENTRY-010)
+- Susan Brownell post-closing email - reference consolidated per-owner confirmation email (REQ-ENTRY-014)
+
+### Still needed
+
+1. **`Judges_Book_Sat.pdf` body pages** (Deborah has the cover; the body pages with filled-in score and time rows were listed in the project file manifest but not uploaded). Needed to validate judges-book body layout for REQ-SUB-002.
+2. **Screen grabs of the current software:** especially the main entry screen and the scoring screen. Useful for validating UX in sections 3 and 8; not blocking schema.
+3. **Trial-weekend walkthrough** (narrative or voice memo). Needed for `WORKFLOWS.md`; will surface edge cases.
+4. **Other clubs' data** (`.mde` files for other clubs Deborah has worked with). Would reveal configuration variety relevant to sections 1.3 and 2.
+5. **AKC Agility XML schema** (current version). Not blocking MVP; needed when QTrial adds Agility support and §14.2 becomes live.

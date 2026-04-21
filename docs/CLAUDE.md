@@ -72,6 +72,12 @@ These are Robare's preferences. Treat them as constraints, not suggestions.
 - For Rust crate APIs, prefer the crate's actual documentation over memory.
 - When in doubt about AKC regulations, note the uncertainty and mark the code with a TODO for Robare or Deborah to verify.
 
+## Things to search for, not guess
+
+- **AKC form numbers and current versions** (e.g., Form JOVRY8 (03/23) v1.0 Edit for Report of Rally Trial). These update periodically; verify the current revision via AKC's website before generating PDFs.
+- **AKC fee schedules** ($3.50 first entry, $3.00 additional, $10 secretary fee). Verify current rates via AKC's Rally Regulations Chapter 1 Section 4 (and the Obedience equivalent) before using.
+- **AKC submission destinations** (e.g., `rallyresults@akc.org` for Rally, the Obedience equivalent for Obedience, mailing address PO Box 900051 Raleigh NC 27675-9051). Confirm current addresses before wiring them into defaults.
+
 ## Things Claude Code should ask about, not guess
 
 - AKC-specific behaviors beyond what's in `DOMAIN_GLOSSARY.md`
