@@ -1,12 +1,12 @@
-# Local development stack for OffLeash.
+# Local development stack for QTrial.
 #
-# One Postgres instance hosts two databases (offleash, keycloak) with
+# One Postgres instance hosts two databases (qtrial, keycloak) with
 # separate owning roles; see db/docker-init/01-create-databases.sql.
 # Keycloak runs in dev mode against its own database. NATS has
 # JetStream enabled so worker queues can be modeled without a later
 # rebuild. Valkey uses AOF persistence.
 #
-# Host ports are parameterized so OffLeash can coexist with other local
+# Host ports are parameterized so QTrial can coexist with other local
 # stacks that use the same canonical defaults (Postgres 5432, Keycloak
 # 8080, NATS 4222/8222, Valkey 6379). Override by setting the variables
 # in a local `.env` file; see `.env.example` for the alt-port scheme.
@@ -14,19 +14,19 @@
 # This file is not intended for production. Production infrastructure
 # is defined under infra/ (Terraform).
 
-name: offleash
+name: qtrial
 
 services:
   postgres:
     image: postgres:16
-    container_name: offleash-postgres
+    container_name: qtrial-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     ports:
-      - "${OFFLEASH_POSTGRES_PORT:-5432}:5432"
+      - "${QTRIAL_POSTGRES_PORT:-5432}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
       - ./db/docker-init:/docker-entrypoint-initdb.d:ro
@@ -38,7 +38,7 @@ services:
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.6.1
-    container_name: offleash-keycloak
+    container_name: qtrial-keycloak
     restart: unless-stopped
     command: ["start-dev"]
     depends_on:
@@ -54,30 +54,30 @@ services:
       KC_HTTP_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
     ports:
-      - "${OFFLEASH_KEYCLOAK_PORT:-8080}:8080"
+      - "${QTRIAL_KEYCLOAK_PORT:-8080}:8080"
 
   nats:
     image: nats:2.12-alpine
-    container_name: offleash-nats
+    container_name: qtrial-nats
     restart: unless-stopped
     command:
-      - "--name=offleash-nats"
+      - "--name=qtrial-nats"
       - "--jetstream"
       - "--store_dir=/data"
       - "--http_port=8222"
     ports:
-      - "${OFFLEASH_NATS_CLIENT_PORT:-4222}:4222"
-      - "${OFFLEASH_NATS_HTTP_PORT:-8222}:8222"
+      - "${QTRIAL_NATS_CLIENT_PORT:-4222}:4222"
+      - "${QTRIAL_NATS_HTTP_PORT:-8222}:8222"
     volumes:
       - nats-data:/data
 
   valkey:
     image: valkey/valkey:9-alpine
-    container_name: offleash-valkey
+    container_name: qtrial-valkey
     restart: unless-stopped
     command: ["valkey-server", "--appendonly", "yes"]
     ports:
-      - "${OFFLEASH_VALKEY_PORT:-6379}:6379"
+      - "${QTRIAL_VALKEY_PORT:-6379}:6379"
     volumes:
       - valkey-data:/data
     healthcheck:
