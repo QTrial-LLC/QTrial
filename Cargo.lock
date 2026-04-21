@@ -60,32 +60,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "offleash-api"
-version = "0.0.0"
-dependencies = [
- "offleash-shared",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "offleash-shared"
-version = "0.0.0"
-dependencies = [
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "offleash-workers"
-version = "0.0.0"
-dependencies = [
- "offleash-shared",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "once_cell"
 version = "1.21.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -104,6 +78,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8fd00f0bb2e90d81d1044c2b32617f68fcb9fa3bb7640c23e9c748e53fb30934"
 dependencies = [
  "unicode-ident",
+]
+
+[[package]]
+name = "qtrial-api"
+version = "0.0.0"
+dependencies = [
+ "qtrial-shared",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "qtrial-shared"
+version = "0.0.0"
+dependencies = [
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "qtrial-workers"
+version = "0.0.0"
+dependencies = [
+ "qtrial-shared",
+ "tracing",
+ "tracing-subscriber",
 ]
 
 [[package]]
