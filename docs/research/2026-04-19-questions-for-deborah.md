@@ -54,7 +54,7 @@ Also: historically, does Glens Falls typically have a waitlist? Are the limits u
 
 ### 5. "Ring 0" question
 
-In your Obedience Solution judging schedule and judges' books, all the classes say "Ring #0" or "Ring 0." Glens Falls is clearly running one ring. Is "Ring 0" a deliberate convention, or is it just whatever Obedience Solution defaults to when you don't set a ring number? (I suspect the latter, but I want to make sure OffLeash doesn't replicate a confusing default.)
+In your Obedience Solution judging schedule and judges' books, all the classes say "Ring #0" or "Ring 0." Glens Falls is clearly running one ring. Is "Ring 0" a deliberate convention, or is it just whatever Obedience Solution defaults to when you don't set a ring number? (I suspect the latter, but I want to make sure QTrial doesn't replicate a confusing default.)
 
 ### 6. "Transfer to X" dropdown usage
 
@@ -73,7 +73,7 @@ Do you:
 - (b) Only use those "Transfer to" options after the fact, when the exhibitor has actually submitted a post-closing transfer request?
 - (c) Both, depending on the situation?
 
-(This tells us whether OffLeash should offer transfer-intent at entry time, only after-the-fact, or both.)
+(This tells us whether QTrial should offer transfer-intent at entry time, only after-the-fact, or both.)
 
 ### 7. The "glitchy" AKC form
 
@@ -137,7 +137,7 @@ The marked catalog you sent was from the Rally trial. Do you have an equivalent 
 
 ### 16. Your premium list template
 
-The Word template (or whatever you use) that you start from when building a premium list. Having the fields and sections you rely on would help OffLeash surface the right structured data.
+The Word template (or whatever you use) that you start from when building a premium list. Having the fields and sections you rely on would help QTrial surface the right structured data.
 
 ### 17. One of your confirmation emails
 
@@ -167,7 +167,7 @@ Whenever you're up for it, a narrative - voice memo, written, phone call, or in 
 
 ### 22. What do you wish Obedience Solution did that it doesn't?
 
-Open-ended. The features you wish existed, the friction points you work around, the workflows that take longer than they should. These become feature priorities for OffLeash.
+Open-ended. The features you wish existed, the friction points you work around, the workflows that take longer than they should. These become feature priorities for QTrial.
 
 ### 23. What do you NOT want to change?
 
@@ -175,7 +175,7 @@ The flip side. Things Obedience Solution does well that you don't want to lose. 
 
 ### 24. Edge cases from past trials
 
-Any trial weekend where something memorable happened - a judge didn't show, two dogs had the same armband, AKC kicked back a submission, a bitch went into season mid-trial - and how you handled it. These are the stress-test scenarios for OffLeash.
+Any trial weekend where something memorable happened - a judge didn't show, two dogs had the same armband, AKC kicked back a submission, a bitch went into season mid-trial - and how you handled it. These are the stress-test scenarios for QTrial.
 
 ---
 
@@ -183,4 +183,4 @@ Any trial weekend where something memorable happened - a judge didn't show, two 
 
 Most of the Priority 1 items unblock active development this week. Priority 2 is context that sharpens our design choices. Priority 3 is document-gathering that you can do in your own time as you find them. Priority 4 is the good-to-have color that makes the software actually feel like your tool rather than a generic thing.
 
-**Thank you.** This much direct input from the primary user at this stage of a software project is unusual and genuinely important. It's already shown up in how OffLeash is being designed.
+**Thank you.** This much direct input from the primary user at this stage of a software project is unusual and genuinely important. It's already shown up in how QTrial is being designed.

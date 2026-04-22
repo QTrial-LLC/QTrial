@@ -69,7 +69,7 @@ Both forms direct dog-aggression incidents and Event Committee complaints to `ev
 - Event Secretary Fee: free for first 8 Conformation/Obedience events per year, then $10 per event
 - Exclusions: Junior Showmanship, Sweepstakes, Futurities, Maturities, multi-dog classes (brace/team), Obedience non-regular classes, Special Attractions
 
-**Implication for OffLeash:** Fee calculation is not a constant; it's year-dependent and sport-dependent and has different thresholds per sport. The fee structure needs to be modeled as time-varying reference data, not hardcoded. Our MVP needs to generate a correct calculation for 2026 and accommodate the 2027+ values whenever AKC publishes them.
+**Implication for QTrial:** Fee calculation is not a constant; it's year-dependent and sport-dependent and has different thresholds per sport. The fee structure needs to be modeled as time-varying reference data, not hardcoded. Our MVP needs to generate a correct calculation for 2026 and accommodate the 2027+ values whenever AKC publishes them.
 
 **The "glitchy" AKC online form.** Deborah's remark: *"the last time I tried to fill one out very very glitchy. It wouldn't do the totals plus there was a thing about dual classes that didn't have in it, so I don't trust the AKC."* The filled JOVRY8 she sent shows 93 entries calculated at $325.50 = 93 × $3.50 exactly, which is the correct Rally flat rate. So the "glitchy" behavior is likely in the form's field-level automation (totals not computing in certain browsers / PDF readers), not in the fee rules themselves. The "dual classes" comment remains unresolved - it may refer to Rally-plus-Obedience on the same day being handled awkwardly in the single form, or to some other edge case. Ask Deborah.
 
@@ -88,7 +88,7 @@ Key facts:
 - 100-point max score, same as other Rally classes
 - **Scheduling convention:** Rally Choice and Rally Master are interchangeable at the top of the day. The Rally Regulations specifically say the order may vary as "Master or Choice (Choice or Master), Excellent, Advanced, Intermediate, Novice" or the reverse.
 
-**Implication for OffLeash:** Rally Choice is a 7th Rally class not currently in DOMAIN_GLOSSARY or REQUIREMENTS §2.5. It's a Regular Rally class with no A/B split, no jumps, and no title progression limit. This must be in the MVP canonical class catalog for Rally.
+**Implication for QTrial:** Rally Choice is a 7th Rally class not currently in DOMAIN_GLOSSARY or REQUIREMENTS §2.5. It's a Regular Rally class with no A/B split, no jumps, and no title progression limit. This must be in the MVP canonical class catalog for Rally.
 
 ### 4. Rally High Triple Qualifying (RHTQ) is a real award.
 
@@ -98,7 +98,7 @@ The marked catalog ends with both a High Combined (HC) calculation and a **High 
 
 Per the Rally Regulations table of contents, this is formally "Highest Scoring Triple Qualifying Score" and is a defined award in Chapter 1 Section 32. It's the Rally analogue of High Combined but for three specified classes instead of two (typically Advanced B + Excellent B + Master).
 
-**Implication for OffLeash:** Our DATA_MODEL `trial_awards.award_type` enum currently has `hit`, `hc`, `phit`, `phc`, `rhc`, `htq`. We need to verify what `htq` means (Honor Team Qualifier per DOMAIN_GLOSSARY) and add or rename to include **Rally High Triple Qualifying (RHTQ)** explicitly. Existing `rhc` is Rally High Combined.
+**Implication for QTrial:** Our DATA_MODEL `trial_awards.award_type` enum currently has `hit`, `hc`, `phit`, `phc`, `rhc`, `htq`. We need to verify what `htq` means (Honor Team Qualifier per DOMAIN_GLOSSARY) and add or rename to include **Rally High Triple Qualifying (RHTQ)** explicitly. Existing `rhc` is Rally High Combined.
 
 ### 5. A/B class eligibility differs between Obedience and Rally.
 
@@ -119,7 +119,7 @@ Per AKC's official guidance and per Deborah's explanation:
 
 **Promotion to B:** Once a dog earns the Novice title (in Rally), it's automatically promoted out of Novice A eligibility and into B-only for subsequent entries at that level.
 
-**Implication for OffLeash:** Eligibility checks for A class entry are fundamentally different queries:
+**Implication for QTrial:** Eligibility checks for A class entry are fundamentally different queries:
 - Obedience: "has this handler ever earned title X with any dog?"
 - Rally: "has this dog ever earned title X?" (and for Advanced/Excellent, "has this handler ever earned the same title with any dog, and has the handler ever titled in Obedience?")
 
@@ -141,7 +141,7 @@ Per AKC's Obedience Transfer FAQ and the Obedience Transfer Form (January 2023):
 
 **Obedience Solution's UI insight:** The class dropdown in Obedience Solution explicitly lists "Rally Novice A / Transfer to Rally Novice B / Rally Novice B / Transfer to Rally Intermediate / ..." as separate selectable values. This suggests that in her current workflow, transfers are **pre-entered at entry time** as an intent flag ("I'm entering Rally Novice A but if my dog earns the RN before the trial, transfer me to Novice B"), rather than purely a post-entry state change. Need to ask Deborah whether transfers are sometimes pre-elected at entry time or whether the dropdown entries are used to record transfers retroactively after they happen.
 
-**Implication for OffLeash:** Our current REQUIREMENTS §5.2 and DATA_MODEL treat transfers purely as a post-entry state transition. The Obedience Solution pattern suggests we may also need a pre-entry transfer-intent flag. This is a small addition but important for UX parity with what Deborah already knows.
+**Implication for QTrial:** Our current REQUIREMENTS §5.2 and DATA_MODEL treat transfers purely as a post-entry state transition. The Obedience Solution pattern suggests we may also need a pre-entry transfer-intent flag. This is a small addition but important for UX parity with what Deborah already knows.
 
 ### 7. The catalog format has a precise structure that we now have ground truth for.
 
@@ -224,7 +224,7 @@ What we received as `Stewards_BOard_Sat.pdf` is not a "board" in the physical se
 
 This is posted at ringside so exhibitors can see running order and stewards can track who has run.
 
-**Implication for OffLeash:** The Steward's Board is a distinct report from the running order (REQUIREMENTS §7.1) and the judge's book (§9). We should name and scope it as its own deliverable.
+**Implication for QTrial:** The Steward's Board is a distinct report from the running order (REQUIREMENTS §7.1) and the judge's book (§9). We should name and scope it as its own deliverable.
 
 ### 10. Running schedule details from the Obedience Solution screenshot and Deborah's explanation.
 
@@ -249,7 +249,7 @@ The three-minute-per-dog figure Deborah cited is likely per-run, not per-judging
 3. Ribbon/placement/title presentation time after each class
 4. Inter-class transition / set-up time
 
-**Implication for OffLeash:** REQUIREMENTS §7.3 has "class change time 30 sec default" and "event change time 45 sec default" - these are the 2003-era Obedience-specific defaults from the current Access schema, but they don't capture walk-through time or ribbon-presentation time, which are the real schedule components for Rally. We need to model schedule components explicitly:
+**Implication for QTrial:** REQUIREMENTS §7.3 has "class change time 30 sec default" and "event change time 45 sec default" - these are the 2003-era Obedience-specific defaults from the current Access schema, but they don't capture walk-through time or ribbon-presentation time, which are the real schedule components for Rally. We need to model schedule components explicitly:
 - `per_dog_minutes` (derived from class's dogs-per-hour rate)
 - `walkthrough_minutes` (class-specific; Rally needs one, some Obedience classes do, others don't)
 - `ribbon_presentation_minutes` (default per-class estimate)
@@ -259,7 +259,7 @@ The three-minute-per-dog figure Deborah cited is likely per-run, not per-judging
 
 Deborah: *"That would be the other thing that would be set up on the trial screen. When you first set up the trial is the time the trial is actually going to start. I usually arrive at around 7 AM and the trial usually officially starts at around eight or 8:30 AM. Scoring starts happening as soon as the first dog completes its round."*
 
-**Implication for OffLeash:** Our `trials.start_time` should be the **official start time** (the published time in the premium list and the judging schedule). Secretary arrival time is a separate concern and doesn't need to be modeled in the trial record itself (Deborah can put it in a personal note field if she wants; no one else needs to see it). Scoring is asynchronous from start-of-trial and begins whenever the first dog runs.
+**Implication for QTrial:** Our `trials.start_time` should be the **official start time** (the published time in the premium list and the judging schedule). Secretary arrival time is a separate concern and doesn't need to be modeled in the trial record itself (Deborah can put it in a personal note field if she wants; no one else needs to see it). Scoring is asynchronous from start-of-trial and begins whenever the first dog runs.
 
 ### 12. Armband numbering uses class-specific ranges.
 
@@ -293,7 +293,7 @@ From the Sunday judging schedule:
 
 This is a fairness rotation: dogs that ran early Saturday run late Sunday, and vice versa.
 
-**Implication for OffLeash:** REQUIREMENTS §7.1 lists "short_to_tall, tall_to_short, random, manual" running order strategies. Add: **`reverse_previous_day`** as a strategy. Or simpler: let the secretary choose a base strategy per class per day, and offer a "mirror yesterday" convenience option.
+**Implication for QTrial:** REQUIREMENTS §7.1 lists "short_to_tall, tall_to_short, random, manual" running order strategies. Add: **`reverse_previous_day`** as a strategy. Or simpler: let the secretary choose a base strategy per class per day, and offer a "mirror yesterday" convenience option.
 
 ### 14. Obedience Solution feature surface reveals missing requirements.
 
@@ -343,7 +343,7 @@ The screenshots show "Current Event: #17" in the Obedience Solution header. Give
 
 The judging schedule, judges' books, and marked catalog all show "Ring 0" or "Ring #0" even though Glens Falls is clearly running a single ring (the schedule shows only one ring throughout both days). This is either (a) the default ring number Obedience Solution assigns when no ring data is entered, or (b) a deliberate convention Deborah's club uses. Ask Deborah, but I suspect (a).
 
-**Implication for OffLeash:** Don't replicate this. Our `trial_class_offerings.ring_number` should require a value or default sensibly to 1.
+**Implication for QTrial:** Don't replicate this. Our `trial_class_offerings.ring_number` should require a value or default sensibly to 1.
 
 ---
 
