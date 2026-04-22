@@ -47,14 +47,13 @@ async fn seed_entry_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Ent
     .await
     .expect("insert club");
 
-    let user_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id",
-    )
-    .bind(testing::unique_name("secretary") + "@example.test")
-    .bind(format!("{name} secretary"))
-    .fetch_one(&mut **tx)
-    .await
-    .expect("insert user");
+    let user_id: Uuid =
+        sqlx::query_scalar("INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id")
+            .bind(testing::unique_name("secretary") + "@example.test")
+            .bind(format!("{name} secretary"))
+            .fetch_one(&mut **tx)
+            .await
+            .expect("insert user");
 
     sqlx::query(
         "INSERT INTO user_club_roles (club_id, user_id, role) \
@@ -66,11 +65,10 @@ async fn seed_entry_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Ent
     .await
     .expect("grant role");
 
-    let registry_id: Uuid =
-        sqlx::query_scalar("SELECT id FROM registries WHERE code = 'AKC'")
-            .fetch_one(&mut **tx)
-            .await
-            .expect("load AKC registry id");
+    let registry_id: Uuid = sqlx::query_scalar("SELECT id FROM registries WHERE code = 'AKC'")
+        .fetch_one(&mut **tx)
+        .await
+        .expect("load AKC registry id");
 
     let event_id: Uuid = sqlx::query_scalar(
         "INSERT INTO events (club_id, registry_id, name) VALUES ($1, $2, $3) RETURNING id",
@@ -88,10 +86,7 @@ async fn seed_entry_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Ent
     )
     .bind(club_id)
     .bind(event_id)
-    .bind(format!(
-        "2026-11-{:02}",
-        (name.len() % 27) + 1
-    ))
+    .bind(format!("2026-11-{:02}", (name.len() % 27) + 1))
     .fetch_one(&mut **tx)
     .await
     .expect("insert event_day");
@@ -106,12 +101,11 @@ async fn seed_entry_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Ent
     .await
     .expect("insert trial");
 
-    let canonical_class_id: Uuid = sqlx::query_scalar(
-        "SELECT id FROM canonical_classes WHERE code = 'akc_rally_novice_a'",
-    )
-    .fetch_one(&mut **tx)
-    .await
-    .expect("load rally novice a canonical id");
+    let canonical_class_id: Uuid =
+        sqlx::query_scalar("SELECT id FROM canonical_classes WHERE code = 'akc_rally_novice_a'")
+            .fetch_one(&mut **tx)
+            .await
+            .expect("load rally novice a canonical id");
 
     let offering_id: Uuid = sqlx::query_scalar(
         "INSERT INTO trial_class_offerings \
@@ -225,11 +219,7 @@ async fn seed_entry_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Ent
     }
 }
 
-async fn enter_tenant_context(
-    tx: &mut Transaction<'_, Postgres>,
-    user_id: Uuid,
-    club_id: Uuid,
-) {
+async fn enter_tenant_context(tx: &mut Transaction<'_, Postgres>, user_id: Uuid, club_id: Uuid) {
     sqlx::query("SELECT set_config('app.current_user_id', $1, true)")
         .bind(user_id.to_string())
         .execute(&mut **tx)
@@ -270,15 +260,27 @@ async fn tenant_sees_full_entry_stack_in_own_context() {
     // Walk every level of tenant A's stack. Each lookup targets a
     // single known id; if RLS is correctly scoped, the count is 1.
     assert_eq!(count_visible(&mut *tx, "events", a.event_id).await, 1);
-    assert_eq!(count_visible(&mut *tx, "event_days", a.event_day_id).await, 1);
+    assert_eq!(
+        count_visible(&mut *tx, "event_days", a.event_day_id).await,
+        1
+    );
     assert_eq!(count_visible(&mut *tx, "trials", a.trial_id).await, 1);
-    assert_eq!(count_visible(&mut *tx, "trial_class_offerings", a.offering_id).await, 1);
+    assert_eq!(
+        count_visible(&mut *tx, "trial_class_offerings", a.offering_id).await,
+        1
+    );
     assert_eq!(count_visible(&mut *tx, "judges", a.judge_id).await, 1);
-    assert_eq!(count_visible(&mut *tx, "judge_assignments", a.judge_assignment_id).await, 1);
+    assert_eq!(
+        count_visible(&mut *tx, "judge_assignments", a.judge_assignment_id).await,
+        1
+    );
     assert_eq!(count_visible(&mut *tx, "owners", a.owner_id).await, 1);
     assert_eq!(count_visible(&mut *tx, "dogs", a.dog_id).await, 1);
     assert_eq!(count_visible(&mut *tx, "entries", a.entry_id).await, 1);
-    assert_eq!(count_visible(&mut *tx, "entry_lines", a.entry_line_id).await, 1);
+    assert_eq!(
+        count_visible(&mut *tx, "entry_lines", a.entry_line_id).await,
+        1
+    );
     assert_eq!(
         count_visible(&mut *tx, "entry_line_results", a.entry_line_result_id).await,
         1
@@ -298,15 +300,27 @@ async fn tenant_cannot_see_other_tenants_entry_stack_at_any_level() {
     // Any non-zero count at any level is the "forgot club_id on a
     // child table" bug this test exists to catch.
     assert_eq!(count_visible(&mut *tx, "events", b.event_id).await, 0);
-    assert_eq!(count_visible(&mut *tx, "event_days", b.event_day_id).await, 0);
+    assert_eq!(
+        count_visible(&mut *tx, "event_days", b.event_day_id).await,
+        0
+    );
     assert_eq!(count_visible(&mut *tx, "trials", b.trial_id).await, 0);
-    assert_eq!(count_visible(&mut *tx, "trial_class_offerings", b.offering_id).await, 0);
+    assert_eq!(
+        count_visible(&mut *tx, "trial_class_offerings", b.offering_id).await,
+        0
+    );
     assert_eq!(count_visible(&mut *tx, "judges", b.judge_id).await, 0);
-    assert_eq!(count_visible(&mut *tx, "judge_assignments", b.judge_assignment_id).await, 0);
+    assert_eq!(
+        count_visible(&mut *tx, "judge_assignments", b.judge_assignment_id).await,
+        0
+    );
     assert_eq!(count_visible(&mut *tx, "owners", b.owner_id).await, 0);
     assert_eq!(count_visible(&mut *tx, "dogs", b.dog_id).await, 0);
     assert_eq!(count_visible(&mut *tx, "entries", b.entry_id).await, 0);
-    assert_eq!(count_visible(&mut *tx, "entry_lines", b.entry_line_id).await, 0);
+    assert_eq!(
+        count_visible(&mut *tx, "entry_lines", b.entry_line_id).await,
+        0
+    );
     assert_eq!(
         count_visible(&mut *tx, "entry_line_results", b.entry_line_result_id).await,
         0
@@ -420,11 +434,10 @@ async fn armband_is_unique_among_live_entries_in_an_event() {
     .await
     .expect("second owner");
 
-    let a_registry: Uuid =
-        sqlx::query_scalar("SELECT id FROM registries WHERE code = 'AKC'")
-            .fetch_one(&mut *tx)
-            .await
-            .expect("registry");
+    let a_registry: Uuid = sqlx::query_scalar("SELECT id FROM registries WHERE code = 'AKC'")
+        .fetch_one(&mut *tx)
+        .await
+        .expect("registry");
 
     let second_dog_id: Uuid = sqlx::query_scalar(
         "INSERT INTO dogs (club_id, owner_id, registry_id, call_name, sex) \
@@ -578,10 +591,9 @@ async fn parent_club_id_helper_covers_new_entry_layer_variants() {
 
     let a = seed_entry_stack(&mut tx, "Tenant A").await;
 
-    let from_owner =
-        tenancy::parent_club_id(&mut *tx, ParentEntity::Owner, a.owner_id)
-            .await
-            .expect("owner lookup");
+    let from_owner = tenancy::parent_club_id(&mut *tx, ParentEntity::Owner, a.owner_id)
+        .await
+        .expect("owner lookup");
     assert_eq!(from_owner, a.club_id);
 
     let from_dog = tenancy::parent_club_id(&mut *tx, ParentEntity::Dog, a.dog_id)
@@ -589,16 +601,14 @@ async fn parent_club_id_helper_covers_new_entry_layer_variants() {
         .expect("dog lookup");
     assert_eq!(from_dog, a.club_id);
 
-    let from_entry =
-        tenancy::parent_club_id(&mut *tx, ParentEntity::Entry, a.entry_id)
-            .await
-            .expect("entry lookup");
+    let from_entry = tenancy::parent_club_id(&mut *tx, ParentEntity::Entry, a.entry_id)
+        .await
+        .expect("entry lookup");
     assert_eq!(from_entry, a.club_id);
 
-    let from_line =
-        tenancy::parent_club_id(&mut *tx, ParentEntity::EntryLine, a.entry_line_id)
-            .await
-            .expect("entry_line lookup");
+    let from_line = tenancy::parent_club_id(&mut *tx, ParentEntity::EntryLine, a.entry_line_id)
+        .await
+        .expect("entry_line lookup");
     assert_eq!(from_line, a.club_id);
 
     // NotFound path for each new variant.
