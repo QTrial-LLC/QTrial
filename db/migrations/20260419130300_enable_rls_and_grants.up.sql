@@ -2,13 +2,13 @@
 -- enforceable.
 --
 -- The pattern across the whole schema:
---   * `offleash` owns every table. Connections as `offleash` bypass
+--   * `qtrial` owns every table. Connections as `qtrial` bypass
 --     RLS by Postgres convention (table owner is exempt), which gives
 --     us platform-admin paths and migration tooling without additional
 --     wiring. No ALTER TABLE ... FORCE ROW LEVEL SECURITY anywhere.
---   * `offleash_tenant` is a NOLOGIN role. Application requests open a
---     transaction as `offleash`, then execute `SET LOCAL ROLE
---     offleash_tenant` (via `offleash_shared::tenancy::begin_as_tenant`).
+--   * `qtrial_tenant` is a NOLOGIN role. Application requests open a
+--     transaction as `qtrial`, then execute `SET LOCAL ROLE
+--     qtrial_tenant` (via `qtrial_shared::tenancy::begin_as_tenant`).
 --     Inside that transaction the role owner is no longer exempt from
 --     RLS, and the policies below restrict what the request can see
 --     and write.
@@ -28,17 +28,17 @@
 -- GRANTS
 ------------------------------------------------------------
 
-GRANT USAGE ON SCHEMA public TO offleash_tenant;
+GRANT USAGE ON SCHEMA public TO qtrial_tenant;
 
 -- Reference tables: read-only.
-GRANT SELECT ON registries         TO offleash_tenant;
-GRANT SELECT ON akc_fee_schedules  TO offleash_tenant;
-GRANT SELECT ON canonical_classes  TO offleash_tenant;
+GRANT SELECT ON registries         TO qtrial_tenant;
+GRANT SELECT ON akc_fee_schedules  TO qtrial_tenant;
+GRANT SELECT ON canonical_classes  TO qtrial_tenant;
 
 -- Tenant tables: full CRUD. RLS does the row-level gating.
-GRANT SELECT, INSERT, UPDATE, DELETE ON clubs            TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON users            TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON user_club_roles  TO offleash_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON clubs            TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON users            TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON user_club_roles  TO qtrial_tenant;
 
 ------------------------------------------------------------
 -- RLS ON REFERENCE TABLES
@@ -67,7 +67,7 @@ CREATE POLICY canonical_classes_read_all ON canonical_classes
 -- A tenant-context query can only read or modify the currently
 -- authenticated user's row. Invite-by-email and judge-directory style
 -- lookups must run without assuming the tenant role; i.e., they run
--- as `offleash` via a deliberate bypass path.
+-- as `qtrial` via a deliberate bypass path.
 
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 

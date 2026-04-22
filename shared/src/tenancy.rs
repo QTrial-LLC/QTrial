@@ -9,7 +9,7 @@
 //!    variables via `set_config(name, value, true)` (the `true`
 //!    argument scopes the setting to the transaction, equivalent to
 //!    `SET LOCAL`).
-//! 3. Issue `SET LOCAL ROLE offleash_tenant`, which takes the
+//! 3. Issue `SET LOCAL ROLE qtrial_tenant`, which takes the
 //!    connection out of the table-owner identity and subjects it to
 //!    the RLS policies created in the Phase 0 tenancy migration.
 //!
@@ -19,7 +19,7 @@
 //! the transaction implicitly resets the role and settings.
 //!
 //! Platform admin paths (not built in this session) will deliberately
-//! skip this helper. Those paths run as the `offleash` role which
+//! skip this helper. Those paths run as the `qtrial` role which
 //! owns the tables and bypasses RLS, and they MUST log every access.
 
 use sqlx::{PgPool, Postgres, Transaction};
@@ -64,7 +64,7 @@ pub async fn begin_as_tenant(
     // SET LOCAL ROLE cannot be parameterized either, but the target
     // role name is a compile-time constant under our control, so the
     // string is safe.
-    sqlx::query("SET LOCAL ROLE offleash_tenant")
+    sqlx::query("SET LOCAL ROLE qtrial_tenant")
         .execute(&mut *tx)
         .await?;
 
@@ -81,7 +81,7 @@ pub async fn begin_as_tenant(
 /// Typical use at a request handler:
 ///
 /// ```no_run
-/// # use offleash_shared::tenancy::{with_tenant_context, TenantFuture};
+/// # use qtrial_shared::tenancy::{with_tenant_context, TenantFuture};
 /// # use sqlx::PgPool;
 /// # use uuid::Uuid;
 /// # async fn example(pool: &PgPool, user_id: Uuid, club_id: Uuid) -> Result<(), sqlx::Error> {

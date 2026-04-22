@@ -6,7 +6,7 @@
 -- a tenant-context query that accidentally SELECTs from users can only
 -- see the currently-authenticated user's own row. Cross-user reads
 -- (invite-by-email, judge directory, etc.) must run without the tenant
--- role (i.e., as `offleash`, not as `offleash_tenant`) and enforce
+-- role (i.e., as `qtrial`, not as `qtrial_tenant`) and enforce
 -- their own access rules at the app layer.
 --
 -- NOTE ON DOC INVERSION: DATA_MODEL §1 Multi-tenancy text treats users

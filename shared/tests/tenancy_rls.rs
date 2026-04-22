@@ -6,7 +6,7 @@
 //! asserts RLS behavior. Transactions roll back on drop so tests do
 //! not see each other's data.
 
-use offleash_shared::testing;
+use qtrial_shared::testing;
 use sqlx::{Executor, Postgres, Transaction};
 use uuid::Uuid;
 
@@ -83,7 +83,7 @@ async fn seed_two_tenants(tx: &mut Transaction<'_, Postgres>) -> TwoTenants {
     }
 }
 
-/// After SET LOCAL ROLE offleash_tenant + session vars, apply the
+/// After SET LOCAL ROLE qtrial_tenant + session vars, apply the
 /// tenant context to an already-open transaction. Used when a test
 /// wants to seed as owner first, then switch to tenant mode for
 /// assertions.
@@ -102,15 +102,15 @@ async fn set_tenant_context(
         .execute(&mut **tx)
         .await
         .expect("set current_club_id");
-    tx.execute("SET LOCAL ROLE offleash_tenant")
+    tx.execute("SET LOCAL ROLE qtrial_tenant")
         .await
-        .expect("set local role offleash_tenant");
+        .expect("set local role qtrial_tenant");
 }
 
 #[tokio::test]
 async fn owner_role_sees_all_clubs_before_context_switch() {
     // Baseline: confirm the seed helper inserted both clubs and that
-    // the owner (offleash) connection can see them. If this fails the
+    // the owner (qtrial) connection can see them. If this fails the
     // RLS tests below cannot be trusted.
     let pool = testing::pool().await;
     let mut tx = pool.begin().await.expect("begin");

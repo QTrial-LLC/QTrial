@@ -7,7 +7,7 @@
 //! on reference tables from a tenant context, confirming that a
 //! seeded-and-locked-down tenant can still read the full catalog.
 
-use offleash_shared::testing;
+use qtrial_shared::testing;
 use uuid::Uuid;
 
 #[tokio::test]

@@ -16,7 +16,7 @@ path = "src/lib.rs"
 # binaries. Enable it in downstream crates' [dev-dependencies] (not
 # [dependencies]) and in the root workspace test invocation:
 #
-#   cargo test -p offleash-shared --features testing
+#   cargo test -p qtrial-shared --features testing
 testing = ["dep:testcontainers-modules", "dep:tokio"]
 
 [dependencies]

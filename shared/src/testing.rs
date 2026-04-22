@@ -33,7 +33,7 @@
 //! run anyway and the test harness surfaces the panic cleanly.
 //!
 //! Container logs are suppressed by default. Set
-//! `OFFLEASH_TEST_CONTAINER_LOGS=1` in the environment to see them when
+//! `QTRIAL_TEST_CONTAINER_LOGS=1` in the environment to see them when
 //! debugging a boot failure.
 
 use sqlx::PgPool;
@@ -79,13 +79,13 @@ pub async fn pool() -> PgPool {
                        * Docker is not running (try: docker info)\n\
                        * Port conflict while launching Postgres (try: docker ps)\n\
                        * A migration failed to apply; rerun with\n\
-                         OFFLEASH_TEST_CONTAINER_LOGS=1 cargo test ... -- --nocapture"
+                         QTRIAL_TEST_CONTAINER_LOGS=1 cargo test ... -- --nocapture"
                 )
             })
         })
         .await;
 
-    let url = format!("postgres://offleash:offleash@{host}:{port}/offleash");
+    let url = format!("postgres://qtrial:qtrial@{host}:{port}/qtrial");
     PgPoolOptions::new()
         .max_connections(4)
         .connect(&url)
@@ -160,15 +160,15 @@ async fn init_container() -> Result<(String, u16), Box<dyn std::error::Error + S
     }
     bootstrap_pool.close().await;
 
-    // Connect as the owning `offleash` user and apply every migration.
+    // Connect as the owning `qtrial` user and apply every migration.
     // Pool is capped low; migrations only need one connection and
     // smaller pools make connection leaks easier to spot.
-    let app_url = format!("postgres://offleash:offleash@{host}:{port}/offleash");
+    let app_url = format!("postgres://qtrial:qtrial@{host}:{port}/qtrial");
     let migration_pool = PgPoolOptions::new()
         .max_connections(2)
         .connect(&app_url)
         .await
-        .map_err(|err| format!("app connection as offleash failed: {err}"))?;
+        .map_err(|err| format!("app connection as qtrial failed: {err}"))?;
 
     sqlx::migrate!("../db/migrations")
         .run(&migration_pool)
