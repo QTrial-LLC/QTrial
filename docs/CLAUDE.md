@@ -13,6 +13,29 @@ QTrial is a multi-tenant SaaS for managing AKC dog sport trials. Before doing an
 5. `docs/ARCHITECTURE.md` - stack, tenancy approach, deployment
 6. `docs/WORKFLOWS.md` - user-facing operations
 7. `docs/ROADMAP.md` - phased delivery plan
+8. `docs/PROJECT_STATUS.md` - current state of the project: what's done, what's in flight, what's blocked, and the decisions log explaining why we made the choices we made. Read this last in the sequence. It reflects current reality; the prior documents reflect intent and specification.
+
+## Maintaining PROJECT_STATUS.md
+
+docs/PROJECT_STATUS.md is the durable record of where the project actually is, distinct from where the spec documents say it should be. Future Claude and Claude Code sessions rely on it to orient quickly without reading chat history or inferring state from git log.
+
+Update PROJECT_STATUS.md when:
+
+- A PR merges: move the item from "In flight" to "Recently completed" with date, PR number, and a one-line summary
+- A meaningful decision is made: add to the Decisions log with date, the decision statement, rationale, and evidence (file paths, commit SHAs, or doc references)
+- A pending item resolves: remove from "Blocked / waiting" or "Known gaps"
+- A new pending item surfaces: add to the appropriate section
+- The current phase changes: update the header
+
+The Decisions log is the most important section. Its purpose is to prevent re-litigating settled questions. Each entry should be specific enough that a future reader (or future Claude session) can understand why the decision was made and evaluate whether it still holds.
+
+When updating PROJECT_STATUS.md as part of a PR:
+
+- Include the PROJECT_STATUS.md update in the same PR that made the change being recorded
+- Bump the "Last updated" date
+- Keep entries concise; this is a tracking document, not a design spec. Detail belongs in the spec documents.
+
+When in doubt about whether something deserves a Decisions log entry: if you had to explain the decision to a new contributor in a month, would "because we decided that in April" be enough? If not, the rationale belongs in the log.
 
 ## Style preferences
 
