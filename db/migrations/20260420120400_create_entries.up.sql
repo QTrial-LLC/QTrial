@@ -49,7 +49,7 @@ CREATE TABLE entries (
     owner_id                     UUID NOT NULL REFERENCES owners(id) ON DELETE RESTRICT,
     -- Handler on trial day may differ from the exhibitor (pro
     -- handler, family member, junior handler). Free text because
-    -- the handler may not have an OffLeash account.
+    -- the handler may not have an QTrial account.
     handler_name                 TEXT,
     junior_handler_number        TEXT,
     is_senior_handler            BOOL NOT NULL DEFAULT FALSE,

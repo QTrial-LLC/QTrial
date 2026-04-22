@@ -6,21 +6,21 @@
 -- shape that clubs uses: a user reading entries, dogs, owners, etc.
 -- always has a specific club context set.
 --
--- GRANTS come before policies. offleash_tenant gets full CRUD on
+-- GRANTS come before policies. qtrial_tenant gets full CRUD on
 -- every table; RLS gates rows.
 
 ------------------------------------------------------------
 -- GRANTS
 ------------------------------------------------------------
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON owners                   TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON dogs                     TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON dog_titles               TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON dog_sport_participation  TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON teams                    TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON entries                  TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON entry_lines              TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON entry_line_results       TO offleash_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON owners                   TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON dogs                     TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON dog_titles               TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON dog_sport_participation  TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON teams                    TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON entries                  TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON entry_lines              TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON entry_line_results       TO qtrial_tenant;
 
 ------------------------------------------------------------
 -- RLS

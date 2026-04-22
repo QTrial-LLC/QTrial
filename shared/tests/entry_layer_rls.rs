@@ -13,8 +13,8 @@
 //! placement must be qualifying; a waitlist position cannot attach
 //! to a non-waitlisted line.
 
-use offleash_shared::tenancy::{self, ParentEntity};
-use offleash_shared::testing;
+use qtrial_shared::tenancy::{self, ParentEntity};
+use qtrial_shared::testing;
 use sqlx::{Executor, Postgres, Transaction};
 use uuid::Uuid;
 
@@ -240,9 +240,9 @@ async fn enter_tenant_context(
         .execute(&mut **tx)
         .await
         .expect("set current_club_id");
-    tx.execute("SET LOCAL ROLE offleash_tenant")
+    tx.execute("SET LOCAL ROLE qtrial_tenant")
         .await
-        .expect("set local role offleash_tenant");
+        .expect("set local role qtrial_tenant");
 }
 
 async fn count_visible<'c, E>(executor: E, table: &str, id: Uuid) -> i64

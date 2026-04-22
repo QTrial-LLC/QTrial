@@ -102,7 +102,7 @@ CREATE TYPE dog_title_category AS ENUM (
 CREATE TYPE dog_title_source AS ENUM (
     'owner_entered',
     'registry_verified',
-    'earned_in_offleash'
+    'earned_in_qtrial'
 );
 
 CREATE TABLE dog_titles (

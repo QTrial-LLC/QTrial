@@ -2,7 +2,7 @@
 -- per-club in MVP. Cross-tenant dedup (one canonical owner shared
 -- across clubs) is a P2 decision per DATA_MODEL §3; for now each
 -- club maintains its own owner directory, with an optional link to
--- the global users table when the owner also has an OffLeash
+-- the global users table when the owner also has an QTrial
 -- account.
 --
 -- Owner is distinct from exhibitor: the exhibitor is the user who

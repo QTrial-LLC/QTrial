@@ -61,7 +61,7 @@ CREATE TABLE entry_lines (
     -- Pre-entry transfer intent target references the specific
     -- trial_class_offering to move the entry to when the trigger
     -- title is earned before trial start. The dropdown in
-    -- Obedience Solution pairs these at entry time; OffLeash models
+    -- Obedience Solution pairs these at entry time; QTrial models
     -- the pairing directly rather than carrying "Transfer to X" as
     -- parallel class rows.
     transfer_intent_target_class_id     UUID
