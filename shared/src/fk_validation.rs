@@ -144,8 +144,7 @@ pub async fn verify_fk_targets_in_tenant<'c>(
 
     // Parallel arrays: table names and UUIDs, positional pairs.
     // unnest zips them into rows the CASE expression walks.
-    let table_names: Vec<&'static str> =
-        targets.iter().map(|t| t.table.table_name()).collect();
+    let table_names: Vec<&'static str> = targets.iter().map(|t| t.table.table_name()).collect();
     let ids: Vec<Uuid> = targets.iter().map(|t| t.id).collect();
 
     // The CASE dispatches on the fixed set of known table names to

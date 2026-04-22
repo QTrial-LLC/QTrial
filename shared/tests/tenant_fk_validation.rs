@@ -8,7 +8,7 @@
 //! mixed target lists.
 
 use qtrial_shared::fk_validation::{
-    verify_fk_targets_in_tenant, FkTarget, FkValidationError, TenantTable,
+    FkTarget, FkValidationError, TenantTable, verify_fk_targets_in_tenant,
 };
 use qtrial_shared::testing;
 use sqlx::{Executor, Postgres, Transaction};
@@ -51,25 +51,23 @@ async fn seed_tenant(tx: &mut Transaction<'_, Postgres>, label: &str) -> TenantS
     .await
     .expect("insert club");
 
-    let admin_user_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id",
-    )
-    .bind(testing::unique_name("admin") + "@example.test")
-    .bind(format!("{label} admin"))
-    .fetch_one(&mut **tx)
-    .await
-    .expect("insert admin user");
+    let admin_user_id: Uuid =
+        sqlx::query_scalar("INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id")
+            .bind(testing::unique_name("admin") + "@example.test")
+            .bind(format!("{label} admin"))
+            .fetch_one(&mut **tx)
+            .await
+            .expect("insert admin user");
 
     // A user who exists globally but has no role at this club. Used
     // in the "user without a role at current club" test.
-    let unrelated_user_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id",
-    )
-    .bind(testing::unique_name("unrelated") + "@example.test")
-    .bind("Unrelated User")
-    .fetch_one(&mut **tx)
-    .await
-    .expect("insert unrelated user");
+    let unrelated_user_id: Uuid =
+        sqlx::query_scalar("INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id")
+            .bind(testing::unique_name("unrelated") + "@example.test")
+            .bind("Unrelated User")
+            .fetch_one(&mut **tx)
+            .await
+            .expect("insert unrelated user");
 
     sqlx::query(
         "INSERT INTO user_club_roles (club_id, user_id, role) \
@@ -81,11 +79,10 @@ async fn seed_tenant(tx: &mut Transaction<'_, Postgres>, label: &str) -> TenantS
     .await
     .expect("grant role to admin");
 
-    let registry_id: Uuid =
-        sqlx::query_scalar("SELECT id FROM registries WHERE code = 'AKC'")
-            .fetch_one(&mut **tx)
-            .await
-            .expect("AKC registry id");
+    let registry_id: Uuid = sqlx::query_scalar("SELECT id FROM registries WHERE code = 'AKC'")
+        .fetch_one(&mut **tx)
+        .await
+        .expect("AKC registry id");
 
     let event_id: Uuid = sqlx::query_scalar(
         "INSERT INTO events (club_id, registry_id, name) VALUES ($1, $2, $3) RETURNING id",
@@ -118,12 +115,11 @@ async fn seed_tenant(tx: &mut Transaction<'_, Postgres>, label: &str) -> TenantS
     .await
     .expect("insert trial");
 
-    let canonical_class_id: Uuid = sqlx::query_scalar(
-        "SELECT id FROM canonical_classes WHERE code = 'akc_rally_novice_a'",
-    )
-    .fetch_one(&mut **tx)
-    .await
-    .expect("rally novice a canonical id");
+    let canonical_class_id: Uuid =
+        sqlx::query_scalar("SELECT id FROM canonical_classes WHERE code = 'akc_rally_novice_a'")
+            .fetch_one(&mut **tx)
+            .await
+            .expect("rally novice a canonical id");
 
     let offering_id: Uuid = sqlx::query_scalar(
         "INSERT INTO trial_class_offerings (club_id, trial_id, canonical_class_id) \
@@ -213,11 +209,7 @@ async fn seed_cross_tenant_pair(tx: &mut Transaction<'_, Postgres>) -> CrossTena
     CrossTenantPair { a, b }
 }
 
-async fn enter_tenant_context(
-    tx: &mut Transaction<'_, Postgres>,
-    user_id: Uuid,
-    club_id: Uuid,
-) {
+async fn enter_tenant_context(tx: &mut Transaction<'_, Postgres>, user_id: Uuid, club_id: Uuid) {
     sqlx::query("SELECT set_config('app.current_user_id', $1, true)")
         .bind(user_id.to_string())
         .execute(&mut **tx)
@@ -256,11 +248,26 @@ async fn happy_path_accepts_all_targets_from_current_tenant() {
     enter_tenant_context(&mut tx, pair.a.admin_user_id, pair.a.club_id).await;
 
     let targets = vec![
-        FkTarget { table: TenantTable::Event, id: pair.a.event_id },
-        FkTarget { table: TenantTable::Dog, id: pair.a.dog_id },
-        FkTarget { table: TenantTable::Owner, id: pair.a.owner_id },
-        FkTarget { table: TenantTable::TrialClassOffering, id: pair.a.offering_id },
-        FkTarget { table: TenantTable::Judge, id: pair.a.judge_id },
+        FkTarget {
+            table: TenantTable::Event,
+            id: pair.a.event_id,
+        },
+        FkTarget {
+            table: TenantTable::Dog,
+            id: pair.a.dog_id,
+        },
+        FkTarget {
+            table: TenantTable::Owner,
+            id: pair.a.owner_id,
+        },
+        FkTarget {
+            table: TenantTable::TrialClassOffering,
+            id: pair.a.offering_id,
+        },
+        FkTarget {
+            table: TenantTable::Judge,
+            id: pair.a.judge_id,
+        },
     ];
 
     verify_fk_targets_in_tenant(&mut *tx, &targets)
@@ -434,10 +441,22 @@ async fn batch_validation_identifies_the_specific_failing_target() {
     // The helper should reject with the exact (table, id) of the
     // failing target, not a generic batch-failure message.
     let targets = vec![
-        FkTarget { table: TenantTable::Event, id: pair.a.event_id },
-        FkTarget { table: TenantTable::Dog, id: pair.b.dog_id },
-        FkTarget { table: TenantTable::Owner, id: pair.a.owner_id },
-        FkTarget { table: TenantTable::TrialClassOffering, id: pair.a.offering_id },
+        FkTarget {
+            table: TenantTable::Event,
+            id: pair.a.event_id,
+        },
+        FkTarget {
+            table: TenantTable::Dog,
+            id: pair.b.dog_id,
+        },
+        FkTarget {
+            table: TenantTable::Owner,
+            id: pair.a.owner_id,
+        },
+        FkTarget {
+            table: TenantTable::TrialClassOffering,
+            id: pair.a.offering_id,
+        },
     ];
 
     assert_invalid(
