@@ -277,14 +277,13 @@ async fn clubs_with_check_rejects_tenant_insert_regardless_of_role() {
     .await
     .expect("insert club A");
 
-    let user_a: Uuid = sqlx::query_scalar(
-        "INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id",
-    )
-    .bind(testing::unique_name("lone.user") + "@example.test")
-    .bind("Lone User")
-    .fetch_one(&mut *tx)
-    .await
-    .expect("insert lone user");
+    let user_a: Uuid =
+        sqlx::query_scalar("INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id")
+            .bind(testing::unique_name("lone.user") + "@example.test")
+            .bind("Lone User")
+            .fetch_one(&mut *tx)
+            .await
+            .expect("insert lone user");
 
     sqlx::query(
         "INSERT INTO user_club_roles (club_id, user_id, role) VALUES ($1, $2, 'club_admin')",

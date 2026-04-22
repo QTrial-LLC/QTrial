@@ -52,14 +52,13 @@ async fn seed_full_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Tena
     .await
     .expect("insert club");
 
-    let user_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id",
-    )
-    .bind(testing::unique_name("secretary") + "@example.test")
-    .bind(format!("{name} secretary"))
-    .fetch_one(&mut **tx)
-    .await
-    .expect("insert user");
+    let user_id: Uuid =
+        sqlx::query_scalar("INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id")
+            .bind(testing::unique_name("secretary") + "@example.test")
+            .bind(format!("{name} secretary"))
+            .fetch_one(&mut **tx)
+            .await
+            .expect("insert user");
 
     sqlx::query(
         "INSERT INTO user_club_roles (club_id, user_id, role) \
@@ -71,11 +70,10 @@ async fn seed_full_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Tena
     .await
     .expect("grant role");
 
-    let registry_id: Uuid =
-        sqlx::query_scalar("SELECT id FROM registries WHERE code = 'AKC'")
-            .fetch_one(&mut **tx)
-            .await
-            .expect("load AKC registry id");
+    let registry_id: Uuid = sqlx::query_scalar("SELECT id FROM registries WHERE code = 'AKC'")
+        .fetch_one(&mut **tx)
+        .await
+        .expect("load AKC registry id");
 
     let event_id: Uuid = sqlx::query_scalar(
         "INSERT INTO events (club_id, registry_id, name) VALUES ($1, $2, $3) RETURNING id",
@@ -193,11 +191,7 @@ async fn seed_full_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Tena
     }
 }
 
-async fn enter_tenant_context(
-    tx: &mut Transaction<'_, Postgres>,
-    user_id: Uuid,
-    club_id: Uuid,
-) {
+async fn enter_tenant_context(tx: &mut Transaction<'_, Postgres>, user_id: Uuid, club_id: Uuid) {
     sqlx::query("SELECT set_config('app.current_user_id', $1, true)")
         .bind(user_id.to_string())
         .execute(&mut **tx)
@@ -229,18 +223,19 @@ async fn tenant_sees_own_stack_at_every_level() {
         .expect("events");
     assert_eq!(events, vec![a.event_id], "tenant A sees only its own event");
 
-    let event_days: Vec<Uuid> =
-        sqlx::query_scalar("SELECT id FROM event_days ORDER BY day_number")
-            .fetch_all(&mut *tx)
-            .await
-            .expect("event_days");
-    assert_eq!(event_days, a.event_day_ids, "tenant A sees both its event days");
+    let event_days: Vec<Uuid> = sqlx::query_scalar("SELECT id FROM event_days ORDER BY day_number")
+        .fetch_all(&mut *tx)
+        .await
+        .expect("event_days");
+    assert_eq!(
+        event_days, a.event_day_ids,
+        "tenant A sees both its event days"
+    );
 
-    let trials: Vec<Uuid> =
-        sqlx::query_scalar("SELECT id FROM trials ORDER BY created_at")
-            .fetch_all(&mut *tx)
-            .await
-            .expect("trials");
+    let trials: Vec<Uuid> = sqlx::query_scalar("SELECT id FROM trials ORDER BY created_at")
+        .fetch_all(&mut *tx)
+        .await
+        .expect("trials");
     assert_eq!(trials.len(), 4, "tenant A sees all four of its trials");
     for expected_trial in &a.trial_ids {
         assert!(trials.contains(expected_trial));
@@ -305,7 +300,10 @@ async fn tenant_cannot_see_other_tenants_stack_at_any_level() {
         assert_eq!(count_visible(&mut *tx, "trials", *id).await, 0);
     }
     for id in &b.offering_ids {
-        assert_eq!(count_visible(&mut *tx, "trial_class_offerings", *id).await, 0);
+        assert_eq!(
+            count_visible(&mut *tx, "trial_class_offerings", *id).await,
+            0
+        );
     }
     assert_eq!(count_visible(&mut *tx, "judges", b.judge_id).await, 0);
     for id in &b.judge_assignment_ids {
@@ -364,19 +362,14 @@ async fn parent_club_id_helper_returns_correct_club() {
         .expect("event lookup");
     assert_eq!(from_event, a.club_id);
 
-    let from_day = tenancy::parent_club_id(
-        &mut *tx,
-        ParentEntity::EventDay,
-        a.event_day_ids[0],
-    )
-    .await
-    .expect("event_day lookup");
+    let from_day = tenancy::parent_club_id(&mut *tx, ParentEntity::EventDay, a.event_day_ids[0])
+        .await
+        .expect("event_day lookup");
     assert_eq!(from_day, a.club_id);
 
-    let from_trial =
-        tenancy::parent_club_id(&mut *tx, ParentEntity::Trial, a.trial_ids[0])
-            .await
-            .expect("trial lookup");
+    let from_trial = tenancy::parent_club_id(&mut *tx, ParentEntity::Trial, a.trial_ids[0])
+        .await
+        .expect("trial lookup");
     assert_eq!(from_trial, a.club_id);
 
     let from_offering = tenancy::parent_club_id(
@@ -395,10 +388,9 @@ async fn parent_club_id_helper_returns_not_found_for_missing_parent() {
     let mut tx = pool.begin().await.expect("begin");
 
     let nonexistent = Uuid::new_v4();
-    let err =
-        tenancy::parent_club_id(&mut *tx, ParentEntity::Event, nonexistent)
-            .await
-            .expect_err("nonexistent event must return NotFound");
+    let err = tenancy::parent_club_id(&mut *tx, ParentEntity::Event, nonexistent)
+        .await
+        .expect_err("nonexistent event must return NotFound");
 
     match err {
         tenancy::ParentClubIdError::NotFound { entity, id } => {
