@@ -7,10 +7,10 @@
 //! tests seed two distinct tenants and exercise the helper against
 //! mixed target lists.
 
-use offleash_shared::fk_validation::{
+use qtrial_shared::fk_validation::{
     verify_fk_targets_in_tenant, FkTarget, FkValidationError, TenantTable,
 };
-use offleash_shared::testing;
+use qtrial_shared::testing;
 use sqlx::{Executor, Postgres, Transaction};
 use uuid::Uuid;
 
@@ -228,9 +228,9 @@ async fn enter_tenant_context(
         .execute(&mut **tx)
         .await
         .expect("set current_club_id");
-    tx.execute("SET LOCAL ROLE offleash_tenant")
+    tx.execute("SET LOCAL ROLE qtrial_tenant")
         .await
-        .expect("set local role offleash_tenant");
+        .expect("set local role qtrial_tenant");
 }
 
 fn assert_invalid(

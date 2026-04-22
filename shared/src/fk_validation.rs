@@ -20,7 +20,7 @@
 //! layer. That distinction would also be an information leak.
 //!
 //! **Caller contract:** the passed executor must already be in a
-//! tenant context, specifically with `SET LOCAL ROLE offleash_tenant`
+//! tenant context, specifically with `SET LOCAL ROLE qtrial_tenant`
 //! and `app.current_club_id` set for the current tenant. The helpers
 //! in [`crate::tenancy`] (`begin_as_tenant`, `with_tenant_context`)
 //! establish exactly this shape. If the helper is called from an
