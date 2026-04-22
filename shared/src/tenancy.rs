@@ -116,7 +116,7 @@ pub enum ParentClubIdError {
 /// inserting a child under a soft-deleted parent is almost always a
 /// bug in the caller.
 ///
-/// Every tenant child table in OffLeash carries its own `club_id`
+/// Every tenant child table in QTrial carries its own `club_id`
 /// directly (per DATA_MODEL's multi-tenancy convention); this helper
 /// is the canonical way for app code to fetch that value from the
 /// parent at write time. RLS WITH CHECK gives us belt-and-suspenders

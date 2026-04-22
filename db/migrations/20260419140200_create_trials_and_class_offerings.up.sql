@@ -103,7 +103,7 @@ CREATE TABLE trial_class_offerings (
     canonical_class_id              UUID NOT NULL REFERENCES canonical_classes(id),
     -- Default to 1, reject 0. Obedience Solution's legacy "Ring 0"
     -- was a placeholder for unset and should never appear in
-    -- OffLeash; Phase 7 migration translates it to 1 at import time.
+    -- QTrial; Phase 7 migration translates it to 1 at import time.
     ring_number                     INT NOT NULL DEFAULT 1,
     class_limit                     INT,
     scheduled_start_time            TIME,

@@ -8,10 +8,10 @@
 -- specific club context. Symmetric USING and WITH CHECK is the
 -- simpler correct shape.
 --
--- GRANTS come before policies. `offleash_tenant` gets full CRUD on
+-- GRANTS come before policies. `qtrial_tenant` gets full CRUD on
 -- every table (RLS does the row gating). Reference-data style
 -- tables (canonical_classes, registries) were granted SELECT-only
--- to offleash_tenant in session 3 and need no additional grants
+-- to qtrial_tenant in session 3 and need no additional grants
 -- here; they are the read-side of the event subtree, not part of
 -- the event subtree itself.
 
@@ -19,13 +19,13 @@
 -- GRANTS
 ------------------------------------------------------------
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON events                 TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON event_days             TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON trials                 TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON trial_class_offerings  TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON judges                 TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON judge_assignments      TO offleash_tenant;
-GRANT SELECT, INSERT, UPDATE, DELETE ON trial_awards           TO offleash_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON events                 TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON event_days             TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON trials                 TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON trial_class_offerings  TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON judges                 TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON judge_assignments      TO qtrial_tenant;
+GRANT SELECT, INSERT, UPDATE, DELETE ON trial_awards           TO qtrial_tenant;
 
 ------------------------------------------------------------
 -- RLS ON EVENT-SETUP TABLES

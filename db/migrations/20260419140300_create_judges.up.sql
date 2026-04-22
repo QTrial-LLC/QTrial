@@ -8,7 +8,7 @@
 -- entries for the same judge.
 --
 -- `user_id` is nullable and FKs into the global `users` table when
--- the judge has an OffLeash account. The link lets a judge sign in
+-- the judge has an QTrial account. The link lets a judge sign in
 -- and see their assignments in a future session. Without an account
 -- the row is a pure contact record.
 
@@ -18,7 +18,7 @@ CREATE TABLE judges (
     -- its judge directory; soft delete via deleted_at does not
     -- cascade.
     club_id             UUID NOT NULL REFERENCES clubs(id) ON DELETE CASCADE,
-    -- ON DELETE SET NULL: if the linked OffLeash user is purged
+    -- ON DELETE SET NULL: if the linked QTrial user is purged
     -- (GDPR, manual cleanup), the judge directory entry survives as
     -- a contact record without the login link.
     user_id             UUID REFERENCES users(id) ON DELETE SET NULL,

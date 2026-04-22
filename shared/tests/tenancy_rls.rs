@@ -359,7 +359,7 @@ async fn my_clubs_picker_returns_all_user_role_grants_without_club_context() {
         .execute(&mut *tx)
         .await
         .expect("clear current_club_id");
-    sqlx::query("SET LOCAL ROLE offleash_tenant")
+    sqlx::query("SET LOCAL ROLE qtrial_tenant")
         .execute(&mut *tx)
         .await
         .expect("set tenant role");

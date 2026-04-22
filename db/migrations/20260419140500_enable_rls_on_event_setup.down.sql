@@ -14,10 +14,10 @@ ALTER TABLE trials                 DISABLE ROW LEVEL SECURITY;
 ALTER TABLE event_days             DISABLE ROW LEVEL SECURITY;
 ALTER TABLE events                 DISABLE ROW LEVEL SECURITY;
 
-REVOKE ALL ON trial_awards           FROM offleash_tenant;
-REVOKE ALL ON judge_assignments      FROM offleash_tenant;
-REVOKE ALL ON judges                 FROM offleash_tenant;
-REVOKE ALL ON trial_class_offerings  FROM offleash_tenant;
-REVOKE ALL ON trials                 FROM offleash_tenant;
-REVOKE ALL ON event_days             FROM offleash_tenant;
-REVOKE ALL ON events                 FROM offleash_tenant;
+REVOKE ALL ON trial_awards           FROM qtrial_tenant;
+REVOKE ALL ON judge_assignments      FROM qtrial_tenant;
+REVOKE ALL ON judges                 FROM qtrial_tenant;
+REVOKE ALL ON trial_class_offerings  FROM qtrial_tenant;
+REVOKE ALL ON trials                 FROM qtrial_tenant;
+REVOKE ALL ON event_days             FROM qtrial_tenant;
+REVOKE ALL ON events                 FROM qtrial_tenant;

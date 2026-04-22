@@ -16,8 +16,8 @@
 //! and matching RLS policy, this test should fail before the change
 //! lands.
 
-use offleash_shared::tenancy::{self, ParentEntity};
-use offleash_shared::testing;
+use qtrial_shared::tenancy::{self, ParentEntity};
+use qtrial_shared::testing;
 use sqlx::{Executor, Postgres, Transaction};
 use uuid::Uuid;
 
@@ -40,7 +40,7 @@ struct TenantStack {
 /// role, one event with two days, two trials per day, one class
 /// offering per trial (using the seeded AKC Rally Novice A),
 /// one judge, judge assignments for every offering, and one HIT
-/// award. Runs as the owning `offleash` role so RLS does not
+/// award. Runs as the owning `qtrial` role so RLS does not
 /// interfere with setup.
 async fn seed_full_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> TenantStack {
     let club_id: Uuid = sqlx::query_scalar(
@@ -208,9 +208,9 @@ async fn enter_tenant_context(
         .execute(&mut **tx)
         .await
         .expect("set current_club_id");
-    tx.execute("SET LOCAL ROLE offleash_tenant")
+    tx.execute("SET LOCAL ROLE qtrial_tenant")
         .await
-        .expect("set local role offleash_tenant");
+        .expect("set local role qtrial_tenant");
 }
 
 #[tokio::test]
