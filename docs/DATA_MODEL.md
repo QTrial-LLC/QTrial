@@ -231,7 +231,7 @@ Note: judges are club-scoped in the sense that clubs track them in their judge d
 |---|---|---|
 | `id` | UUID | PK |
 | `club_id` | UUID | tenant root (see note above) |
-| `user_id` | UUID | FK, nullable - present if the judge has an QTrial account |
+| `user_id` | UUID | FK, nullable - present if the judge has a QTrial account |
 | `last_name`, `first_name` | TEXT | |
 | `akc_judge_number` | TEXT | |
 | `address_line1`, `city`, `state`, `postal_code`, `country_code` | TEXT | |
