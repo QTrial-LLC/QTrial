@@ -3,8 +3,10 @@ target/
 **/*.rs.bk
 Cargo.lock.bak
 
-# sqlx offline query cache
-.sqlx/
+# Note: the sqlx offline query cache under `.sqlx/` is INTENTIONALLY
+# committed so CI can build without a live database. Regenerate with
+# `cargo sqlx prepare --workspace` after changing any sqlx::query! /
+# query_as! call. Do not add `.sqlx/` to this file.
 
 # Node / Next.js
 node_modules/
