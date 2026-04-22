@@ -30,8 +30,7 @@ use uuid::Uuid;
 /// Boxed future alias used by [`with_tenant_context`]'s closure bound.
 /// Keeping the alias at the module level lets callers write the bound
 /// without repeating the full `Pin<Box<dyn Future<...>>>` incantation.
-pub type TenantFuture<'a, T> =
-    Pin<Box<dyn Future<Output = Result<T, sqlx::Error>> + Send + 'a>>;
+pub type TenantFuture<'a, T> = Pin<Box<dyn Future<Output = Result<T, sqlx::Error>> + Send + 'a>>;
 
 /// Open a transaction with tenant context applied and return it to the
 /// caller. The caller is responsible for committing on success;

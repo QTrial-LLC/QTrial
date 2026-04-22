@@ -50,8 +50,7 @@ use crate::tenancy;
 /// The same bootstrap script dev Compose feeds into its Postgres
 /// container's `/docker-entrypoint-initdb.d/` directory. Compiled in so
 /// the fixture cannot drift from dev without CI noticing.
-const BOOTSTRAP_SQL: &str =
-    include_str!("../../db/docker-init/01-create-databases.sql");
+const BOOTSTRAP_SQL: &str = include_str!("../../db/docker-init/01-create-databases.sql");
 
 /// Postgres image tag. When the dev `postgres:16` in `docker-compose.yml`
 /// changes, update this tag in lockstep so tests exercise the same
@@ -149,9 +148,7 @@ async fn init_container() -> Result<(String, u16), Box<dyn std::error::Error + S
         .max_connections(1)
         .connect(&bootstrap_url)
         .await
-        .map_err(|err| {
-            format!("bootstrap connection as postgres superuser failed: {err}")
-        })?;
+        .map_err(|err| format!("bootstrap connection as postgres superuser failed: {err}"))?;
     for statement in split_bootstrap_statements(BOOTSTRAP_SQL) {
         sqlx::query(&statement)
             .execute(&bootstrap_pool)

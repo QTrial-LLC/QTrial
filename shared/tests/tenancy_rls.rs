@@ -39,23 +39,21 @@ async fn seed_two_tenants(tx: &mut Transaction<'_, Postgres>) -> TwoTenants {
     .await
     .expect("insert club B");
 
-    let user_a: Uuid = sqlx::query_scalar(
-        "INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id",
-    )
-    .bind(testing::unique_name("user.a") + "@example.test")
-    .bind("User A")
-    .fetch_one(&mut **tx)
-    .await
-    .expect("insert user A");
+    let user_a: Uuid =
+        sqlx::query_scalar("INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id")
+            .bind(testing::unique_name("user.a") + "@example.test")
+            .bind("User A")
+            .fetch_one(&mut **tx)
+            .await
+            .expect("insert user A");
 
-    let user_b: Uuid = sqlx::query_scalar(
-        "INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id",
-    )
-    .bind(testing::unique_name("user.b") + "@example.test")
-    .bind("User B")
-    .fetch_one(&mut **tx)
-    .await
-    .expect("insert user B");
+    let user_b: Uuid =
+        sqlx::query_scalar("INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id")
+            .bind(testing::unique_name("user.b") + "@example.test")
+            .bind("User B")
+            .fetch_one(&mut **tx)
+            .await
+            .expect("insert user B");
 
     sqlx::query(
         "INSERT INTO user_club_roles (club_id, user_id, role) VALUES ($1, $2, 'club_admin')",
@@ -87,11 +85,7 @@ async fn seed_two_tenants(tx: &mut Transaction<'_, Postgres>) -> TwoTenants {
 /// tenant context to an already-open transaction. Used when a test
 /// wants to seed as owner first, then switch to tenant mode for
 /// assertions.
-async fn set_tenant_context(
-    tx: &mut Transaction<'_, Postgres>,
-    user_id: Uuid,
-    club_id: Uuid,
-) {
+async fn set_tenant_context(tx: &mut Transaction<'_, Postgres>, user_id: Uuid, club_id: Uuid) {
     sqlx::query("SELECT set_config('app.current_user_id', $1, true)")
         .bind(user_id.to_string())
         .execute(&mut **tx)
@@ -195,14 +189,13 @@ async fn tenant_insert_into_own_club_user_roles_succeeds() {
     // Seed an additional user who will receive the new role grant,
     // since user_club_roles_active_uk prevents duplicate active grants
     // of the same role for the same user at the same club.
-    let user_c: Uuid = sqlx::query_scalar(
-        "INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id",
-    )
-    .bind(testing::unique_name("user.c") + "@example.test")
-    .bind("User C")
-    .fetch_one(&mut *tx)
-    .await
-    .expect("insert user C");
+    let user_c: Uuid =
+        sqlx::query_scalar("INSERT INTO users (email, display_name) VALUES ($1, $2) RETURNING id")
+            .bind(testing::unique_name("user.c") + "@example.test")
+            .bind("User C")
+            .fetch_one(&mut *tx)
+            .await
+            .expect("insert user C");
 
     set_tenant_context(&mut tx, seed.user_a, seed.club_a).await;
 

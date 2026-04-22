@@ -82,13 +82,15 @@ async fn canonical_classes_counts_match_session_two_scope() {
         .expect("count canonical_classes");
     assert_eq!(total, 23, "session 2 scope is exactly 23 classes");
 
-    let obedience: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM canonical_classes WHERE sport = 'obedience'",
-    )
-    .fetch_one(pool)
-    .await
-    .expect("count obedience");
-    assert_eq!(obedience, 14, "14 Obedience classes: 6 Regular + 5 OT + 3 Preferred");
+    let obedience: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM canonical_classes WHERE sport = 'obedience'")
+            .fetch_one(pool)
+            .await
+            .expect("count obedience");
+    assert_eq!(
+        obedience, 14,
+        "14 Obedience classes: 6 Regular + 5 OT + 3 Preferred"
+    );
 
     let rally: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM canonical_classes WHERE sport = 'rally'")
@@ -115,13 +117,15 @@ async fn rally_choice_is_seeded_with_ten_leg_title_rule() {
     .await
     .expect("select rally choice");
 
-    let (display_name, legs, ab_rule, has_jumps) =
-        row.expect("akc_rally_choice must be seeded");
+    let (display_name, legs, ab_rule, has_jumps) = row.expect("akc_rally_choice must be seeded");
 
     assert_eq!(display_name, "Rally Choice");
     assert_eq!(legs, Some(10));
     assert_eq!(ab_rule, "none");
-    assert!(!has_jumps, "Rally Choice has no jumps per AKC Rally Regs Ch 3 §18");
+    assert!(
+        !has_jumps,
+        "Rally Choice has no jumps per AKC Rally Regs Ch 3 §18"
+    );
 }
 
 #[tokio::test]
