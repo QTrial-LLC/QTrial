@@ -54,3 +54,8 @@ required-features = ["testing"]
 name = "entry_layer_rls"
 path = "tests/entry_layer_rls.rs"
 required-features = ["testing"]
+
+[[test]]
+name = "tenant_fk_validation"
+path = "tests/tenant_fk_validation.rs"
+required-features = ["testing"]
