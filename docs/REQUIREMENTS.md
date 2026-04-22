@@ -541,7 +541,7 @@ Per `tblPremiumMailingList` in the current schema and typical club workflow.
 
 ## 16. Data migration from Access [MVP]
 
-A tool that imports data from a Lab Tested Databases–style Access `.mde`/`.mdb` file into an QTrial club:
+A tool that imports data from a Lab Tested Databases–style Access `.mde`/`.mdb` file into a QTrial club:
 - Dogs (`tblDogData`)
 - Owners (`tblOwnerData`)
 - Judges (`tblJudges`)
