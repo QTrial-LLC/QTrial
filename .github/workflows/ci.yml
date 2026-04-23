@@ -125,7 +125,7 @@ jobs:
         env:
           PGPASSWORD: qtrial
         run: |
-          cargo install sqlx-cli --version 0.8 \
+          cargo install sqlx-cli --version ^0.8 \
               --no-default-features --features postgres,rustls --locked
           sqlx migrate run --source db/migrations --database-url "$DATABASE_URL"
 
