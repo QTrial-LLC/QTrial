@@ -1,0 +1,24 @@
+legacy_id,class_name,entries_min,entries_max,first_place_points,second_place_points,third_place_points,fourth_place_points
+1,Open B,6,10,2,0,0,0
+2,Open B,11,15,4,1,0,0
+3,Open B,16,20,6,2,0,0
+4,Open B,21,25,10,3,1,0
+5,Open B,26,30,14,4,2,0
+6,Open B,31,35,18,5,2,1
+7,Open B,36,40,22,7,3,1
+8,Open B,41,45,26,9,4,2
+9,Open B,46,50,30,11,5,2
+10,Open B,51,64,34,13,6,3
+11,Utility B,3,4,2,0,0,0
+12,Utility B,5,7,4,1,0,0
+13,Utility B,8,10,6,2,0,0
+14,Utility B,11,13,10,3,1,0
+15,Utility B,14,16,14,4,1,0
+16,Utility B,17,19,17,5,2,0
+17,Utility B,20,23,20,7,2,1
+18,Utility B,24,26,24,9,3,1
+19,Utility B,27,29,27,11,4,1
+20,Utility B,30,32,30,13,4,2
+21,Utility B,33,36,33,14,5,2
+22,Utility B,37,40,37,15,6,3
+23,Utility B,41,56,40,17,7,3

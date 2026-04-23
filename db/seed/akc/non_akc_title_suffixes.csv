@@ -1,0 +1,82 @@
+legacy_id,code,sport_scope_code,display_order,source_organization,long_name,allows_multiple
+901,WC,X,1,NSDTRC,Working Certificate,false
+902,WCI,X,2,NSDTRC,Working Certificate Intermediate,false
+903,WCX,X,3,NSDTRC,Working Certificate Excellent,false
+904,SD,X,4,Siberian Husky Club of America,Sled Dog,false
+905,SDX,X,5,Siberian Husky Club of America,Sled Dog Excellent,false
+906,SDO,X,6,Siberian Husky Club of America,Sled Dog Outstanding,false
+907,CS,X,7,American Rottweiler Club,Carting Started,false
+908,CI,X,8,American Rottweiler Club,Carting Intermediate,false
+909,CX,X,9,American Rottweiler Club,Carting Excellent,false
+910,CST,X,10,American Rottweiler Club,Carting Started Team,false
+911,CIT,X,11,American Rottweiler Club,Carting Intermediate Team,false
+912,CXT,X,12,American Rottweiler Club,Carting Excellent Team,false
+913,NDD,X,13,multiple,Novice Draft Dog,false
+914,DD,X,14,multiple,Draft Dog,false
+915,NBDD,X,15,multiple,Novice Brace Draft Dog,false
+916,BDD,X,16,multiple,Brace Draft Dog,false
+917,TDD,X,17,St Bernard Club of America,Team Draft Dog,false
+921,MT,X,18,American Bloodhound Club,Man Trailer,false
+922,MTI,X,19,American Bloodhound Club,Man Trailer Intermediate,false
+923,MTX,X,20,American Bloodhound Club,Man Trailer Excellent,false
+924,CC,X,21,Dalmatian Club of America,Coaching Certificate,false
+925,RD,X,22,Dalmatian Club of America,Road Dog,false
+926,RDX,X,23,Dalmatian Club of America,Road Dog Excellent,false
+931,BH,X,24,multiple,Basic Companion Dog,false
+932,FH1,X,25,multiple,Advanced Tracking,false
+933,FH2,X,25,multiple,Superior Tracking,false
+934,IPO1,X,26,multiple,International Novice Schutzhund,false
+935,IPO2,X,27,multiple,International Intermediate Schutzhund,false
+936,IPO3,X,29,multiple,International Master Level Schutzhund,false
+937,SCHH1,X,30,multiple,Novice Schutzhund,false
+938,SCHH2,X,31,multiple,Intermediate Schutzhund,false
+939,SCHH3,X,32,multiple,Master Schutzhund,false
+940,SCHHA,X,33,multiple,Novice Schutzhund A,false
+941,TT,X,34,Doberman Pinscher Club of America,Temperament Test,false
+942,WDS1,X,35,Doberman Pinscher Club of America,Working Dog Sport 1,false
+943,WDS2,X,36,Doberman Pinscher Club of America,Working Dog Sport 2,false
+944,WDS3,X,37,Doberman Pinscher Club of America,Working Dog Sport 3,false
+951,FDCH,X,38,NAFA,Flyball Dog Champion,false
+952,FM,X,39,NAFA,Flyball Master,false
+953,ONYX,X,40,NAFA,Onyx,false
+954,RATI,X,41,BHA,Barn Hunt Instinct,false
+955,RATN,X,42,BHA,Novice Barn Hunt,false
+956,RATO,X,43,BHA,Open Barn Hunt,false
+957,RATS,X,44,BHA,Senior Barn Hunt,false
+958,RATM,X,45,BHA,Master Barn Hunt,false
+959,RATCH,X,46,BHA,Barn Hunt Champion,false
+960,RATCHX,X,47,BHA,Barn Hunt Master Champion,true
+961,DN,X,48,NADD,Dock Novice,false
+962,DJ,X,49,NADD,Dock Junior,false
+963,DS,X,50,NADD,Dock Senior,false
+964,DM,X,51,NADD,Dock Master,false
+965,DE,X,52,NADD,Dock Elite,false
+966,DNA,X,53,NADD,Dock Novice Advanced,false
+967,DJA,X,54,NADD,Dock Junior Advanced,false
+968,DSA,X,55,NADD,Dock Senior Advanced,false
+969,DMA,X,56,NADD,Dock Master Advanced,false
+970,DEA,X,57,NADD,Dock Elite Advanced,false
+971,DJX,X,58,NADD,Dock Junior Excellent,false
+972,DSX,X,59,NADD,Dock Senior Exellent,false
+973,DMX,X,60,NADD,Dock Master Excellent,false
+974,DEX,X,61,NADD,Dock Elite Excellent,false
+975,AN,X,62,NADD,Air Retrieve Novice,false
+976,AJ,X,63,NADD,Air Retrieve Junior,false
+977,AS,X,64,NADD,Air Retrieve Senior,false
+978,AM,X,65,NADD,Air Retrieve Master,false
+979,AE,X,66,NADD,Air Retrieve Elite,false
+980,ANA,X,67,NADD,Air Retrieve Novice Advanced,false
+981,AJA,X,68,NADD,Air Retrieve Junior Advanced,false
+982,ASA,X,69,NADD,Air Retrieve Senior Advanced,false
+983,AMA,X,70,NADD,Air Retrieve Master Advanced,false
+984,AEA,X,71,NADD,Air Retrieve Elite Advanced,false
+985,ANX,X,72,NADD,Air Retrieve Novice Excellent,false
+986,ASX,X,73,NADD,Air Retrieve Senior Excellent,false
+987,AMX,X,74,NADD,Air Retrieve Master Excellent,false
+988,AEX,X,75,NADD,Air Retrieve Elite Excellent,false
+989,NTD,X,76,DMWYD,Novice Trick Dog,false
+990,ITD,X,77,DMWYD,Intermediate Trick Dog,false
+991,ATD,X,78,DMWYD,Advanced Trick Dog,false
+992,ETC,X,79,DMWYD,Expert Trick Dog,false
+993,TDCH,X,80,DMWYD,Trick Dog Champion,false
+994,SAR,X,81,FEMA,Search and Rescue,false

@@ -1,0 +1,473 @@
+ClassCode,ClassPattern,Class,Box1,Box2,Box3,Box4,Box5,Box6,Box7,Box8,Box9,Box10,Box11,Box12,Box13
+1,1,Novice A,"Heel on Leash & Figure Eight
+(40 pts)","Stand for Exam
+(30 pts)","Heel Free
+(40 pts)","Recall
+(30 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",
+2,1,Novice B,"Heel on Leash & Figure Eight
+(40 pts)","Stand for Exam
+(30 pts)","Heel Free
+(40 pts)","Recall
+(30 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",
+3,2,Open A,"Heel Free & Figure Eight
+(40 pts)","Drop on Recall
+(30 pts)","Retrieve on Flat
+(20 pts)","Retrieve over High Jump
+(30 pts)","Broad Jump
+(20 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalities","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE"
+4,3,Open B,#1,#2,#3,#4,#5,"Subtotal of
+Points Off","Long
+(30 pts)","Long
+(30 pts)","Miscellaneous
+Penalities","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE"
+5,4,Utility A,"Signal Exercise
+(40 pts)","Scent
+Discrimination #1
+(30 pts)","Scent
+Discrimination #2
+(30 pts)","Directed Retrieve
+(30 pts)","Moving Stand &
+Exam
+(30 pts)","Directed Jumping
+(40 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,
+6,5,Utility B,#1,#2,#3,#4,#5,#6,"Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,
+7,10,Beginner Novice A,"Heel on Leash
+(40 pts)","Figure Eight
+(40 pts)","Sit for Exam
+(40 pts)","Sit Stay
+(40 pts)","Recall
+(40 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,,
+8,10,Beginner Novice B,"Heel on Leash
+(40 pts)","Figure Eight
+(40 pts)","Sit for Exam
+(40 pts)","Sit Stay
+(40 pts)","Recall
+(40 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,,
+9,14,Preferred Novice,"Heel on Leash & Figure Eight
+(40 pts)","Stand for Exam
+(40 pts)","Heel Free
+(40 pts)","Recall
+(40 pts)","Stay - Sit or Down
+(40 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,,
+10,6,Graduate Novice,"Heel Free
+& Figure Eight
+(40 pts)","Drop on Recall
+(40 pts)","Dumbbell Recall
+(30 pts)","Dumbbell Recall over High Jump
+(30 pts)","Recall Over
+Broad Jump
+(30 pts)","Subtotal of
+Points Off","Group Exercise -
+Sit or Down
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",
+11,15,Preferred Open,#1,#2,#3,#4,#5,"Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,,
+12,7,Graduate Open,"Signal Exercise
+(40 pts)","Scent Discrimination
+(30 pts)","Go Out
+(30 pts)","Directed Jumping
+(40 pts)","Moving Stand &
+Exam
+(30 pts)","Directed Retrieve
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,
+13,5,Preferred Utility,#1,#2,#3,#4,#5,#6,"Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,
+14,5,Versatility,"Novice Exercise 1
+(25 pts)","Novice Exercise 2
+(25 pts)","Open Exercise 1
+(35 pts)","Open Exercise 2
+(35 pts)","Utility Exercise 1
+(40 pts)","Utility Exercise 2
+(40 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,
+21,8,Wildcard Novice,"Heel on Leash & Figure Eight
+(40 pts)","Stand for Exam
+(30 pts)","Heel Free
+(40 pts)","Recall
+(30 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score",,
+22,12,Wildcard Open,"Heel off Leash & Figure Eight
+(40 pts)","Drop on Recall
+(30 pts)","Retrieve on Flat
+(20 pts)","Retrieve over High Jump
+(30 pts)","Broad Jump
+(20 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalities","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score",
+23,13,Wildcard Utility,"Signal Exercise
+(40 pts)","Scent
+Discrimination #1
+(30 pts)","Scent
+Discrimination #2
+(30 pts)","Directed Retrieve
+(30 pts)","Moving Stand &
+Exam
+(30 pts)","Directed Jumping
+(40 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score",,,
+24,8,Brace Obedience,"Heel on Leash & Figure Eight
+(40 pts)","Stand for Exam
+(30 pts)","Heel Free
+(40 pts)","Recall
+(30 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score",,
+25,8,Veteran Obedience,"Heel on Leash & Figure Eight
+(40 pts)","Stand for Exam
+(30 pts)","Heel Free
+(40 pts)","Recall
+(30 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score",,
+26,8,Team Obedience,"Heel on Leash & Figure Eight
+(160 pts)","Stand for Exam
+(120 pts)","Heel Free
+(160 pts)","Drop on Recall
+(120 pts)","Subtotal of
+Points Off","Long Sit
+(120 pts)","Long Down
+(120 pts)","Miscellaneous
+Penalties","Maximum
+Score (800)","POINTS OFF
+(Subtract)","Total
+Score",,
+27,1,Sub-Novice,"Heel on Leash
+(40 pts)","Figure Eight
+(25 pts)","Stand for Exam
+(30 pts)","Recall
+(40 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score",,
+30,11,Obedience Advanced Team Work,Heeling Exercise (40 pts),Option Exercise #1(40 pts),Option Exercise #2 (40 pts),Option Exercise #3 (40 pts),Option Exercise #4 (40 pts),Option Exercise #5 (40 pts),"Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score",,,
+87,9,International Class,"Drop on Recall
+(30 pts)","Retrieve over High Jump
+(30 pts)","Heel Free
+(30 pts)","Scent
+Discrimination
+(30 pts)","Signal Exercise
+(40 pts)","Directed Jumping
+(40 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score",,,
+95,8,Pre-Novice B,"Heel on Leash
+(45 pts)","Figure Eight
+(25 pts)","Stand for Exam
+(30 pts)","Recall
+(40 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score",,
+901,2,Open B I,"Heel Free && Figure Eight
+(40 pts)","Drop on Recall
+(30 pts)","Retrieve on Flat
+(20 pts)","Retrieve over High Jump
+(30 pts)","Broad Jump
+(20 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalities","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE"
+902,16,Open B II,"Broad Jump
+(20 pts)","Retrieve over High Jump
+(30 pts)","Retrieve on Flat
+(20 pts)","Drop on Recall
+(30 pts)","Figure Eight && Heel Free
+(40 pts)","Subtotal of
+Points Off","Long Down
+(30 pts)","Long Sit
+(30 pts)","Miscellaneous
+Penalities","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE"
+903,17,Open B III,"Retrieve on Flat
+(20 pts)","Drop on Recall
+(30 pts)","Retrieve over High Jump
+(30 pts)","Broad Jump
+(20 pts)","Figure Eight && Heel Free
+(40 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalities","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE"
+904,18,Open B IV,"Drop on Recall
+(30 pts)","Heel Free && Figure Eight
+(40 pts)","Retrieve over High Jump
+(30 pts)","Broad Jump
+(20 pts)","Retrieve on Flat
+(20 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalities","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE"
+905,19,Open B V,"Retrieve over High Jump
+(30 pts)","Drop on Recall
+(30 pts)","Figure Eight && Heel Free
+(40 pts)","Retrieve on Flat
+(20 pts)","Broad Jump
+(20 pts)","Subtotal of
+Points Off","Long Down
+(30 pts)","Long Sit
+(30 pts)","Miscellaneous
+Penalities","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE"
+906,20,Open B VI,"Broad Jump
+(20 pts)","Figure Eight && Heel Free
+(40 pts)","Drop on Recall
+(30 pts)","Retrieve over High Jump
+(30 pts)","Retrieve on Flat
+(20 pts)","Subtotal of
+Points Off","Long Sit
+(30 pts)","Long Down
+(30 pts)","Miscellaneous
+Penalities","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE"
+907,4,Utility B I,"Signal Exercise
+(40 pts)","Scent
+Discrimination #1
+(30 pts)","Scent
+Discrimination #2
+(30 pts)","Directed Retrieve
+(30 pts)","Moving Stand &
+Exam
+(30 pts)","Directed Jumping
+(40 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,
+908,21,Utility B II,"Directed Jumping
+(40 pts)","Moving Stand &
+Exam
+(30 pts)","Directed Retrieve
+(30 pts)","Scent
+Discrimination #1
+(30 pts)","Scent
+Discrimination #2
+(30 pts)","Signal Exercise
+(40 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,
+909,22,Utility B III,"Scent
+Discrimination #1
+(30 pts)","Scent
+Discrimination #2
+(30 pts)","Directed Retrieve
+(30 pts)","Signal Exercise
+(40 pts)","Moving Stand &
+Exam
+(30 pts)","Directed Jumping
+(40 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,
+910,23,Utility B IV,"Moving Stand &
+Exam
+(30 pts)","Directed Jumping
+(40 pts)","Signal Exercise
+(40 pts)","Directed Retrieve
+(30 pts)","Scent
+Discrimination #1
+(30 pts)","Scent
+Discrimination #2
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,
+911,24,Utility B V,"Directed Retrieve
+(30 pts)","Scent
+Discrimination #1
+(30 pts)","Scent
+Discrimination #2
+(30 pts)","Directed Jumping
+(40 pts)","Signal Exercise
+(40 pts)","Moving Stand &
+Exam
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,
+912,25,Utility B VI,"Directed Retrieve
+(30 pts)","Signal Exercise
+(40 pts)","Directed Jumping
+(40 pts)","Moving Stand &
+Exam
+(30 pts)","Scent
+Discrimination #1
+(30 pts)","Scent
+Discrimination #2
+(30 pts)","Miscellaneous
+Penalties","Maximum
+Score (200)","POINTS OFF
+(Subtract)","Total
+Score","FINAL
+QUALIFYING
+SCORE",,

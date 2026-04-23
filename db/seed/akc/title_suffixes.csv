@@ -1,0 +1,260 @@
+legacy_id,code,long_name,sport_scope_code,sport_scope_description,source_organization,display_order
+1,VCD1,Versatile Companion Dog 1,V,Multi-sport (Obedience + Agility + Tracking),AKC,1
+2,VCD2,Versatile Companion Dog 2,V,Multi-sport (Obedience + Agility + Tracking),AKC,2
+3,VCD3,Versatile Companion Dog 3,V,Multi-sport (Obedience + Agility + Tracking),AKC,3
+4,VCD4,Versatile Companion Dog 4,V,Multi-sport (Obedience + Agility + Tracking),AKC,4
+11,CD,Companion Dog,O,Obedience,AKC,5
+12,CDX,Companion Dog Excellent,O,Obedience,AKC,6
+13,UD,Utility Dog,O,Obedience,AKC,7
+14,UDX,Utility Dog Excellent,O,Obedience,AKC,8
+15,OM,Obedience Master,O,Obedience,AKC,9
+16,OGM,Obedience Grand Master,O,Obedience,AKC,10
+17,BN,Beginner Novice,O,Obedience,AKC,11
+18,GN,Graduate Novice,O,Obedience,AKC,12
+19,GO,Graduate Open,O,Obedience,AKC,13
+20,VER,Versatility,O,Obedience,AKC,14
+31,RN,Rally Novice,R,Rally,AKC,15
+32,RA,Rally Advanced,R,Rally,AKC,16
+33,RE,Rally Excellent,R,Rally,AKC,17
+34,RAE,Rally Advanced Excellent,R,Rally,AKC,18
+41,TD,Tracking Dog,T,Tracking,AKC,19
+42,TDX,Tracking Dog Excellent,T,Tracking,AKC,20
+44,VST,Variable Surface Tracking,T,Tracking,AKC,21
+51,JH,Junior Hunter,F,Hunt Test,AKC,22
+52,SH,Senior Hunter,F,Hunt Test,AKC,23
+53,MH,Master Hunter,F,Hunt Test,AKC,24
+54,MNH,Master National Hunter,F,Hunt Test,AKC,25
+61,HT,Herding Tested,H,Herding,AKC,26
+62,PT,Pre-Trial Tested,H,Herding,AKC,27
+63,HS,Herding Started,H,Herding,AKC,28
+64,HI,Herding Intermediate,H,Herding,AKC,29
+65,HX,Herding Excellent,H,Herding,AKC,30
+71,JC,Junior Courser,L,Lure Coursing,AKC,31
+72,SC,Senior Courser,L,Lure Coursing,AKC,32
+73,MC,Master Courser,L,Lure Coursing,AKC,33
+74,LCX,Lure Courser Excellent,L,Lure Coursing,AKC,34
+81,CA,Coursing Ability,C,Coursing,AKC,35
+82,CAA,Coursing Ability Advanced,C,Coursing,AKC,36
+83,CAX,Coursing Ability Excellent,C,Coursing,AKC,37
+101,NA,Novice Agility,A,Agility,AKC,38
+102,OA,Open Agility,A,Agility,AKC,39
+103,AX,Agility Excellent,A,Agility,AKC,40
+104,MX,Master Agility Excellent,A,Agility,AKC,41
+105,MXB,Master Bronze Agility,A,Agility,AKC,42
+106,MXS,Master Silver Agility,A,Agility,AKC,43
+107,MXG,Master Gold Agility,A,Agility,AKC,44
+108,MXC,Master Century Agility,A,Agility,AKC,45
+109,TQX,Triple Q Excellent,A,Agility,AKC,46
+111,NAJ,Novice Agility Jumper,J,Agility Jumpers With Weaves,AKC,47
+112,OAJ,Open Agility Jumper,J,Agility Jumpers With Weaves,AKC,48
+113,AXJ,Excellent Agility Jumper,J,Agility Jumpers With Weaves,AKC,49
+114,MXJ,Master Excellent Jumpers With Weaves,J,Agility Jumpers With Weaves,AKC,50
+115,MJB,Master Bronze Jumpers With Weaves,J,Agility Jumpers With Weaves,AKC,51
+116,MJS,Master Silver Jumpers With Weaves,J,Agility Jumpers With Weaves,AKC,52
+117,MJG,Master Gold Jumpers With Weaves,J,Agility Jumpers With Weaves,AKC,53
+118,MJC,Master Century Jumpers With Weaves,J,Agility Jumpers With Weaves,AKC,54
+121,NAP,Novice Agility Preferred,P,Preferred Agility Standard,AKC,55
+122,OAP,Open Agility Preferred,P,Preferred Agility Standard,AKC,56
+123,AXP,Agility Excellent A Preferred,P,Preferred Agility Standard,AKC,57
+124,MXP,Master Agility Excellent Preferred,P,Preferred Agility Standard,AKC,58
+125,MXPB,Master Bronze Agility Preferred,P,Preferred Agility Standard,AKC,59
+126,MXPS,Master Silver Agility Preferred,P,Preferred Agility Standard,AKC,60
+127,MXPG,Master Gold Agility Preferred,P,Preferred Agility Standard,AKC,61
+128,MXPC,Master Century Agility Preferred,P,Preferred Agility Standard,AKC,62
+129,TQXP,Triple Q Excellent Preferred,P,Preferred Agility Standard,AKC,63
+130,PAX,Preferred Agility Excellent,P,Preferred Agility Standard,AKC,64
+131,NJP,Novice Jumpers With Weaves Preferred,Q,Preferred Agility Jumpers,AKC,65
+132,OJP,Open Jumpers With Weaves Preferred,Q,Preferred Agility Jumpers,AKC,66
+133,AJP,Excellent Agility Jumpers With Weaves A Preferred,Q,Preferred Agility Jumpers,AKC,67
+134,MJP,Master Excellent Jumpers With Weaves Preferred,Q,Preferred Agility Jumpers,AKC,68
+135,MJPB,Master Bronze Jumpers With Weaves Preferred,Q,Preferred Agility Jumpers,AKC,69
+136,MJPS,Master Silver Jumpers With Weaves Preferred,Q,Preferred Agility Jumpers,AKC,70
+137,MJPG,Master Gold Jumpers With Weaves Preferred,Q,Preferred Agility Jumpers,AKC,71
+138,MJPC,Master Century Jumpers With Weaves Preferred,Q,Preferred Agility Jumpers,AKC,72
+141,NF,Novice FAST,Y,Agility FAST,AKC,73
+142,OF,Open FAST,Y,Agility FAST,AKC,74
+143,XF,Excellent FAST,Y,Agility FAST,AKC,75
+144,MXF,Master Excellent FAST,Y,Agility FAST,AKC,76
+145,MFB,Master Bronze FAST,Y,Agility FAST,AKC,77
+146,MFS,Master Silver FAST,Y,Agility FAST,AKC,78
+147,MFG,Master Gold FAST,Y,Agility FAST,AKC,79
+148,MFC,Master Century FAST,Y,Agility FAST,AKC,80
+150,FTC,FAST Century,Y,Agility FAST,AKC,81
+151,NFP,Novice FAST Preferred,Z,Preferred Agility FAST,AKC,82
+152,OFP,Open FAST Preferred,Z,Preferred Agility FAST,AKC,83
+153,XFP,Excellent FAST Preferred,Z,Preferred Agility FAST,AKC,84
+154,MFP,Master Excellent FAST Preferred,Z,Preferred Agility FAST,AKC,85
+155,MFPB,Master Bronze FAST Preferred,Z,Preferred Agility FAST,AKC,86
+156,MFPS,Master Silver FAST Preferred,Z,Preferred Agility FAST,AKC,87
+157,MFPG,Master Gold FAST Preferred,Z,Preferred Agility FAST,AKC,88
+158,MFPC,Master Century FAST Preferred,Z,Preferred Agility FAST,AKC,89
+160,FTCP,FAST Century Preferred,Z,Preferred Agility FAST,AKC,90
+161,T2B,Time 2 Beat,U,Time 2 Beat,AKC,91
+162,T2BP,Time 2 Beat Preferred,S,Preferred Time 2 Beat,AKC,92
+201,JE,Junior Earthdog,E,Earthdog,AKC,93
+202,SE,Senior Earthdog,E,Earthdog,AKC,94
+203,ME,Master Earthdog,E,Earthdog,AKC,95
+204,EE,Endurance Earthdog,E,Earthdog,AKC,96
+991,UDTD,Utility Dog + Tracking Dog (legacy compound),V,Multi-sport legacy,AKC,97
+992,UDTDX,Utility Dog + Tracking Dog Excellent (legacy compound),V,Multi-sport legacy,AKC,98
+993,UDXTDX,Utility Dog Excellent + Tracking Dog Excellent (legacy compound),V,Multi-sport legacy,AKC,99
+994,UDVST,Utility Dog + Variable Surface Tracking (legacy compound),V,Multi-sport legacy,AKC,100
+995,UDXVST,Utility Dog Excellent + Variable Surface Tracking (legacy compound),V,Multi-sport legacy,AKC,101
+996,CM,Certificate of Merit,N,Conformation,AKC,102
+997,THD,Therapy Dog,D,Therapy Dog,AKC,103
+998,CGC,Canine Good Citizen,X,Companion,AKC,104
+999,CGCA,AKC Community Canine,X,Companion,AKC,105
+1001,ACT1,Agility Course Test 1,A,Agility,AKC,
+1002,ACT1J,Agility Course Test 1 Jumpers,J,Agility Jumpers With Weaves,AKC,
+1003,ACT2,Agility Course Test 2,A,Agility,AKC,
+1004,ACT2J,Agility Course Test 2 Jumpers,J,Agility Jumpers With Weaves,AKC,
+1005,ATT,AKC Temperament Test,TT,Temperament Test,AKC,
+1006,BCAT,BCAT - 150 points in Fast CAT events,FCAT,Fast CAT,AKC,
+1007,BN-V,Virtual Beginner Novice,G,Virtual Obedience,AKC,
+1008,CAX2,Coursing Ability Excellent 2,C,Coursing,AKC,
+1009,CD-V,Virtual Companion Dog,G,Virtual Obedience,AKC,
+1010,CGCU,Canine Good Citizen Urban,X,Companion,AKC,
+1011,DCAT,DCAT - 500 points in Fast CAT events,FCAT,Fast CAT,AKC,
+1012,FCAT,FCAT - 1000 points in Fast CAT events,FCAT,Fast CAT,AKC,
+1013,FDC,Farm Dog Certified,X,Companion,AKC,
+1014,FITB,Bronze AKC FIT DOG,I,FIT Dog,AKC,
+1015,FITG,Gold AKC FIT DOG,I,FIT Dog,AKC,
+1016,FITS,Silver AKC FIT DOG,I,FIT Dog,AKC,
+1017,FTA,Fetch Advanced,B,Fetch,AKC,
+1018,FTI,Fetch Intermediate,B,Fetch,AKC,
+1019,FTN,Fetch Novice,B,Fetch,AKC,
+1020,FTR,Fetch Retriever,B,Fetch,AKC,
+1021,HIAd,Herding Intermediate Course A - Ducks,H,Herding,AKC,
+1022,HIAs,Herding Intermediate Course A - Sheep,H,Herding,AKC,
+1023,HIAc,Herding Intermediate Course A - Cattle,H,Herding,AKC,
+1024,HIBd,Herding Intermediate Course B - Ducks,H,Herding,AKC,
+1025,HIBs,Herding Intermediate Course B - Sheep,H,Herding,AKC,
+1026,HIBc,Herding Intermediate Course B - Cattle,H,Herding,AKC,
+1027,HICs,Herding Intermediate Course C - Sheep,H,Herding,AKC,
+1028,HSAd,Herding Started Course A - Ducks,H,Herding,AKC,
+1029,HSAs,Herding Started Course A - Sheep,H,Herding,AKC,
+1030,HSAc,Herding Started Course A - Cattle,H,Herding,AKC,
+1031,HSBd,Herding Started Course B - Ducks,H,Herding,AKC,
+1032,HSBs,Herding Started Course B - Sheep,H,Herding,AKC,
+1033,HSBc,Herding Started Course B - Cattle,H,Herding,AKC,
+1034,HSCs,Herding Started Course C - Sheep,H,Herding,AKC,
+1035,HXAd,Herding Advanced Course A - Ducks,H,Herding,AKC,
+1036,HXAs,Herding Advanced Course A - Sheep,H,Herding,AKC,
+1037,HXAc,Herding Advanced Course A - Cattle,H,Herding,AKC,
+1038,HXBd,Herding Advanced Course B - Ducks,H,Herding,AKC,
+1039,HXBs,Herding Advanced Course B - Sheep,H,Herding,AKC,
+1040,HXBc,Herding Advanced Course B - Cattle,H,Herding,AKC,
+1041,HXCs,Herding Advanced Course C - Sheep,H,Herding,AKC,
+1042,JHA,Junior Hunter Advanced,F,Hunt Test,AKC,
+1043,JHR,Junior Hunter Retriever,F,Hunt Test,AKC,
+1044,JHU,Junior Hunter Upland,F,Hunt Test,AKC,
+1045,MHA,Master Hunter Advanced,F,Hunt Test,AKC,
+1046,MHR,Master Hunter Retriever,F,Hunt Test,AKC,
+1047,MHU,Master Hunter Upland,F,Hunt Test,AKC,
+1048,NE,Novice Earthdog,E,Earthdog,AKC,
+1049,PAD,Premier Agility Dog,A,Agility Premier,AKC,
+1050,PADP,Premier Agility Dog Preferred,P,Preferred Agility Premier,AKC,
+1051,PCD,Preferred Companion Dog,O,Obedience,AKC,
+1052,PCDX,Preferred Companion Dog Excellent,O,Obedience,AKC,
+1053,PDB,Premier Agility Dog Bronze,A,Agility Premier,AKC,
+1054,PDBP,Premier Agility Dog Bronze Preferred,P,Preferred Agility Premier,AKC,
+1055,PDC,Premier Agility Dog Century,A,Agility Premier,AKC,
+1056,PDCP,Premier Agility Dog Century Preferred,P,Preferred Agility Premier,AKC,
+1057,PDG,Premier Agility Dog Gold,A,Agility Premier,AKC,
+1058,PDGP,Premier Agility Dog Gold Preferred,P,Preferred Agility Premier,AKC,
+1059,PDS,Premier Agility Dog Silver,A,Agility Premier,AKC,
+1060,PDSP,Premier Agility Dog Silver Preferred,P,Preferred Agility Premier,AKC,
+1061,PJB,Premier Jumpers Dog Bronze,J,Agility Jumpers Premier,AKC,
+1062,PJBP,Premier Jumpers Dog Bronze Preferred,Q,Preferred Jumpers Premier,AKC,
+1063,PJC,Premier Jumpers Dog Century,J,Agility Jumpers Premier,AKC,
+1064,PJCP,Premier Jumpers Dog Century Preferred,Q,Preferred Jumpers Premier,AKC,
+1065,PJD,Premier Jumpers Dog,J,Agility Jumpers Premier,AKC,
+1066,PJDP,Premier Jumpers Dog Preferred,Q,Preferred Jumpers Premier,AKC,
+1067,PJG,Premier Jumpers Dog Gold,J,Agility Jumpers Premier,AKC,
+1068,PJGP,Premier Jumpers Dog Gold Preferred,Q,Preferred Jumpers Premier,AKC,
+1069,PJS,Premier Jumpers Dog Silver,J,Agility Jumpers Premier,AKC,
+1070,PJSP,Premier Jumpers Dog Silver Preferred,Q,Preferred Jumpers Premier,AKC,
+1071,PUDX,Preferred Utility Dog Excellent,O,Obedience,AKC,
+1072,PUTD,Preferred Utility Dog,O,Obedience,AKC,
+1073,RC,Rally Choice,R,Rally,AKC,
+1074,RI,Rally Intermediate,R,Rally,AKC,
+1075,RM,Rally Master,R,Rally,AKC,
+1076,SBA,Scent Work Buried Advanced,W,Scent Work,AKC,
+1077,SBAE,Scent Work Buried Advanced Elite,W,Scent Work,AKC,
+1078,SBE,Scent Work Buried Excellent,W,Scent Work,AKC,
+1079,SBEE,Scent Work Buried Excellent Elite,W,Scent Work,AKC,
+1080,SBM,Scent Work Buried Master,W,Scent Work,AKC,
+1081,SBME,Scent Work Buried Master Elite,W,Scent Work,AKC,
+1082,SBN,Scent Work Buried Novice,W,Scent Work,AKC,
+1083,SBNE,Scent Work Buried Novice Elite,W,Scent Work,AKC,
+1084,SCA,Scent Work Container Advanced,W,Scent Work,AKC,
+1085,SCAE,Scent Work Container Advanced Elite,W,Scent Work,AKC,
+1086,SCE,Scent Work Container Excellent,W,Scent Work,AKC,
+1087,SCEE,Scent Work Container Excellent Elite,W,Scent Work,AKC,
+1088,SCM,Scent Work Container Master,W,Scent Work,AKC,
+1089,SCME,Scent Work Container Master Elite,W,Scent Work,AKC,
+1090,SCN,Scent Work Container Novice,W,Scent Work,AKC,
+1091,SCNE,Scent Work Container Novice Elite,W,Scent Work,AKC,
+1092,SEA,Scent Work Exterior Advanced,W,Scent Work,AKC,
+1093,SEAE,Scent Work Exterior Advanced Elite,W,Scent Work,AKC,
+1094,SEE,Scent Work Exterior Excellent,W,Scent Work,AKC,
+1095,SEEE,Scent Work Exterior Excellent Elite,W,Scent Work,AKC,
+1096,SEM,Scent Work Exterior Master,W,Scent Work,AKC,
+1097,SEME,Scent Work Exterior Master Elite,W,Scent Work,AKC,
+1098,SEN,Scent Work Exterior Novice,W,Scent Work,AKC,
+1099,SENE,Scent Work Exterior Novice Elite,W,Scent Work,AKC,
+1100,SHA,Senior Hunter Advanced,F,Hunt Test,AKC,
+1101,SHDA,Scent Work Handler Discrimination Advanced,W,Scent Work,AKC,
+1102,SHDAE,Scent Work Handler Discrimination Advanced Elite,W,Scent Work,AKC,
+1103,SHDE,Scent Work Handler Discrimination Excellent,W,Scent Work,AKC,
+1104,SHDEE,Scent Work Handler Discrimination Excellent Elite,W,Scent Work,AKC,
+1105,SHDM,Scent Work Handler Discrimination Master,W,Scent Work,AKC,
+1106,SHDME,Scent Work Handler Discrimination Master Elite,W,Scent Work,AKC,
+1107,SHDN,Scent Work Handler Discrimination Novice,W,Scent Work,AKC,
+1108,SHDNE,Scent Work Handler Discrimination Novice Elite,W,Scent Work,AKC,
+1109,SHR,Senior Hunter Retriever,F,Hunt Test,AKC,
+1110,SHU,Senior Hunter Upland,F,Hunt Test,AKC,
+1111,SIA,Scent Work Interior Advanced,W,Scent Work,AKC,
+1112,SIAE,Scent Work Interior Advanced Elite,W,Scent Work,AKC,
+1113,SIE,Scent Work Interior Excellent,W,Scent Work,AKC,
+1114,SIEE,Scent Work Interior Excellent Elite,W,Scent Work,AKC,
+1115,SIM,Scent Work Interior Master,W,Scent Work,AKC,
+1116,SIME,Scent Work Interior Master Elite,W,Scent Work,AKC,
+1117,SIN,Scent Work Interior Novice,W,Scent Work,AKC,
+1118,SINE,Scent Work Interior Novice Elite,W,Scent Work,AKC,
+1119,STR,STAR Puppy,X,Companion,AKC,
+1120,SWA,Scent Work Advanced,W,Scent Work,AKC,
+1121,SWAE,Scent Work Advanced Elite,W,Scent Work,AKC,
+1122,SWD,Scent Work Detective,W,Scent Work,AKC,
+1123,SWE,Scent Work Excellent,W,Scent Work,AKC,
+1124,SWEE,Scent Work Excellent Elite,W,Scent Work,AKC,
+1125,SWM,Scent Work Master,W,Scent Work,AKC,
+1126,SWME,Scent Work Master Elite,W,Scent Work,AKC,
+1127,SWN,Scent Work Novice,W,Scent Work,AKC,
+1128,SWNE,Scent Work Novice Elite,W,Scent Work,AKC,
+1129,TDU,Tracking Dog Urban,T,Tracking,AKC,
+1130,THDA,Therapy Dog Advanced,D,Therapy Dog,AKC,
+1131,THDD,Distinguished Therapy Dog,D,Therapy Dog,AKC,
+1132,THDN,Therapy Dog Novice,D,Therapy Dog,AKC,
+1133,THDS,Therapy Dog Supreme,D,Therapy Dog,AKC,
+1134,THDX,Therapy Dog Excellent,D,Therapy Dog,AKC,
+1135,TKA,Advanced Trick Dog,K,Trick Dog,AKC,
+1136,TKE,Trick Dog Elite Performer,K,Trick Dog,AKC,
+1137,TKI,Intermediate Trick Dog,K,Trick Dog,AKC,
+1138,TKN,Novice Trick Dog,K,Trick Dog,AKC,
+1139,TKP,Trick Dog Performer,K,Trick Dog,AKC,
+1140,VHMA,Virtual Home Manners Adult,G,Virtual Companion,AKC,
+1141,VHMP,Virtual Home Manners Puppy,G,Virtual Companion,AKC,
+1142,VSWB,Virtual Scent Work Beginner,G,Virtual Scent Work,AKC,
+1143,VSWE,Virtual Scent Work Experienced,G,Virtual Scent Work,AKC,
+1144,VSWI,Virtual Scent Work Intermediate,G,Virtual Scent Work,AKC,
+1145,RATN,Novice Barn Hunt,BH,Barn Hunt (AKC-recognized via Barn Hunt Association),Barn Hunt Association,
+1146,RATO,Open Barn Hunt,BH,Barn Hunt (AKC-recognized via Barn Hunt Association),Barn Hunt Association,
+1147,RATS,Senior Barn Hunt,BH,Barn Hunt (AKC-recognized via Barn Hunt Association),Barn Hunt Association,
+1148,RATM,Master Barn Hunt,BH,Barn Hunt (AKC-recognized via Barn Hunt Association),Barn Hunt Association,
+1149,RATCh,Barn Hunt Champion,BH,Barn Hunt (AKC-recognized via Barn Hunt Association),Barn Hunt Association,
+1150,RATChX,Barn Hunt Master Champion,BH,Barn Hunt (AKC-recognized via Barn Hunt Association),Barn Hunt Association,
+1151,CZ8B,Crazy 8s Bronze,BH,Barn Hunt (AKC-recognized via Barn Hunt Association),Barn Hunt Association,
+1152,CZ8S,Crazy 8s Silver,BH,Barn Hunt (AKC-recognized via Barn Hunt Association),Barn Hunt Association,
+1153,CZ8G,Crazy 8s Gold,BH,Barn Hunt (AKC-recognized via Barn Hunt Association),Barn Hunt Association,
+1154,CZ8P,Crazy 8s Platinum,BH,Barn Hunt (AKC-recognized via Barn Hunt Association),Barn Hunt Association,
