@@ -1,26 +1,29 @@
 # QTrial Project Status
 
-**Last updated:** 2026-04-22
-**Current phase:** Phase 0 (Foundation) - complete; preparing PR 2 (gap-fill migrations + seed loader)
+**Last updated:** 2026-04-23
+**Current phase:** Phase 0 (Foundation) + PR 2a (reference-data foundation) - complete; PR 2b and PR 2c queued
 **Maintained by:** Robare Pruyn, with Claude assistance
 
 ---
 
 ## Where we are right now
 
-Phase 0 is complete. Main has 25 migration pairs (50 files in
-db/migrations/), 21 tables, the shared crate with tenancy /
-ParentEntity / fk_validation helpers, and 2,266 lines of passing
-integration tests. `git grep -i offleash` returns zero across the
-entire repo. Every phase-0 branch landed via small, independently-
-reviewed PRs with no force-pushes to main.
+PR 2a (reference-data foundation) is complete. Main now has 33
+migration pairs, 35 tables (21 Phase 0 + 14 reference), the
+qtrial-seed-loader binary populating 14 reference tables
+idempotently, five seed-loader integration tests behind a
+testcontainers fixture, a GitHub Actions CI workflow, and
+db/migrations/README.md. `git grep -i offleash` still returns zero.
 
-PR 2 (migrations gap-fill + seed loader) is the next piece of work.
-It adds ~22 new tables, 7 table alterations, the seed loader binary,
-integration tests, a GitHub Actions CI workflow, and
-db/migrations/README.md. A fresh PR 2 prompt will be written against
-actual main state; prior attempts were blocked on imagined state that
-didn't match the repo.
+PR 2b is the next scheduled work: tenant-scoped tables that the
+Phase 0 schema is missing (platform_admins, dog_ownerships,
+dog_trial_jump_heights, armband_assignments, email_templates,
+submission_records, audit_log, payments, refunds). PR 2c follows
+with the seven table alterations (dogs column rework,
+entries.armband drop, entry_lines handler columns,
+entry_line_results timing/scoring, events.dogs_per_hour_override +
+per_series enum value, dog_titles.source enum extension, breed
+restrictions on events).
 
 Separately, QTrial LLC formation is in flight via Northwest
 Registered Agent (NY domestic, Warren County principal office,
@@ -31,6 +34,24 @@ account setup.
 ---
 
 ## Recently completed
+
+### PR 2a: reference-data foundation (2026-04-23)
+
+- 2026-04-23: PR #12 (pending) - feat/reference-data-foundation -
+  14 new reference tables (countries, states, breed_groups, breeds,
+  breed_varieties, title_prefixes, title_suffixes, jump_heights,
+  obedience_exercises, obedience_class_exercises, otch_points,
+  om_points, rally_rach_points, sport_time_defaults) with
+  permissive-read RLS; qtrial-seed-loader binary populating them
+  idempotently from db/seed/akc/ CSVs; 5/5 seed-loader integration
+  tests; GitHub Actions CI workflow with Postgres 16 service
+  container; db/migrations/README.md; DATA_MODEL.md §8 updated
+  with akc_fee_schedules (the one Phase 0 table the doc had drifted
+  past). 256 junction rows loaded into obedience_class_exercises
+  from 22 of 36 CSV rows; 14 rows skipped by design (4 Random-
+  Reward base layouts, 10 unseeded canonical classes). Seed
+  directory moved from the local-only db_seed_akc/ to
+  db/seed/akc/ as the first commit on the branch.
 
 ### This merge-cleanup cycle (2026-04-21 / 2026-04-22)
 
@@ -79,9 +100,11 @@ account setup.
 
 ## In flight
 
-Nothing currently in flight. PR 2 (migrations gap-fill + seed
-loader) is the next scheduled work; its prompt has not been
-written yet.
+PR 2a (reference-data foundation) is open for review on
+feat/reference-data-foundation. PR 2b (tenant-scoped table
+gap-fill) and PR 2c (table alterations + armband restructure) are
+the next two scheduled pieces; prompts to be written against
+post-2a main state.
 
 ---
 
@@ -109,6 +132,136 @@ written yet.
 Architecture and process decisions made during planning and build,
 with rationale. This section prevents re-litigating settled
 questions.
+
+### 2026-04-23: PR 2a reference tables use permissive-read RLS
+
+**Decision:** Every reference table added in PR 2a (countries,
+states, breed_groups, breeds, breed_varieties, title_prefixes,
+title_suffixes, jump_heights, obedience_exercises,
+obedience_class_exercises, otch_points, om_points,
+rally_rach_points, sport_time_defaults) enables RLS with a
+permissive-read policy (`USING (TRUE)`) plus a SELECT-only grant
+to `qtrial_tenant`. No INSERT/UPDATE/DELETE policy means writes
+are implicitly denied; the `qtrial` table owner bypasses RLS for
+admin paths and the seed loader.
+
+**Rationale:** Matches the pattern already in
+`20260419130300_enable_rls_and_grants.up.sql` for registries,
+akc_fee_schedules, and canonical_classes. Keeps reference-data
+access uniform across every cross-tenant table and makes
+seed-loader bypass behavior consistent.
+
+**Evidence:** `db/migrations/20260423120700_enable_rls_on_reference_data_foundation.up.sql`
+batches the grants, ENABLE, and policies for all 14 tables.
+
+### 2026-04-23: obedience_class_exercises is normalized, not wide Box1-Box13
+
+**Decision:** Each row in `obedience_class_exercises` represents
+one (canonical_class, pattern_variant, box_position) cell. The
+junction carries either `obedience_exercise_id` with `max_points`
+(matched scored cell), or `max_points` + `box_label` (unmatched
+scored cell: compound or sub-numbered exercise name), or
+`box_label` alone (rollup/header row). Two CHECK constraints
+enforce that at least one column is set and that a linked
+exercise row also carries max_points.
+
+**Rationale:** The seed CSV ships exercises in a wide
+Box1..Box13 layout per class, but a wide schema wastes columns
+(Novice has 12 boxes, Utility has 13, Beginner Novice has 11),
+forces per-class special-casing at render time, and cannot
+represent Open B / Utility B's six randomized pattern variants
+without schema gymnastics. A normalized junction iterates cleanly
+in the judges-book generator.
+
+**Evidence:** `db/migrations/20260423120400_create_obedience_exercises.up.sql`.
+Loader parses 22 of 36 CSV rows into 256 junction rows.
+
+### 2026-04-23: pattern_variant column on obedience_class_exercises
+
+**Decision:** `obedience_class_exercises` carries a
+`pattern_variant INT NOT NULL DEFAULT 1` column with the UNIQUE
+index on `(canonical_class_id, pattern_variant, display_order)`.
+Open B I-VI and Utility B I-VI load as variants 1-6 of the
+"Open B" / "Utility B" base canonical classes.
+
+**Rationale:** AKC's random-reward Obedience patterns assign
+exercises in six predetermined orderings. Each ordering is a
+distinct judges-book layout for the same canonical class. Without
+`pattern_variant`, the six variants would need to be six separate
+canonical_classes rows, which either duplicates the base class or
+forces a self-FK scheme the judges-book generator would have to
+unwind. The variant column lets the canonical class stay as
+"Open B" and the variant be metadata on the layout.
+
+**Evidence:** Schema is in migration 20260423120400; seed CSV
+rows 901-906 / 907-912 carry the six Open B / Utility B variants.
+
+### 2026-04-23: Seed loader assumes a single concurrent runner
+
+**Decision:** The `qtrial-seed-loader` binary assumes only one
+instance runs against a given database at a time. The
+`countries` loader (and similar tables) declare an
+`ON CONFLICT (alpha2_code)` target even though `countries` has a
+second unique constraint on `alpha3_code`; concurrent seed runs
+could collide on alpha3_code first and raise a bare unique
+violation rather than falling through to DO UPDATE.
+
+**Rationale:** Not a concern in practice. The loader is a
+one-shot post-migration batch job, not a user-facing reference-
+data refresh tool. Broadening the ON CONFLICT clause to cover
+multiple unique keys is not supported by Postgres; the real fix
+would be a wrapping advisory lock, which is overkill for the
+batch-job use case.
+
+**Evidence:** Integration tests serialize the loader behind a
+`tokio::sync::OnceCell<()>` gate
+(`workers/tests/seed_loader.rs`). Revisit the decision if we
+ever build user-facing reference-data refresh tooling.
+
+### 2026-04-23: Preferred Open / Preferred Utility exercise patterns deferred
+
+**Decision:** MVP ships `obedience_class_exercises` without
+judges-book support for Preferred Open and Preferred Utility. The
+current seed CSV has only `#1-#N` placeholder cells for both
+classes, which the loader skips.
+
+**Rationale:** Both classes have published AKC exercise lists
+(https://www.akc.org/sports/obedience/getting-started/classes/)
+but the seed CSV does not yet carry them. Adding the lists
+requires extending `obedience_exercises` with two entries that
+are not in the current 20-row master list: "Command
+Discrimination" (Preferred Open) and "Stand Stay - Get Your
+Leash" (Preferred Open). A later PR will seed both classes once
+those exercises are added. GFKC does not offer Preferred classes
+so MVP ships unblocked.
+
+**Evidence:** Header comment in
+`db/migrations/20260423120400_create_obedience_exercises.up.sql`
+documents the gap. Loader skip path logs the class name and
+reason.
+
+### 2026-04-23: Testcontainer integration tests gated off default CI
+
+**Decision:** The seed-loader integration test binary
+(`workers/tests/seed_loader.rs`) and the Phase 0 testcontainer
+tests under `shared/tests/` sit behind Cargo feature flags
+(`qtrial-workers/integration-tests` and
+`qtrial-shared/testing`). CI's `cargo test --workspace` runs at
+default features and therefore skips them. Local dev opts in via
+`cargo test --workspace --features qtrial-workers/integration-tests,qtrial-shared/testing`.
+
+**Rationale:** Testcontainers has a known history of sporadic
+flakes on GitHub Actions runners. Gating the heavy tests behind
+features lets CI keep its default build-gate deterministic while
+still exercising the loader end-to-end via a dedicated
+service-container smoke step that runs the real binary twice
+(first run + idempotency second run).
+
+**Evidence:** `.github/workflows/ci.yml`; `required-features =
+["integration-tests"]` on the workers seed_loader test binary;
+similar gates on shared's phase-0 test binaries were already in
+place.
+
 
 ### 2026-04-22: Phase 0 infrastructure cleanup complete
 
@@ -357,27 +510,42 @@ Consistent with human authorship style across the codebase.
 
 ## Known gaps and pending items
 
-### Code/schema gaps (to resolve in PR 2)
+### Code/schema gaps
 
-- 23 new tables not yet created (title_prefixes, title_suffixes,
-  breed_groups, breeds, breed_varieties, jump_heights,
-  obedience_exercises, obedience_class_exercises (these replace
-  DATA_MODEL.md §8's current `exercises` stub; PR 2 will update
-  §8 as part of the same PR that creates the migrations),
-  countries, states, otch_points, om_points, rally_rach_points,
-  sport_time_defaults, platform_admins, dog_ownerships,
-  dog_trial_jump_heights, armband_assignments, email_templates,
-  submission_records, audit_log, payments, refunds)
-- 7 table alterations pending (dogs column rework, entries.armband
-  drop, entry_lines handler columns, entry_line_results timing/
-  scoring, events dogs_per_hour_override + per_series enum value,
-  dog_titles.source enum extension with parsed_from_registered_name)
-- Seed loader binary not yet written (workers/src/bin/seed_loader.rs)
-- CI workflow not yet present (.github/workflows/ci.yml)
-- db/migrations/README.md explaining conventions not yet written
-- db_seed_akc/ is untracked; needs mkdir + mv + git add into
-  db/seed/akc/
-- akc_fee_schedules documentation missing from DATA_MODEL.md §8
+**Tenant-scoped tables to resolve in PR 2b:**
+
+- platform_admins
+- dog_ownerships
+- dog_trial_jump_heights
+- armband_assignments
+- email_templates
+- submission_records
+- audit_log
+- payments
+- refunds
+
+**Table alterations to resolve in PR 2c:**
+
+- dogs column rework
+- entries.armband drop
+- entry_lines handler columns
+- entry_line_results timing/scoring
+- events.dogs_per_hour_override + per_series enum value
+- dog_titles.source enum extension (parsed_from_registered_name)
+- breed restrictions on events
+
+**Reference-data follow-ups (small, post-PR 2a):**
+
+- Preferred Open and Preferred Utility
+  `obedience_class_exercises` patterns, including two new
+  `obedience_exercises` entries: "Command Discrimination" and
+  "Stand Stay - Get Your Leash". Source:
+  https://www.akc.org/sports/obedience/getting-started/classes/
+- `jump_heights.akc_secondary_class_code` backfill from
+  `db/seed/akc/post_mvp/akc_xml_jump_heights.csv`, due when the
+  Agility XML submission workstream lands.
+- `states.display_name` via a future migration sourcing a
+  hardcoded US + CA state/province lookup.
 
 ### Business/legal pending
 
@@ -409,18 +577,19 @@ Tracked in-doc so they survive into future Q&A rounds:
 
 In rough priority order:
 
-1. **PR 2 prompt**: will be written against actual main state (not
-   imagined state). Scope: migrations gap-fill (~22 new tables + 7
-   alterations), seed loader binary with integration tests, GitHub
-   Actions CI workflow, db/migrations/README.md, and documenting
-   akc_fee_schedules in DATA_MODEL.md §8 alongside the new
-   reference tables.
-2. **PR 2 execution**: land in a dedicated session.
-3. **Phase 1 work begins** (per ROADMAP.md): club creation and
+1. **PR 2a review and merge**: feat/reference-data-foundation is
+   open for review. Merge lands once CI passes and review clears.
+2. **PR 2b**: tenant-scoped table gap-fill (platform_admins,
+   dog_ownerships, dog_trial_jump_heights, armband_assignments,
+   email_templates, submission_records, audit_log, payments,
+   refunds). Prompt written against post-2a main.
+3. **PR 2c**: seven table alterations + armband restructure +
+   breed restrictions on events. Prompt written against post-2b main.
+4. **Phase 1 work begins** (per ROADMAP.md): club creation and
    configuration, user management, event creation, trial class
    offerings, judge directory, fee configuration, basic premium
    list PDF generation.
-4. **Business/legal threadwork** in parallel: EIN, Warren County
+5. **Business/legal threadwork** in parallel: EIN, Warren County
    publication, Operating Agreement, Relay banking, AWS account.
 
 ---
