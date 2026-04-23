@@ -1,0 +1,46 @@
+sport,level,class_name,akc_xml_code
+Standard,Preferred,Excellent B,AGEXCBP
+Standard,Regular,Novice A,AGNOVA
+Standard,Regular,Novice B,AGNOVB
+Standard,Regular,Open,AGOPEN
+Standard,Regular,Excellent A,AGEXCA
+Standard,Regular,Excellent B,AGEXCB
+Standard,Preferred,Novice,AGNOVP
+Standard,Preferred,Open,AGOPENP
+Standard,Preferred,Excellent A,AGEXCAP
+JWW,Preferred,Excellent B,JWWEXCBP
+JWW,Regular,Novice A,JWWNOVA
+JWW,Regular,Novice B,JWWNOVB
+JWW,Regular,Open,JWWOPEN
+JWW,Regular,Excellent A,JWWEXCA
+JWW,Regular,Excellent B,JWWEXCB
+JWW,Preferred,Novice,JWWNOVP
+JWW,Preferred,Open,JWWOPENP
+JWW,Preferred,Excellent A,JWWEXCAP
+FAST,Preferred,Excellent B,FSTEXBP
+FAST,Regular,Novice A,FSTNOVA
+FAST,Regular,Novice B,FSTNOVB
+FAST,Regular,Open,FSTOPEN
+FAST,Regular,Excellent A,FSTEXA
+FAST,Regular,Excellent B,FSTEXCB
+FAST,Preferred,Novice,FSTNOVP
+FAST,Preferred,Open,FSTOPENP
+FAST,Preferred,Excellent A,FSTEXAP
+Standard,Regular,Move-up to Open,AGOPEN
+Standard,Regular,Move-up to Excellent A,AGEXCA
+Standard,Regular,Move-up to Excellent B,AGEXCB
+Standard,Preferred,Move-up to Open,AGOPENP
+Standard,Preferred,Move-up to Excellent A,AGEXCAP
+Standard,Preferred,Move-up to Excellent B,AGEXCBP
+JWW,Regular,Move-up to Open,JWWOPEN
+JWW,Regular,Move-up to Excellent A,JWWEXCA
+JWW,Regular,Move-up to Excellent B,JWWEXCB
+JWW,Preferred,Move-up to Open,JWWOPENP
+JWW,Preferred,Move-up to Excellent A,JWWEXCAP
+JWW,Preferred,Move-up to Excellent B,JWWEXCBP
+FAST,Regular,Move-up to Open,FSTOPEN
+FAST,Regular,Move-up to Excellent A,FSTEXA
+FAST,Regular,Move-up to Excellent B,FSTEXB
+FAST,Preferred,Move-up to Open,FSTOPENP
+FAST,Preferred,Move-up to Excellent A,FSTEXAP
+FAST,Preferred,Move-up to Excellent B,FSTEXBP

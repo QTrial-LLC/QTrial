@@ -1,0 +1,64 @@
+NonAKCTitleBreedID,SuffixTitle,Breed
+1,SD,Siberian Husky
+2,SDX,Siberian Husky
+3,SDO,Siberian Husky
+4,CS,Rottweiler
+5,CI,Rottweiler
+6,CX,Rottweiler
+7,CST,Rottweiler
+8,CIT,Rottweiler
+9,CXT,Rottweiler
+10,NDD,Bouvier des Flandres
+11,NDD,Bernese Mountain Dog
+12,NDD,Greater Swiss Mountain Dog
+13,NDD,Mastiff
+14,DD,Bouvier des Flandres
+15,DD,Bernese Mountain Dog
+16,DD,Greater Swiss Mountain Dog
+17,DD,Mastiff
+18,DD,Saint Bernard
+19,NBDD,Bouvier des Flandres
+20,NBDD,Bernese Mountain Dog
+21,NBDD,Greater Swiss Mountain Dog
+22,NBDD,Mastiff
+23,BDD,Bouvier des Flandres
+24,BDD,Bernese Mountain Dog
+25,BDD,Greater Swiss Mountain Dog
+26,BDD,Mastiff
+27,TDD,Saint Bernard
+28,MT,Bloodhound
+29,MTI,Bloodhound
+30,MTX,Bloodhound
+31,CC,Dalmatian
+32,RD,Dalmatian
+33,RDX,Dalmatian
+34,BH,Belgian Malinois
+35,BH,Belgian Sheepdog
+36,BH,Bouvier des Flandres
+37,BH,Doberman Pinscher
+38,BH,German Shepherd Dog
+39,BH,Rottweiler
+40,FH1,Bouvier des Flandres
+41,FH1,German Shepherd Dog
+42,FH1,Doberman Pinscher
+43,FH1,Rottweiler
+44,FH2,Bouvier des Flandres
+45,FH2,German Shepherd Dog
+46,FH2,Doberman Pinscher
+47,FH2,Rottweiler
+48,IPO3,Belgian Malinois
+49,IPO3,Bouvier des Flandres
+50,IPO3,German Shepherd Dog
+51,IPO3,Rottweiler
+52,IPO3,Doberman Pinscher
+53,SCHH3,Belgian Malinois
+54,SCHH3,Bouvier des Flandres
+55,SCHH3,Doberman Pinscher
+56,SCHH3,German Shepherd Dog
+57,SCHH3,Rottweiler
+58,SCHHA,Bouvier des Flandres
+59,SCHHA,German Shepherd Dog
+60,SCHHA,Doberman Pinscher
+61,SCHHA,Rottweiler
+62,TT,Doberman Pinscher
+63,WDS3,Doberman Pinscher

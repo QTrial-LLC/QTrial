@@ -6,11 +6,50 @@ rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
 
+# The workers crate exposes a small library so integration tests
+# (workers/tests/seed_loader.rs) can exercise the same seed-loader
+# entry point the binary does without shelling out to a child process.
+[lib]
+path = "src/lib.rs"
+
 [[bin]]
 name = "qtrial-workers"
 path = "src/main.rs"
+
+[[bin]]
+name = "qtrial-seed-loader"
+path = "src/bin/seed_loader.rs"
+
+[features]
+# `integration-tests` gates the testcontainers-backed seed_loader test
+# so `cargo test --workspace` at its default feature set does not spin
+# up Docker. CI enables this feature explicitly in a step that runs
+# after the service-container seed smoke test, which means CI does not
+# block on testcontainers availability for the basic build-gate steps.
+# Local dev picks it up via `cargo test --workspace --features qtrial-
+# workers/integration-tests qtrial-shared/testing`.
+integration-tests = []
 
 [dependencies]
 qtrial-shared = { path = "../shared" }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
+sqlx = { workspace = true }
+tokio = { workspace = true }
+uuid = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+csv = { workspace = true }
+regex = { workspace = true }
+serde = { workspace = true }
+
+[dev-dependencies]
+qtrial-shared = { path = "../shared", features = ["testing"] }
+tokio = { workspace = true }
+sqlx = { workspace = true }
+uuid = { workspace = true }
+
+[[test]]
+name = "seed_loader"
+path = "tests/seed_loader.rs"
+required-features = ["integration-tests"]

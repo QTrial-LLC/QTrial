@@ -24,3 +24,7 @@ uuid = { version = "1", features = ["v4", "serde"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 thiserror = "2"
 testcontainers-modules = { version = "0.14", features = ["postgres"] }
+csv = "1"
+regex = "1"
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }

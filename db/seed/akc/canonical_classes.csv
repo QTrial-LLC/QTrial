@@ -1,0 +1,76 @@
+legacy_id,name,sport,class_type,akc_class_code,moveup_target_legacy_id,is_sanctioned,actual_class_name,is_displayed,has_jump,has_multiple_entries,max_total_score,default_dogs_per_hour,has_broad_jump,has_walkthrough
+1,Transfer to Novice A,Obedience,Regular,1,1,true,Novice A,false,false,false,200,9,false,true
+2,Novice A,Obedience,Regular,1,2,true,Novice A,true,false,false,200,9,false,true
+3,Transfer to Novice B,Obedience,Regular,2,1,true,Novice B,false,false,false,200,9,false,false
+4,Novice B,Obedience,Regular,2,2,true,Novice B,true,false,false,200,9,false,false
+5,Transfer to Open A,Obedience,Regular,3,1,true,Open A,false,true,false,200,8,true,false
+6,Open A,Obedience,Regular,3,2,true,Open A,true,true,false,200,8,true,false
+7,Transfer to Open B,Obedience,Regular,4,1,true,Open B,false,true,false,200,8,true,false
+8,Open B,Obedience,Regular,4,2,true,Open B,true,true,false,200,8,true,false
+9,Transfer to Utility A,Obedience,Regular,5,1,true,Utility A,false,true,false,200,7,false,false
+10,Utility A,Obedience,Regular,5,2,true,Utility A,true,true,false,200,7,false,false
+11,Transfer to Utility B,Obedience,Regular,6,1,true,Utility B,false,true,false,200,7,false,false
+12,Utility B,Obedience,Regular,6,2,true,Utility B,true,true,false,200,7,false,false
+13,Transfer to Beginner Novice A,Obedience,Optional Titling,7,1,true,Beginner Novice A,false,false,false,200,10,false,true
+14,Beginner Novice A,Obedience,Optional Titling,7,2,true,Beginner Novice A,true,false,false,200,10,false,true
+15,Transfer to Beginner Novice B,Obedience,Optional Titling,8,1,true,Beginner Novice B,false,false,false,200,10,false,true
+16,Beginner Novice B,Obedience,Optional Titling,8,2,true,Beginner Novice B,true,false,false,200,10,false,true
+17,Transfer to Pre-Novice,Obedience,Optional Titling,9,1,false,Pre-Novice,false,false,false,200,9,false,true
+18,Pre-Novice,Obedience,Optional Titling,9,2,false,Pre-Novice,false,false,false,200,9,false,true
+19,Transfer to Graduate Novice,Obedience,Optional Titling,10,1,true,Graduate Novice,false,true,false,200,8,true,false
+20,Graduate Novice,Obedience,Optional Titling,10,2,true,Graduate Novice,true,true,false,200,8,true,false
+21,Transfer to Pre-Open,Obedience,Optional Titling,11,1,false,Pre-Open,false,true,false,200,8,true,false
+22,Pre-Open,Obedience,Optional Titling,11,2,false,Pre-Open,false,true,false,200,8,true,false
+23,Transfer to Graduate Open,Obedience,Optional Titling,12,1,true,Graduate Open,false,true,false,200,7,false,false
+24,Graduate Open,Obedience,Optional Titling,12,2,true,Graduate Open,true,true,false,200,7,false,false
+25,Transfer to Pre-Utility,Obedience,Optional Titling,13,1,false,Pre-Utility,false,true,false,200,7,false,false
+26,Pre-Utility,Obedience,Optional Titling,13,2,false,Pre-Utility,false,true,false,200,7,false,false
+27,Transfer to Versatility,Obedience,Optional Titling,14,1,true,Versatility,false,true,false,200,6,true,false
+28,Versatility,Obedience,Optional Titling,14,2,true,Versatility,true,true,false,200,6,true,false
+29,Transfer to Preferred Novice,Obedience,Preferred,9,1,true,Preferred Novice,false,false,false,200,9,false,true
+30,Preferred Novice,Obedience,Preferred,9,2,true,Preferred Novice,true,false,false,200,9,false,true
+31,Transfer to Preferred Open,Obedience,Preferred,11,1,true,Preferred Open,false,true,false,200,8,true,false
+32,Preferred Open,Obedience,Preferred,11,2,true,Preferred Open,true,true,false,200,8,true,false
+33,Transfer to Preferred Utility,Obedience,Preferred,13,1,true,Preferred Utility,false,true,false,200,7,false,false
+34,Preferred Utility,Obedience,Preferred,13,2,true,Preferred Utility,true,true,false,200,7,false,false
+51,Wildcard Novice,Obedience,Nonregular,21,2,true,Wildcard Novice,true,false,false,200,9,false,false
+52,Wildcard Open,Obedience,Nonregular,22,2,true,Wildcard Open,true,true,false,200,8,true,false
+53,Wildcard Utility,Obedience,Nonregular,23,2,true,Wildcard Utility,true,true,false,200,7,false,false
+54,Brace Obedience,Obedience,Nonregular,24,2,true,Brace Obedience,true,false,true,200,9,false,false
+55,Veteran Obedience,Obedience,Nonregular,25,2,true,Veteran Obedience,true,false,false,200,9,false,false
+56,Team Obedience,Obedience,Nonregular,26,2,true,Team Obedience,true,false,true,800,8,false,false
+57,Sub-Novice,Obedience,Nonregular,27,2,false,Sub-Novice,true,false,false,200,9,false,false
+58,International Class,Obedience,Nonregular,28,2,false,International Class,true,true,false,200,7,false,false
+61,Obedience Advanced Team Work,Obedience,Nonregular,30,2,false,Obedience Advanced Team Work,true,false,false,200,5,false,false
+71,Random Reward Novice,Obedience,Nonregular,31,2,false,Random Reward Novice,true,false,false,200,9,false,false
+72,Random Reward Open,Obedience,Nonregular,32,2,false,Random Reward Open,true,true,false,200,8,true,false
+73,Random Reward Utility,Obedience,Nonregular,33,2,false,Random Reward Utility,true,true,false,200,7,false,false
+92,Pre-Novice A,Obedience,Nonregular,92,2,false,Pre-Novice A,true,false,false,200,9,false,false
+93,Pre-Novice B,Obedience,Nonregular,93,2,false,Pre-Novice B,true,false,false,200,9,false,false
+101,Rally Novice A,Rally,Regular,101,2,true,Rally Novice A,true,false,false,100,20,false,true
+102,Transfer to Rally Novice B,Rally,Regular,102,1,true,Rally Novice B,false,false,false,100,20,false,true
+103,Rally Novice B,Rally,Regular,102,2,true,Rally Novice B,true,false,false,100,20,false,true
+104,Transfer to Rally Intermediate,Rally,Regular,103,1,true,Rally Intermediate,false,false,false,100,20,false,true
+105,Rally Intermediate,Rally,Regular,103,2,true,Rally Intermediate,true,false,false,100,20,false,true
+106,Transfer to Rally Advanced A,Rally,Regular,104,1,true,Rally Advanced A,false,true,false,100,20,false,true
+107,Rally Advanced A,Rally,Regular,104,2,true,Rally Advanced A,true,true,false,100,20,false,true
+108,Transfer to Rally Advanced B,Rally,Regular,105,1,true,Rally Advanced B,false,true,false,100,20,false,true
+109,Rally Advanced B,Rally,Regular,105,2,true,Rally Advanced B,true,true,false,100,20,false,true
+110,Transfer to Rally Excellent A,Rally,Regular,106,1,true,Rally Excellent A,false,true,false,100,20,false,true
+111,Rally Excellent A,Rally,Regular,106,2,true,Rally Excellent A,true,true,false,100,20,false,true
+112,Transfer to Rally Excellent B,Rally,Regular,107,1,true,Rally Excellent B,false,true,false,100,20,false,true
+113,Rally Excellent B,Rally,Regular,107,2,true,Rally Excellent B,true,true,false,100,20,false,true
+114,Transfer to Rally Master,Rally,Regular,108,1,true,Rally Master,false,true,false,100,20,false,true
+115,Rally Master,Rally,Regular,108,2,true,Rally Master,true,true,false,100,20,false,true
+116,Transfer to Rally Choice,Rally,Regular,109,1,true,Rally Choice,false,false,false,100,20,false,true
+117,Rally Choice,Rally,Regular,109,2,true,Rally Choice,true,false,false,100,20,false,true
+151,Rally Pairs Novice,Rally,Nonregular,111,2,true,Rally Pairs Novice,true,false,true,200,12,false,true
+152,Rally Pairs Advanced,Rally,Nonregular,112,2,true,Rally Pairs Advanced,true,false,true,200,12,false,true
+153,Rally Pairs Excellent,Rally,Nonregular,113,2,true,Rally Pairs Excellent,true,false,true,200,12,false,true
+154,Rally T Challenge,Rally,Nonregular,114,2,true,Rally T Challenge,true,false,false,200,15,false,true
+155,Rally T Challenge Team,Rally,Nonregular,115,2,true,Rally T Challenge Team,true,false,true,800,4,false,true
+156,Rally Team Novice,Rally,Nonregular,116,2,true,Rally Team Novice,true,false,true,400,4,false,true
+157,Rally Team Advanced,Rally,Nonregular,117,2,true,Rally Team Advanced,true,false,true,400,4,false,true
+158,Rally Team Excellent,Rally,Nonregular,118,2,true,Rally Team Excellent,true,false,true,400,4,false,true
+159,Rally Plus,Rally,Nonregular,119,2,true,Rally Plus,true,false,false,200,12,false,true
+160,Rally Intro,Rally,Nonregular,120,2,false,Rally Intro,true,false,false,100,20,false,true

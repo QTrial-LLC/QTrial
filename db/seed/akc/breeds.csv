@@ -1,0 +1,289 @@
+legacy_id,name,abbreviation,group_legacy_id,is_giant,is_three_quarters,default_height_inches,has_variety,has_division,display_order,source_date_added
+1,Affenpinscher,Affenpinscher,5,false,false,10,false,false,1,01/26/17 00:00:00
+2,Afghan Hound,Afghan Hound,2,false,false,26,false,false,1,01/26/17 00:00:00
+3,Airedale Terrier,Airedale Terrier,4,false,false,24,false,false,1,01/26/17 00:00:00
+4,Akita,Akita,3,false,false,26,false,false,1,01/26/17 00:00:00
+5,Alaskan Malamute,Alaskan Malamute,3,false,false,24,false,false,2,01/26/17 00:00:00
+7,American English Coonhound,Coonhound,2,false,false,24,false,false,2,01/26/17 00:00:00
+8,American Eskimo Dog,American Eskimo Dog,6,false,false,16,false,false,1,01/26/17 00:00:00
+9,American Foxhound,American Foxhound,2,false,false,24,false,false,3,01/26/17 00:00:00
+10,American Staffordshire Terrier,AmStaff,4,false,false,18,false,false,3,01/26/17 00:00:00
+11,American Water Spaniel,American Water Spaniel,1,false,false,16,false,false,1,01/26/17 00:00:00
+12,Appenzeller Sennenhund,Appen Sennenhund,9,false,false,22,false,false,3,01/26/17 00:00:00
+14,Australian Cattle Dog,Australian Cattle Dog,7,false,false,18,false,true,1,01/26/17 00:00:00
+15,Australian Kelpie,Australian Kelpie,9,false,false,20,false,false,4,01/26/17 00:00:00
+16,Australian Shepherd,Australian Shepherd,7,false,false,20,false,true,2,01/26/17 00:00:00
+17,Australian Terrier,Australian Terrier,4,false,false,10,false,false,4,01/26/17 00:00:00
+18,Azawakh,Azawakh,2,false,false,26,false,false,4,01/26/17 00:00:00
+19,Basenji,Basenji,2,false,false,16,false,false,5,01/26/17 00:00:00
+20,Basset Hound,Basset Hound,2,false,true,14,false,false,6,01/26/17 00:00:00
+21,Beagle,Beagle,2,false,false,14,true,false,7,01/26/17 00:00:00
+22,Bearded Collie,Bearded Collie,7,false,false,22,false,false,3,01/26/17 00:00:00
+23,Beauceron,Beauceron,7,false,false,26,false,false,4,01/26/17 00:00:00
+24,Bedlington Terrier,Bedlington Terrier,4,false,false,16,false,false,5,01/26/17 00:00:00
+25,Belgian Laekenois,Belgian Laekenois,7,false,false,24,false,false,5,01/26/17 00:00:00
+26,Belgian Malinois,Belgian Malinois,7,false,false,24,false,false,6,01/26/17 00:00:00
+27,Belgian Sheepdog,Belgian Sheepdog,7,false,false,24,false,false,7,01/26/17 00:00:00
+28,Belgian Tervuren,Belgian Tervuren,7,false,false,24,false,false,8,01/26/17 00:00:00
+29,Bergamasco,Bergamasco,7,false,true,22,false,false,9,01/26/17 00:00:00
+30,Bernese Mountain Dog,Berner,3,false,true,26,false,false,4,01/26/17 00:00:00
+31,Bichon Frise,Bichon Frise,6,false,false,10,false,false,2,01/26/17 00:00:00
+32,Black and Tan Coonhound,Coonhound,2,false,false,26,false,false,8,01/26/17 00:00:00
+33,Black Russian Terrier,Black Russian Terr,3,false,true,28,false,false,5,01/26/17 00:00:00
+34,Bloodhound,Bloodhound,2,false,true,26,false,false,9,01/26/17 00:00:00
+35,Bluetick Coonhound,Bluetick Coonhound,2,false,false,24,false,false,10,01/26/17 00:00:00
+36,Bolognese,Bolognese,9,false,false,12,false,false,16,01/26/17 00:00:00
+37,Border Collie,Border Collie,7,false,false,22,false,true,11,01/26/17 00:00:00
+38,Border Terrier,Border Terrier,4,false,false,14,false,false,6,01/26/17 00:00:00
+39,Borzoi,Borzoi,2,false,true,28,false,false,11,01/26/17 00:00:00
+40,Boston Terrier,Boston Terrier,6,false,false,10,false,false,3,01/26/17 00:00:00
+41,Bouvier des Flandres,Bouvier,7,false,false,26,false,false,12,01/26/17 00:00:00
+42,Boxer,Boxer,3,false,false,24,false,false,7,01/26/17 00:00:00
+43,Boykin Spaniel,Boykin Spaniel,1,false,false,18,false,false,3,01/26/17 00:00:00
+44,Briard,Briard,7,false,false,26,false,false,13,01/26/17 00:00:00
+45,Brittany,Brittany,1,false,false,20,false,false,4,01/26/17 00:00:00
+46,Brussels Griffon,Brussels Griffon,5,false,false,8,false,false,2,01/26/17 00:00:00
+47,Bull Terrier,Bull Terrier,4,false,false,22,true,false,7,01/26/17 00:00:00
+48,Bulldog,Bulldog,6,false,true,14,false,false,4,01/26/17 00:00:00
+49,Bullmastiff,Bullmastiff,3,false,true,26,false,false,8,01/26/17 00:00:00
+50,Cairn Terrier,Cairn Terrier,4,false,false,10,false,false,8,01/26/17 00:00:00
+51,Canaan Dog,Canaan Dog,7,false,false,22,false,false,14,01/26/17 00:00:00
+52,Cane Corso,Cane Corso,3,false,false,24,false,false,9,01/26/17 00:00:00
+53,Cardigan Welsh Corgi,Cardi Corgi,7,false,true,12,false,false,15,01/26/17 00:00:00
+54,Carolina Dog,Carolina Dog,9,false,false,22,false,false,21,01/26/17 00:00:00
+55,Catahoula Leopard Dog,Catahoula Leopard,9,false,false,22,false,false,22,01/26/17 00:00:00
+56,Caucasian Ovcharka,Caucasian Ovcharka,9,false,true,26,false,false,23,01/26/17 00:00:00
+57,Cavalier King Charles Spaniel,Cav King Charles,5,false,false,12,false,false,3,01/26/17 00:00:00
+58,Cesky Terrier,Cesky Terrier,4,false,false,12,false,false,9,01/26/17 00:00:00
+59,Chesapeake Bay Retriever,Chesapeake Bay Retriever,1,false,false,24,false,false,5,01/26/17 00:00:00
+60,Chihuahua,Chihuahua,5,false,false,4,true,false,4,01/26/17 00:00:00
+61,Chinese Crested,Chinese Crested,5,false,false,12,false,false,5,01/26/17 00:00:00
+62,Chinese Shar-Pei,Chinese Shar-Pei,6,false,false,20,false,false,5,01/26/17 00:00:00
+63,Chinook,Chinook,3,false,false,24,false,false,10,01/26/17 00:00:00
+64,Chow Chow,Chow Chow,6,false,false,18,false,false,6,01/26/17 00:00:00
+65,Clumber Spaniel,Clumber Spaniel,1,false,true,18,false,false,6,01/26/17 00:00:00
+66,Cocker Spaniel,Cocker Spaniel,1,false,false,14,true,false,7,01/26/17 00:00:00
+67,Collie,Collie,7,false,false,24,true,false,16,01/26/17 00:00:00
+68,Coton de Tulear,Coton de Tulear,6,false,false,10,false,false,27,01/26/17 00:00:00
+69,Curly-Coated Retriever,Curly-Coated Retriever,1,false,false,26,false,false,8,01/26/17 00:00:00
+70,Dachshund,Dachshund,2,false,true,10,true,true,13,01/26/17 00:00:00
+71,Dalmatian,Dalmatian,6,false,false,22,false,false,7,01/26/17 00:00:00
+72,Dandie Dinmont Terrier,Dandie Dinmont Terrier,4,false,false,10,false,false,10,01/26/17 00:00:00
+73,Doberman Pinscher,Doberman Pinscher,3,false,false,26,false,false,11,01/26/17 00:00:00
+74,Dogue de Bordeaux,Dogue de Bordeaux,3,false,true,26,false,false,13,01/26/17 00:00:00
+75,English Cocker Spaniel,English Cocker Spaniel,1,false,false,16,false,false,9,01/26/17 00:00:00
+76,English Foxhound,English Foxhound,2,false,false,24,false,false,14,01/26/17 00:00:00
+77,English Setter,English Setter,1,false,false,24,false,false,10,01/26/17 00:00:00
+78,English Shepherd,English Shepherd,10,false,false,20,false,false,3,01/26/17 00:00:00
+79,English Springer Spaniel,English Springer Spaniel,1,false,false,20,false,false,11,01/26/17 00:00:00
+80,English Toy Spaniel,English Toy Spaniel,5,false,false,8,true,false,6,01/26/17 00:00:00
+81,Entlebucher Mountain Dog,Entlebucher,7,false,false,20,false,false,17,01/26/17 00:00:00
+82,Field Spaniel,Field Spaniel,1,false,false,18,false,false,12,01/26/17 00:00:00
+83,Finnish Lapphund,Finnish Lapphund,7,false,false,20,false,false,18,01/26/17 00:00:00
+84,Finnish Spitz,Finnish Spitz,6,false,false,18,false,false,8,01/26/17 00:00:00
+85,Flat-Coated Retriever,Flat-Coated Retriever,1,false,false,24,false,false,13,01/26/17 00:00:00
+86,French Bulldog,French Bulldog,6,false,true,12,false,false,9,01/26/17 00:00:00
+87,German Pinscher,German Pinscher,3,false,false,18,false,false,14,01/26/17 00:00:00
+88,German Shepherd Dog,GSD,7,false,false,24,false,false,19,01/26/17 00:00:00
+89,German Shorthaired Pointer,GSP,1,false,false,24,false,false,14,01/26/17 00:00:00
+90,German Spitz,German Spitz,9,false,false,12,false,false,40,01/26/17 00:00:00
+91,German Wirehaired Pointer,GWP,1,false,false,24,false,false,15,01/26/17 00:00:00
+92,Giant Schnauzer,Giant Schnauzer,3,false,false,26,false,false,15,01/26/17 00:00:00
+93,Golden Retriever,Golden Retriever,1,false,false,24,false,false,16,01/26/17 00:00:00
+94,Gordon Setter,Gordon Setter,1,false,false,26,false,false,17,01/26/17 00:00:00
+95,Great Dane,Great Dane,3,false,true,30,false,false,16,01/26/17 00:00:00
+96,Great Pyrenees,Great Pyrenees,3,false,true,28,false,false,17,01/26/17 00:00:00
+97,Greater Swiss Mountain Dog,Swissie,3,false,true,26,false,false,18,01/26/17 00:00:00
+98,Greyhound,Greyhound,2,false,false,24,false,false,16,01/26/17 00:00:00
+99,Harrier,Harrier,2,false,false,20,false,false,17,01/26/17 00:00:00
+100,Havanese,Havanese,5,false,false,10,false,false,7,01/26/17 00:00:00
+101,Ibizan Hound,Ibizan Hound,2,false,false,26,false,false,18,01/26/17 00:00:00
+102,Icelandic Sheepdog,Icelandic Sheepdog,7,false,false,14,false,false,20,01/26/17 00:00:00
+104,Irish Red and White Setter,Red/White Setter,1,false,false,24,false,false,18,01/26/17 00:00:00
+105,Irish Setter,Irish Setter,1,false,false,26,false,false,19,01/26/17 00:00:00
+106,Irish Terrier,Irish Terrier,4,false,false,18,false,false,12,01/26/17 00:00:00
+107,Irish Water Spaniel,Irish Water Spaniel,1,false,false,22,false,false,20,01/26/17 00:00:00
+108,Irish Wolfhound,Irish Wolfhound,2,false,true,32,false,false,19,01/26/17 00:00:00
+109,Italian Greyhound,Italian Greyhound,5,false,false,14,false,false,8,01/26/17 00:00:00
+110,Jack Russell Terrier,Jack Russell Terrier,10,false,false,12,false,false,4,01/26/17 00:00:00
+111,Japanese Chin,Japanese Chin,5,false,false,10,false,false,9,01/26/17 00:00:00
+112,Kai Ken,Kai Ken,9,false,false,18,false,false,49,01/26/17 00:00:00
+113,Keeshond,Keeshond,6,false,false,18,false,false,10,01/26/17 00:00:00
+114,Kerry Blue Terrier,Kerry Blue Terrier,4,false,false,20,false,false,13,01/26/17 00:00:00
+115,Komondor,Komondor,3,false,false,26,false,false,19,01/26/17 00:00:00
+116,Kuvasz,Kuvasz,3,false,true,28,false,false,20,01/26/17 00:00:00
+117,Labrador Retriever,Labrador Retriever,1,false,false,22,false,true,21,01/26/17 00:00:00
+118,Lakeland Terrier,Lakeland Terrier,4,false,false,14,false,false,14,01/26/17 00:00:00
+119,Lhasa Apso,Lhasa Apso,6,false,false,10,false,false,11,01/26/17 00:00:00
+120,Lowchen,Lowchen,6,false,false,14,false,false,12,01/26/17 00:00:00
+121,Maltese,Maltese,5,false,false,8,false,false,10,01/26/17 00:00:00
+122,Manchester Terrier,Manchester Terrier,11,false,false,0,false,false,2,01/26/17 00:00:00
+123,Mastiff,Mastiff,3,false,true,28,false,false,22,01/26/17 00:00:00
+124,McNab,McNab,10,false,false,20,false,false,6,01/26/17 00:00:00
+125,Mi-Ki,Mi-Ki,10,false,false,10,false,false,8,01/26/17 00:00:00
+126,Middle Asian Owtcharka,Mid Asian Owtcharka,10,false,false,24,false,false,7,01/26/17 00:00:00
+127,Miniature Bull Terrier,Miniature Bull Terrier,4,false,false,12,false,false,16,01/26/17 00:00:00
+128,Miniature Pinscher,Miniature Pinscher,5,false,false,12,false,false,12,01/26/17 00:00:00
+129,Miniature Poodle,Miniature Poodle,6,false,false,14,false,false,14,01/26/17 00:00:00
+130,Miniature Schnauzer,Miniature Schnauzer,4,false,false,14,false,false,17,01/26/17 00:00:00
+131,All American Dog,All American Dog,8,false,false,16,false,false,1,01/26/17 00:00:00
+132,Neapolitan Mastiff,Neapolitan Mastiff,3,false,true,28,false,false,23,01/26/17 00:00:00
+133,Newfoundland,Newfoundland,3,false,true,28,false,false,24,01/26/17 00:00:00
+134,Norfolk Terrier,Norfolk Terrier,4,false,false,10,false,false,18,01/26/17 00:00:00
+135,Norwegian Buhund,Norwegian Buhund,7,false,false,18,false,false,22,01/26/17 00:00:00
+136,Norwegian Elkhound,Norwegian Elkhound,2,false,false,20,false,false,20,01/26/17 00:00:00
+137,Norwegian Lundehund,Norwegian Lundehund,6,false,false,14,false,false,13,01/26/17 00:00:00
+138,Norwich Terrier,Norwich Terrier,4,false,false,10,false,false,19,01/26/17 00:00:00
+139,Nova Scotia Duck Tolling Retriever,Toller,1,false,false,20,false,false,24,01/26/17 00:00:00
+140,Old English Sheepdog,Old English Sheepdog,7,false,false,24,false,false,23,01/26/17 00:00:00
+141,Otterhound,Otterhound,2,false,true,28,false,false,21,01/26/17 00:00:00
+142,Papillon,Papillon,5,false,false,10,false,false,13,01/26/17 00:00:00
+143,Parson Russell Terrier,Parson Russell Terrier,4,false,false,14,false,false,20,01/26/17 00:00:00
+144,Pekingese,Pekingese,5,false,false,8,false,false,14,01/26/17 00:00:00
+145,Pembroke Welsh Corgi,Pem Corgi,7,false,false,12,false,false,24,01/26/17 00:00:00
+146,Perro de Presa Canario,Perro de Presa,9,false,false,24,false,false,59,01/26/17 00:00:00
+147,Peruvian Inca Orchid,Peruvian Inca Orchid,9,false,false,24,false,false,60,01/26/17 00:00:00
+148,Petit Basset Griffon Vendeen,PBGV,2,false,false,14,false,false,22,01/26/17 00:00:00
+149,Pharaoh Hound,Pharaoh Hound,2,false,false,24,false,false,23,01/26/17 00:00:00
+150,Pointer,Pointer,1,false,false,26,false,false,25,01/26/17 00:00:00
+151,Pomeranian,Pomeranian,5,false,false,8,false,false,15,01/26/17 00:00:00
+152,Portuguese Water Dog,Portuguese Water Dog,3,false,false,20,false,false,25,01/26/17 00:00:00
+153,Pug,Pug,5,false,false,12,false,false,16,01/26/17 00:00:00
+154,Puli,Puli,7,false,false,16,false,false,26,01/26/17 00:00:00
+155,Rat Terrier,Rat Terrier,4,false,false,16,false,false,21,01/26/17 00:00:00
+156,Redbone Coonhound,Redbone Coonhound,2,false,false,24,false,false,26,01/26/17 00:00:00
+157,Rhodesian Ridgeback,Ridgeback,2,false,false,26,false,false,27,01/26/17 00:00:00
+158,Rottweiler,Rottweiler,3,false,false,24,false,false,26,01/26/17 00:00:00
+159,Saint Bernard,Saint Bernard,3,false,true,26,false,false,27,01/26/17 00:00:00
+160,Saluki,Saluki,2,false,false,26,false,false,28,01/26/17 00:00:00
+161,Samoyed,Samoyed,3,false,false,22,false,false,28,01/26/17 00:00:00
+162,Schipperke,Schipperke,6,false,false,12,false,false,15,01/26/17 00:00:00
+163,Scottish Deerhound,Scottish Deerhound,2,false,false,30,false,false,29,01/26/17 00:00:00
+164,Scottish Terrier,Scottish Terrier,4,false,false,10,false,false,23,01/26/17 00:00:00
+165,Shetland Sheepdog,Shetland Sheepdog,7,false,false,14,false,false,29,01/26/17 00:00:00
+166,Shiba Inu,Shiba Inu,6,false,false,16,false,false,16,01/26/17 00:00:00
+167,Shih Tzu,Shih Tzu,5,false,false,10,false,false,17,01/26/17 00:00:00
+168,Siberian Husky,Siberian Husky,3,false,false,22,false,false,29,01/26/17 00:00:00
+169,Silky Terrier,Silky Terrier,5,false,false,10,false,false,18,01/26/17 00:00:00
+170,Skye Terrier,Skye Terrier,4,false,true,10,false,false,25,01/26/17 00:00:00
+171,Sloughi,Sloughi,2,false,false,26,false,false,30,01/26/17 00:00:00
+172,Smooth Fox Terrier,Smooth Fox Terrier,4,false,false,16,false,false,26,01/26/17 00:00:00
+173,Soft Coated Wheaten Terrier,Wheaten,4,false,false,18,false,false,27,01/26/17 00:00:00
+174,Staffordshire Bull Terrier,Staff Bull Terrier,4,false,false,16,false,false,28,01/26/17 00:00:00
+175,Standard Poodle,Standard Poodle,6,false,false,20,false,false,18,01/26/17 00:00:00
+176,Standard Schnauzer,Standard Schnauzer,3,false,false,18,false,false,30,01/26/17 00:00:00
+177,Sussex Spaniel,Sussex Spaniel,1,false,true,14,false,false,27,01/26/17 00:00:00
+178,Swedish Vallhund,Swedish Valhund,7,false,false,12,false,false,31,01/26/17 00:00:00
+179,Thai Ridgeback,Thai Ridgeback,9,false,true,22,false,false,85,01/26/17 00:00:00
+180,Tibetan Mastiff,Tibetan Mastiff,3,false,false,26,false,false,31,01/26/17 00:00:00
+181,Tibetan Spaniel,Tibetan Spaniel,6,false,false,10,false,false,19,01/26/17 00:00:00
+182,Tibetan Terrier,Tibetan Terrier,6,false,false,16,false,false,20,01/26/17 00:00:00
+183,Tosa,Tosa,9,false,false,28,false,false,87,01/26/17 00:00:00
+184,Toy Fox Terrier,Toy Fox Terrier,5,false,false,10,false,false,19,01/26/17 00:00:00
+185,Toy Poodle,Toy Poodle,5,false,false,10,false,false,20,01/26/17 00:00:00
+186,Treeing Tennessee Brindle,Treeing Tennessee,9,false,false,18,false,false,89,01/26/17 00:00:00
+187,Treeing Walker Coonhound,Coonhound,2,false,false,24,false,false,31,01/26/17 00:00:00
+188,Vizsla,Vizsla,1,false,false,22,false,false,28,01/26/17 00:00:00
+189,Weimaraner,Weimaraner,1,false,false,26,false,false,29,01/26/17 00:00:00
+190,Welsh Springer Spaniel,Welsh Springer Spaniel,1,false,false,18,false,false,30,01/26/17 00:00:00
+191,Welsh Terrier,Welsh Terrier,4,false,false,16,false,false,29,01/26/17 00:00:00
+192,West Highland White Terrier,Westie,4,false,false,10,false,false,30,01/26/17 00:00:00
+193,Whippet,Whippet,2,false,false,20,false,false,32,01/26/17 00:00:00
+194,Wire Fox Terrier,Wire Fox Terrier,4,false,false,16,false,false,31,01/26/17 00:00:00
+195,Wirehaired Pointing Griffon,Wirehaired Pointing,1,false,false,22,false,false,31,01/26/17 00:00:00
+196,Xoloitzcuintli,Xoloitzcuintli,6,false,false,16,false,false,21,01/26/17 00:00:00
+197,Yorkshire Terrier,Yorkshire Terrier,5,false,false,8,false,false,21,01/26/17 00:00:00
+198,Polish Lowland Sheepdog,Polish Lowland Sheepdog,7,false,false,18,false,false,25,01/26/17 00:00:00
+199,Pyrenean Shepherd,Pyrenean Shepherd,7,false,false,18,false,false,28,01/26/17 00:00:00
+200,Russell Terrier,Russell Terrier,4,false,false,12,false,false,22,01/26/17 00:00:00
+201,Bracco Italiano,Bracco Italiano,9,false,false,24,false,false,17,01/26/17 00:00:00
+202,Central Asian Shepherd Dog,Central Asian,9,false,false,28,false,false,25,01/26/17 00:00:00
+203,Czechoslovakian Vlcak,Czechoslovakian Vlcak,9,false,false,22,false,false,29,01/26/17 00:00:00
+204,Estrela Mountain Dog,Estrela Mountain Dog,9,false,true,26,false,false,36,01/26/17 00:00:00
+205,Grand Basset Griffon Vendeen,Grand Basset Griffon,2,false,true,16,false,false,15,01/26/17 00:00:00
+206,Karelian Bear Dog,Karelian Bear Dog,9,false,false,24,false,false,50,01/26/17 00:00:00
+207,Kishu Ken,Kishu Ken,9,false,false,20,false,false,51,01/26/17 00:00:00
+208,Nederlandse Kooikerhondje,Kooikerhondje,1,false,true,14,false,false,23,01/26/17 00:00:00
+209,Lagotto Romagnolo,Lagotto Romagnolo,1,false,true,18,false,false,22,01/26/17 00:00:00
+210,Lancashire Heeler,Lancashire Heeler,9,false,false,12,false,false,53,01/26/17 00:00:00
+211,Leonberger,Leonberger,3,false,true,30,false,false,21,01/26/17 00:00:00
+212,Mudi,Mudi,9,false,false,16,false,false,56,01/26/17 00:00:00
+213,Portuguese Podengo,Portuguese Podengo,9,false,true,12,false,false,62,01/26/17 00:00:00
+214,Portuguese Pointer,Portuguese Pointer,9,false,false,22,false,false,63,01/26/17 00:00:00
+215,Pumi,Pumi,7,false,false,18,false,false,27,01/26/17 00:00:00
+216,Rafeiro do Alentejo,Rafeiro do Alentejo,9,false,false,26,false,false,68,01/26/17 00:00:00
+217,Schapendoes,Schapendoes,9,false,false,18,false,false,72,01/26/17 00:00:00
+218,Small Munsterlander,Small Munsterlander,9,false,false,20,false,false,78,01/26/17 00:00:00
+219,South African Boerboel,S African Boerboel,10,false,false,26,false,false,9,01/26/17 00:00:00
+220,Spanish Water Dog,Spanish Water Dog,7,false,false,18,false,false,30,01/26/17 00:00:00
+221,Stabyhoun,Stabyhoun,9,false,false,20,false,false,81,01/26/17 00:00:00
+222,Spinone Italiano,Spinone Italiano,1,false,false,26,false,false,26,01/26/17 00:00:00
+223,Anatolian Shepherd Dog,Anatolian Shepherd,3,false,false,28,false,false,3,01/26/17 00:00:00
+224,Glen of Imaal Terrier,Glen of Imaal,4,false,false,14,false,false,11,01/26/17 00:00:00
+225,Manchester Terrier (Standard),Manchester (Std),4,false,false,16,false,false,15,01/26/17 00:00:00
+226,Sealyham Terrier,Sealyham Terrier,4,false,false,10,false,false,24,01/26/17 00:00:00
+227,Manchester Terrier (Toy),Manchester (Toy),5,false,false,8,false,false,15,01/26/17 00:00:00
+230,Berger Picard,Berger Picard,7,false,false,24,false,false,10,01/26/17 00:00:00
+231,Cirneco dell'Etna,Cirneco dell'Etna,2,false,false,20,false,false,12,01/26/17 00:00:00
+232,Swedish Lapphund,Swedish Lapphund,9,false,false,18,false,false,82,01/26/17 00:00:00
+233,Jindo,Jindo,9,false,false,20,false,false,48,01/26/17 00:00:00
+234,Wirehaired Vizsla,Wirehaired Vizsla,9,false,false,22,false,false,91,01/26/17 00:00:00
+235,Eurasier,Eurasier,9,false,false,22,false,false,37,01/26/17 00:00:00
+236,Plott Hound,Plott Hound,2,false,false,22,false,false,24,01/26/17 00:00:00
+237,Poodle,Poodle,11,false,false,0,false,false,1,01/26/17 00:00:00
+239,Boerboel,Boerboel,3,false,false,26,false,false,6,01/26/17 00:00:00
+240,Norrbottenspets,Norrbottenspets,9,false,false,16,false,false,58,01/26/17 00:00:00
+241,Russian Toy,Russian Toy,9,false,false,10,false,false,70,01/26/17 00:00:00
+242,Slovensky Cuvac,Solvensky Cuvac,9,false,false,24,false,false,76,01/26/17 00:00:00
+243,Portuguese Podengo Pequeno,PP Pequeno,2,false,false,0,false,false,25,01/26/17 00:00:00
+244,American Hairless Terrier,American Hairless,4,false,false,14,false,false,2,01/26/17 00:00:00
+245,Barbet,Barbet,1,false,false,0,false,false,2,01/26/17 00:00:00
+246,Braque du Bourbonnais,Braque du Bourbonnais,9,false,false,0,false,false,18,01/26/17 00:00:00
+249,Dogo Argentino,Dogo Argentino,3,false,false,0,false,false,12,01/26/17 00:00:00
+250,Drentsche Patrijshond,Drentsche Patrijshond,9,false,false,0,false,false,33,01/26/17 00:00:00
+251,German Longhaired Pointer,German Longhaired Pointer,9,false,false,24,false,false,39,01/26/17 00:00:00
+252,Hamiltonstovare,Hamiltonstovare,9,false,false,0,false,false,42,01/26/17 00:00:00
+253,Hovawart,Hovawart,9,false,false,0,false,false,45,01/26/17 00:00:00
+254,Spanish Mastiff,Spanish Mastiff,9,false,false,0,false,false,79,01/26/17 00:00:00
+255,Miniature American Shepherd,Mini American Shepherd,7,false,false,14,false,false,21,01/26/17 00:00:00
+256,Danish-Swedish Farmdog,Danish-Swedish Farmdog,9,false,false,0,false,false,30,01/26/17 00:00:00
+258,Deutscher Wachtelhund,Deutscher Wachtelhund,9,false,false,0,false,false,31,01/26/17 00:00:00
+259,Dutch Shepherd,Dutch Shepherd,9,false,false,23,false,false,35,01/26/17 00:00:00
+260,Working Kelpie,Working Kelpie,9,false,false,16,false,false,92,01/26/17 00:00:00
+261,Biewer Terrier,Biewer Terrier,9,false,false,8,false,false,13,05/29/17 00:00:00
+262,Russian Tsvetnaya Bolonka,Russian Tsvetnaya,9,false,false,8,false,false,71,07/25/17 00:00:00
+263,Mountain Cur,Mountain Cur,9,false,false,20,false,false,55,05/24/18 00:00:00
+264,Kromfohrlander,Kromfohrlander,10,false,false,16,false,false,5,11/05/18 00:00:00
+265,Yakutian Laika,Yakutian Laika,9,false,false,22,false,false,93,02/17/19 00:00:00
+266,Australian Stumpy Tail Cattle Dog,Stumpy Tail Cattle Dog,9,false,false,18,false,false,5,07/11/19 00:00:00
+267,Caucasian Shepherd Dog,Caucasian Shepherd,9,false,true,25,false,false,24,08/31/20 00:00:00
+268,Broholmer,Broholmer,9,false,false,28,false,false,20,08/31/20 00:00:00
+269,Croatian Sheepdog,Croatian Sheepdog,9,false,false,0,false,false,28,08/31/20 00:00:00
+270,Hanoverian Scenthound,Hanoverian,9,false,false,0,false,false,43,08/31/20 00:00:00
+271,Lapponian Herder,Lapponian Herder,9,false,false,0,false,false,54,08/31/20 00:00:00
+272,Slovakian Wirehaired Pointer,Slovakian Wirehaired,9,false,false,0,false,false,75,08/31/20 00:00:00
+273,Porcelaine,Porcelaine,9,false,false,0,false,false,61,08/31/20 00:00:00
+274,Romanian Mioritic Sheepdog,Romanian Mioritic,9,false,false,0,false,false,69,08/31/20 00:00:00
+275,Segugio Italiano,Segugio Italiano,9,false,false,0,false,false,73,
+276,American Bulldog,American Bulldog,9,false,false,23,false,false,1,08/31/20 00:00:00
+277,American Leopard Hound,American Leopard,9,false,false,24,false,false,2,08/31/20 00:00:00
+278,Braque Francais Pyrenean,Braque Francais,9,false,false,20,false,false,19,08/31/20 00:00:00
+279,French Spaniel,French Spaniel,9,false,false,22,false,false,38,
+282,Pudelpointer,Pudelpointer,9,false,false,24,false,false,65,08/31/20 00:00:00
+283,Wetterhoun,Wetterhoun,9,false,false,22,false,false,90,08/31/20 00:00:00
+284,Basset Fauve de Bretagne,Basset Fauve,9,false,false,14,false,false,8,08/31/20 00:00:00
+285,Bavarian Mountain Scent Hound,Bavarian Mtn Scent,9,false,false,18,false,false,9,08/31/20 00:00:00
+286,Drever,Drever,9,false,false,14,false,false,34,08/31/20 00:00:00
+287,Slovensky Kopov,Slovensky Kopov,9,false,false,18,false,false,77,08/31/20 00:00:00
+288,Taiwan Dog,Taiwan Dog,9,false,false,18,false,false,83,08/31/20 00:00:00
+289,Transylvania Hound,Transylvania Hound,9,false,false,24,false,false,88,08/31/20 00:00:00
+290,Bohemian Shepherd,Bohemian Shepherd,9,false,false,20,false,false,15,08/31/20 00:00:00
+291,Hokkaido,Hokkaido,9,false,false,18,false,false,44,08/31/20 00:00:00
+292,Pyrenean Mastiff,Pyrenean Mastiff,9,false,false,30,false,false,67,08/31/20 00:00:00
+293,Shikoku,Shikoku,9,false,false,20,false,false,74,08/31/20 00:00:00
+294,Tornjak,Tornjak,9,false,false,26,false,false,86,08/31/20 00:00:00
+295,Jagdterrier,Jagdterrier,9,false,false,14,false,false,46,08/31/20 00:00:00
+296,Teddy Roosevelt Terrier,Teddy Roosevelt,9,false,false,12,false,false,84,08/31/20 00:00:00
+297,Japanese Spitz,Japanese Spitz,9,false,false,14,false,false,47,08/31/20 00:00:00
+298,Portuguese Sheepdog,Portuguese Sheepdog,9,false,false,18,false,false,64,08/31/20 00:00:00
+299,Alaskan Klee Kai,Alaskan Klee Kai,10,false,false,16,false,false,1,12/30/21 00:00:00

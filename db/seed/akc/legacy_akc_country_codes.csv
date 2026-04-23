@@ -1,0 +1,145 @@
+legacy_akc_code,legacy_akc_name,iso_alpha2_code,needs_manual_resolution
+USA,United States,US,false
+USR,Russia,RU,false
+VEN,Venezuela,VE,false
+VLA,Venezuela,VE,false
+WAF,West Africa,,true
+WGR,West Germany (former),DE,false
+WIN,West Indies,,true
+YUG,Yugoslavia,,true
+ZIM,Zimbabwe,ZW,false
+ADR,Andorra,AD,false
+ALG,Algeria,DZ,false
+AMS,American Samoa,AS,false
+ARB,Aruba,AW,false
+ARG,Argentina,AR,false
+AST,Austria,AT,false
+AUS,Australia,AU,false
+AZR,Azores,,true
+BAH,Bahamas,BS,false
+BAN,Bangladesh,BD,false
+BAR,Barbados,BB,false
+BEL,Belgium,BE,false
+BER,Bermuda,BM,false
+BLR,Belarus,BY,false
+BLZ,Belize,BZ,false
+BOL,Bolivia,BO,false
+BRA,Brazil,BR,false
+BRN,Bahrain,BH,false
+BUL,Bulgaria,BG,false
+BVI,British Virgin Islands,VG,false
+BWI,British West Indies,,true
+CAN,Canada,CA,false
+CHI,Chile,CL,false
+COL,Colombia,CO,false
+COS,Costa Rica,CR,false
+CRO,Croatia,HR,false
+CSF,Czech and Slovak Federative Republic,,true
+CUB,Cuba,CU,false
+CYI,Cayman Islands,KY,false
+CYP,Cyprus,CY,false
+CZE,Czechoslovakia (former),,true
+CZN,Canal Zone,,true
+CZR,Czech Republic,CZ,false
+DEN,Denmark,DK,false
+DOR,Dominican Republic,DO,false
+EAF,East Africa,,true
+ECU,Ecuador,EC,false
+EGR,East Germany (former),DE,false
+EGY,Egypt,EG,false
+ELS,El Salvador,SV,false
+EST,Estonia,EE,false
+ETH,Ethiopia,ET,false
+FIJ,Fiji,FJ,false
+FIN,Finland,FI,false
+FRA,France,FR,false
+FRP,French Polynesia,PF,false
+FWI,French West Indies,,true
+GAB,Gabon,GA,false
+GER,Germany,DE,false
+GRC,Greece,GR,false
+GSY,Guernsey,GG,false
+GUA,Guatemala,GT,false
+GUY,Guyana,GY,false
+GWI,Grenada West Indies,,true
+HAI,Haiti,HT,false
+HKG,Hong Kong,HK,false
+HON,Honduras,HN,false
+HUN,Hungary,HU,false
+ICE,Iceland,IS,false
+IDN,Indonesia,ID,false
+IND,India,IN,false
+IRE,Ireland (excluding Northern Ireland),IE,false
+IRN,Iran,IR,false
+IRQ,Iraq,IQ,false
+ISR,Israel,IL,false
+ITA,Italy,IT,false
+JAM,Jamaica,JM,false
+JAP,Japan,JP,false
+JPN,Japan,JP,false
+JRD,Jordan,JO,false
+KNY,Kenya,KE,false
+KOR,Korea,KR,false
+KUW,Kuwait,KW,false
+LAT,Latvia,LV,false
+LEB,Lebanon,LB,false
+LIT,Lithuania,LT,false
+LUX,Luxembourg,LU,false
+MAC,Macao,MO,false
+MAD,Madagascar,MG,false
+MAL,Malaysia,MY,false
+MAU,Mauritius,MU,false
+MEX,Mexico,MX,false
+MIQ,Miquelon,PM,false
+MLD,Moldova,MD,false
+MON,Monaco,MC,false
+MOR,Morocco,MA,false
+MTA,Malta,MT,false
+NAM,Namibia,NA,false
+NAN,Netherlands Antilles,,true
+NCG,Nicaragua,NI,false
+NEP,Nepal,NP,false
+NET,Netherlands,NL,false
+NIG,Nigeria,NG,false
+NKR,North Korea,KP,false
+NOR,Norway,NO,false
+NVN,North Vietnam,,true
+NZL,New Zealand,NZ,false
+OMN,Oman,OM,false
+PAK,Pakistan,PK,false
+PAN,Panama,PA,false
+PAR,Paraguay,PY,false
+PER,Peru,PE,false
+PHI,Philippines,PH,false
+POL,Poland,PL,false
+POR,Portugal,PT,false
+RCH,Republic of China,TW,false
+RGA,Republic of Geo,GE,false
+ROM,Romania,RO,false
+RSL,Republic of Slovenia,SI,false
+RUM,Rumania,RO,false
+RUS,Russia,RU,false
+SAF,South Africa,ZA,false
+SAM,San Marino,SM,false
+SAU,Saudi Arabia,SA,false
+SCT,Scotland,GB,false
+SFR,Slovok Federate,,true
+SIN,Singapore,SG,false
+SKR,South Korea,KR,false
+SLV,Slovenia,SI,false
+SNM,San Marino,SM,false
+SPA,Spain,ES,false
+SRI,Sri Lanka,LK,false
+SUR,Surinam,SR,false
+SVN,South Vietnam,,true
+SWE,Sweden,SE,false
+SWI,Switzerland,CH,false
+TAI,Taiwan,TW,false
+THI,Thailand,TH,false
+TKY,Turkey,TR,false
+TRI,Trinidad,TT,false
+TZN,Tanzania,TZ,false
+UAE,United Arab Emirates,AE,false
+UKG,United Kingdom,GB,false
+UKR,Ukraine,UA,false
+URU,Uruguay,UY,false

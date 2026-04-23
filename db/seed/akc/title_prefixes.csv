@@ -1,0 +1,50 @@
+legacy_id,code,long_name,sport_scope_code,sport_scope_description,source_organization
+101,CH,Champion,N,Conformation,AKC
+102,GCH,Grand Champion,N,Conformation,AKC
+103,DC,Dual Champion,V,Multi-sport (Conformation + Field/Herding),AKC
+104,TC,Triple Champion,V,Multi-sport (DC + OTCH/CT/MACH/PACH),AKC
+105,VCCH,Versatile Companion Champion,V,Multi-sport (OTCH + MACH/PACH + CT),AKC
+106,OTCH,Obedience Trial Champion,O,Obedience,AKC
+107,CT,Champion Tracker,T,Tracking,AKC
+109,AFC,Amateur Field Trial Champion,F,Field Trial,AKC
+110,FC,Field Champion,F,Field Trial,AKC
+115,HC,Herding Champion,H,Herding,AKC
+120,MACH,Master Agility Champion,A,Agility,AKC
+121,PACH,Preferred Agility Champion,A,Agility,AKC
+151,NOC,National Obedience Champion,O,Obedience,AKC
+152,NAFC,National Amateur Field Champion,F,Field Trial,AKC
+153,NFC,National Field Champion,F,Field Trial,AKC
+154,NAC,National Agility Champion,A,Agility,AKC
+155,NAGDC,National Amateur Gundog Champion,F,Field Trial,AKC
+156,NGDC,National Gundog Champion,F,Field Trial,AKC
+1001,AGCH,Agility Grand Champion,A,Agility,AKC
+1002,CCH,Coonhound Bench Show Champion,M,Coonhound,AKC
+1003,CFC,Coonhound Field Champion,M,Coonhound,AKC
+1004,CGCH,Coonhound Grand Champion,M,Coonhound,AKC
+1005,CGF,Coonhound Grand Field Champion,M,Coonhound,AKC
+1006,CGN,Coonhound Grand Nite Champion,M,Coonhound,AKC
+1007,CGW,Coonhound Grand Water Race Champion,M,Coonhound,AKC
+1008,CNC,Coonhound Nite Champion,M,Coonhound,AKC
+1009,CSG,Coonhound Supreme Grand Champion,M,Coonhound,AKC
+1010,CSGF,Coonhound Supreme Grand Field Champion,M,Coonhound,AKC
+1011,CSGN,Coonhound Supreme Grand Nite Champion,M,Coonhound,AKC
+1012,CSGW,Coonhound Supreme Grand Water Race Champion,M,Coonhound,AKC
+1013,CWC,Coonhound Water Race Champion,M,Coonhound,AKC
+1014,CWSG,Coonhound World Show Champion,M,Coonhound,AKC
+1015,GCHB,Grand Champion Bronze,N,Conformation,AKC
+1016,GCHG,Grand Champion Gold,N,Conformation,AKC
+1017,GCHP,Grand Champion Platinum,N,Conformation,AKC
+1018,GCHS,Grand Champion Silver,N,Conformation,AKC
+1019,GDSC,Gun Dog Stake Champion,F,Field Trial,AKC
+1020,GAFC,Grand Amateur Field Champion,F,Field Trial,AKC
+1021,GFC,Grand Field Champion,F,Field Trial,AKC
+1022,PNAC,Preferred National Agility Champion,A,Agility,AKC
+1023,POC,Preferred Obedience Champion,O,Obedience,AKC
+1024,RACH,Rally Champion,R,Rally,AKC
+1025,RAFC,Regional Amateur Field Champion,F,Field Trial,AKC
+1026,RFC,Regional Field Champion,F,Field Trial,AKC
+1027,RGDSC,Retrieving Gun Dog Stake Champion,F,Field Trial,AKC
+1028,RNC,Rally National Champion,R,Rally,AKC
+1029,RWAFC,Regional Walking Amateur Field Champion,F,Field Trial,AKC
+1030,RWFC,Regional Walking Field Champion,F,Field Trial,AKC
+1031,WNC,World Nite Champion,M,Coonhound,AKC
