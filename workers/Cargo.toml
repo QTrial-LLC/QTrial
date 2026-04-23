@@ -20,6 +20,16 @@ path = "src/main.rs"
 name = "qtrial-seed-loader"
 path = "src/bin/seed_loader.rs"
 
+[features]
+# `integration-tests` gates the testcontainers-backed seed_loader test
+# so `cargo test --workspace` at its default feature set does not spin
+# up Docker. CI enables this feature explicitly in a step that runs
+# after the service-container seed smoke test, which means CI does not
+# block on testcontainers availability for the basic build-gate steps.
+# Local dev picks it up via `cargo test --workspace --features qtrial-
+# workers/integration-tests qtrial-shared/testing`.
+integration-tests = []
+
 [dependencies]
 qtrial-shared = { path = "../shared" }
 tracing = { workspace = true }
@@ -42,4 +52,4 @@ uuid = { workspace = true }
 [[test]]
 name = "seed_loader"
 path = "tests/seed_loader.rs"
-required-features = []
+required-features = ["integration-tests"]
