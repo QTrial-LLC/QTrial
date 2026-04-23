@@ -6,11 +6,40 @@ rust-version.workspace = true
 license.workspace = true
 publish.workspace = true
 
+# The workers crate exposes a small library so integration tests
+# (workers/tests/seed_loader.rs) can exercise the same seed-loader
+# entry point the binary does without shelling out to a child process.
+[lib]
+path = "src/lib.rs"
+
 [[bin]]
 name = "qtrial-workers"
 path = "src/main.rs"
+
+[[bin]]
+name = "qtrial-seed-loader"
+path = "src/bin/seed_loader.rs"
 
 [dependencies]
 qtrial-shared = { path = "../shared" }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
+sqlx = { workspace = true }
+tokio = { workspace = true }
+uuid = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+csv = { workspace = true }
+regex = { workspace = true }
+serde = { workspace = true }
+
+[dev-dependencies]
+qtrial-shared = { path = "../shared", features = ["testing"] }
+tokio = { workspace = true }
+sqlx = { workspace = true }
+uuid = { workspace = true }
+
+[[test]]
+name = "seed_loader"
+path = "tests/seed_loader.rs"
+required-features = []
