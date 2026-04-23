@@ -96,7 +96,7 @@ async fn seed_full_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Tena
         )
         .bind(club_id)
         .bind(event_id)
-        .bind(day_number as i32)
+        .bind(day_number)
         // Distinct dates per day, rendered as ISO text so this test
         // file does not need to reach into chrono types directly.
         .bind(format!("2026-11-{:02}", day_number + 10))
@@ -112,7 +112,7 @@ async fn seed_full_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Tena
             )
             .bind(club_id)
             .bind(day_id)
-            .bind(trial_number as i32)
+            .bind(trial_number)
             .fetch_one(&mut **tx)
             .await
             .expect("insert trial");
