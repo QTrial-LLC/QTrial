@@ -519,6 +519,33 @@ Waitlist is modeled via `entry_lines.status = 'waitlist'` with a `waitlist_posit
 
 Seeded with AKC as the first entry; UKC added when we extend support.
 
+#### `akc_fee_schedules`
+
+Year-scoped, per-sport AKC fee schedule used by REQ-SUB-005 fee
+calculation. AKC raises recording and service fees periodically (the
+2026 increase appears on JOVOB7 revision 10/25 and JOVRY8 revision
+10/25); modeling fees as data rather than code means future rate
+changes land as new seed rows, not code changes.
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | UUID | PK |
+| `registry_id` | UUID | FK to `registries` |
+| `sport` | ENUM `akc_fee_sport` | `obedience_conformation`, `rally`. Matches AKC's billing grouping, not the per-sport `sport` ENUM used elsewhere in the schema. |
+| `effective_year` | INT | |
+| `recording_fee_first_entry` | NUMERIC(5,2) | Obedience/Conformation charges $0.50 on the first entry per dog; Rally has no separate recording fee and stores NULL. |
+| `recording_fee_additional` | NUMERIC(5,2) | Obedience/Conformation charges $0.00 on additional entries; Rally stores NULL. |
+| `service_fee_first_entry` | NUMERIC(5,2) | Per-entry service fee. For Rally, both first- and additional-entry columns carry the same flat rate so downstream callers do not need sport-specific branching. |
+| `service_fee_additional` | NUMERIC(5,2) | |
+| `event_secretary_fee` | NUMERIC(5,2) | $10 charged when the club's year-to-date event count exceeds the threshold. |
+| `event_secretary_fee_threshold` | INT | 8 for Obedience/Conformation (JOVOB7), 12 for Rally (JOVRY8). |
+| `excluded_from_recording_fee` | TEXT[] | Entry-type codes that are NOT counted when the recording-fee total is computed (e.g. `junior_showmanship`, `sweepstakes`, `nonregular`). Pulled from JOVOB7/JOVRY8 boilerplate. |
+
+Unique on `(registry_id, sport, effective_year)`. The 2025 and 2026
+rows for both AKC sports are seeded by
+`20260419120400_seed_akc_fee_schedules.up.sql`; adding a new year is
+a new seed migration, not a schema change.
+
 #### `breed_groups`
 
 | Column | Type | Notes |
@@ -540,6 +567,7 @@ Seeded from `tblAKCGroups`.
 | `breed_group_id` | UUID | FK |
 | `name` | TEXT | |
 | `abbreviation` | TEXT | |
+| `default_height_inches` | INT | Entry-form autofill for default jump height. The per-dog authoritative value lives on `dog_trial_jump_heights`; this column is the convenience default when a new dog is added. |
 | `is_giant` | BOOL | |
 | `is_three_quarters` | BOOL | |
 | `has_variety` | BOOL | |
