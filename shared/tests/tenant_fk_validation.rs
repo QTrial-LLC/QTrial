@@ -179,12 +179,14 @@ async fn seed_tenant(tx: &mut Transaction<'_, Postgres>, label: &str) -> TenantS
     .expect("insert entry");
 
     let entry_line_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO entry_lines (club_id, entry_id, trial_class_offering_id, status) \
-         VALUES ($1, $2, $3, 'active') RETURNING id",
+        "INSERT INTO entry_lines \
+           (club_id, entry_id, trial_class_offering_id, status, handler_contact_id) \
+         VALUES ($1, $2, $3, 'active', $4) RETURNING id",
     )
     .bind(club_id)
     .bind(entry_id)
     .bind(offering_id)
+    .bind(owner_id)
     .fetch_one(&mut **tx)
     .await
     .expect("insert entry_line");

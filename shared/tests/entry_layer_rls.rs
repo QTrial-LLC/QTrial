@@ -8,10 +8,12 @@
 //! sees zero rows of the other tenant's subtree at every table.
 //!
 //! The remaining tests cover the CHECK constraints and the armband
-//! partial unique that enforce domain invariants in SQL: armband
-//! reuse across live entries is forbidden; a result row with a
-//! placement must be qualifying; a waitlist position cannot attach
-//! to a non-waitlisted line.
+//! uniqueness invariants that enforce domain rules in SQL. Armband
+//! invariants moved to armband_assignments in PR 2c-surgery: no two
+//! dogs share a number within the same series at the same trial,
+//! and no dog has two assignments in the same series at the same
+//! trial. A result row with a placement must be qualifying; a
+//! waitlist position cannot attach to a non-waitlisted line.
 
 use qtrial_shared::tenancy::{self, ParentEntity};
 use qtrial_shared::testing;
@@ -33,6 +35,7 @@ struct EntryStack {
     owner_id: Uuid,
     dog_id: Uuid,
     entry_id: Uuid,
+    armband_assignment_id: Uuid,
     entry_line_id: Uuid,
     entry_line_result_id: Uuid,
 }
@@ -168,8 +171,8 @@ async fn seed_entry_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Ent
     .expect("insert dog");
 
     let entry_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO entries (club_id, event_id, dog_id, exhibitor_user_id, owner_id, armband) \
-         VALUES ($1, $2, $3, $4, $5, 101) RETURNING id",
+        "INSERT INTO entries (club_id, event_id, dog_id, exhibitor_user_id, owner_id) \
+         VALUES ($1, $2, $3, $4, $5) RETURNING id",
     )
     .bind(club_id)
     .bind(event_id)
@@ -180,13 +183,33 @@ async fn seed_entry_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Ent
     .await
     .expect("insert entry");
 
+    // Armband lives on armband_assignments post-PR-2c-surgery, keyed
+    // by (dog, trial, series). '100' is a realistic Rally Novice A
+    // series label per DOMAIN_GLOSSARY; 101 is the first number in
+    // that series. entry_lines.armband_assignment_id below FKs here.
+    let armband_assignment_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO armband_assignments \
+           (club_id, dog_id, trial_id, armband_series, armband_number) \
+         VALUES ($1, $2, $3, '100', 101) RETURNING id",
+    )
+    .bind(club_id)
+    .bind(dog_id)
+    .bind(trial_id)
+    .fetch_one(&mut **tx)
+    .await
+    .expect("insert armband_assignment");
+
     let entry_line_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO entry_lines (club_id, entry_id, trial_class_offering_id, status) \
-         VALUES ($1, $2, $3, 'active') RETURNING id",
+        "INSERT INTO entry_lines \
+           (club_id, entry_id, trial_class_offering_id, status, \
+            handler_contact_id, armband_assignment_id) \
+         VALUES ($1, $2, $3, 'active', $4, $5) RETURNING id",
     )
     .bind(club_id)
     .bind(entry_id)
     .bind(offering_id)
+    .bind(owner_id)
+    .bind(armband_assignment_id)
     .fetch_one(&mut **tx)
     .await
     .expect("insert entry_line");
@@ -214,6 +237,7 @@ async fn seed_entry_stack(tx: &mut Transaction<'_, Postgres>, name: &str) -> Ent
         owner_id,
         dog_id,
         entry_id,
+        armband_assignment_id,
         entry_line_id,
         entry_line_result_id,
     }
@@ -278,6 +302,10 @@ async fn tenant_sees_full_entry_stack_in_own_context() {
     assert_eq!(count_visible(&mut *tx, "dogs", a.dog_id).await, 1);
     assert_eq!(count_visible(&mut *tx, "entries", a.entry_id).await, 1);
     assert_eq!(
+        count_visible(&mut *tx, "armband_assignments", a.armband_assignment_id).await,
+        1
+    );
+    assert_eq!(
         count_visible(&mut *tx, "entry_lines", a.entry_line_id).await,
         1
     );
@@ -317,6 +345,10 @@ async fn tenant_cannot_see_other_tenants_entry_stack_at_any_level() {
     assert_eq!(count_visible(&mut *tx, "owners", b.owner_id).await, 0);
     assert_eq!(count_visible(&mut *tx, "dogs", b.dog_id).await, 0);
     assert_eq!(count_visible(&mut *tx, "entries", b.entry_id).await, 0);
+    assert_eq!(
+        count_visible(&mut *tx, "armband_assignments", b.armband_assignment_id).await,
+        0
+    );
     assert_eq!(
         count_visible(&mut *tx, "entry_lines", b.entry_line_id).await,
         0
@@ -409,22 +441,33 @@ async fn tenant_cannot_discover_other_tenants_offering_ids_for_cross_tenant_line
 }
 
 #[tokio::test]
-async fn armband_is_unique_among_live_entries_in_an_event() {
-    // Two entries in the same event cannot both hold armband 42 if
-    // both are live (neither soft-deleted). Soft-deleting the first
-    // one must release the armband for reuse.
+async fn armband_is_unique_within_series_and_trial_on_armband_assignments() {
+    // Post-PR-2c-surgery, armband uniqueness lives on
+    // armband_assignments, not on entries. Two invariants enforced at
+    // the DB layer via UNIQUE indexes (see
+    // 20260424120300_create_armband_assignments.up.sql):
     //
-    // The seed already created one entry (a.entry_id) against
-    // (a.event_id, a.dog_id). Re-use that entry as "the first
-    // armband-42 entry" by UPDATE-ing its armband, which avoids
-    // colliding with the entries_event_dog_uk partial unique on
-    // (event_id, dog_id).
+    //   1. UNIQUE (trial_id, armband_series, armband_number): no two
+    //      dogs share the same armband number in the same series at
+    //      the same trial. This is the primary "can't double-assign"
+    //      invariant. Tested first.
+    //   2. UNIQUE (dog_id, trial_id, armband_series): the same dog
+    //      cannot hold two assignments in the same series at the
+    //      same trial. The same dog may hold assignments across
+    //      different series at the same trial (e.g. a dog entered
+    //      in Rally Novice and Rally Choice needs separate series
+    //      rows), but not two within one series.
+    //
+    // armband_assignments has no deleted_at column (per-trial
+    // ephemeral state per the migration header); the old
+    // soft-delete-and-reuse branch from the pre-PR-2c-surgery test
+    // has no analog here.
     let pool = testing::pool().await;
     let mut tx = pool.begin().await.expect("begin");
 
     let a = seed_entry_stack(&mut tx, "Tenant A").await;
 
-    // Seed a second owner and dog for the second entry.
+    // Second dog in the same club for the cross-dog collision test.
     let second_owner_id: Uuid = sqlx::query_scalar(
         "INSERT INTO owners (club_id, last_name, first_name) \
          VALUES ($1, 'Second', 'Owner') RETURNING id",
@@ -450,65 +493,85 @@ async fn armband_is_unique_among_live_entries_in_an_event() {
     .await
     .expect("second dog");
 
-    // Re-use the seed entry as the first armband-42 holder.
-    sqlx::query("UPDATE entries SET armband = 42 WHERE id = $1")
-        .bind(a.entry_id)
-        .execute(&mut *tx)
-        .await
-        .expect("claim armband 42 on seed entry");
-
-    // Savepoint so the expected-fail INSERT does not poison the tx.
-    sqlx::query("SAVEPOINT before_duplicate")
+    // The seed helper already created (a.dog_id, a.trial_id, '100',
+    // 101). Attempt to claim (second_dog_id, a.trial_id, '100', 101)
+    // -- same series + number, different dog -- and assert reject.
+    sqlx::query("SAVEPOINT before_dup_number")
         .execute(&mut *tx)
         .await
         .expect("savepoint");
 
-    let duplicate_attempt = sqlx::query(
-        "INSERT INTO entries (club_id, event_id, dog_id, exhibitor_user_id, owner_id, armband) \
-         VALUES ($1, $2, $3, $4, $5, 42)",
+    let duplicate_number = sqlx::query(
+        "INSERT INTO armband_assignments \
+           (club_id, dog_id, trial_id, armband_series, armband_number) \
+         VALUES ($1, $2, $3, '100', 101)",
     )
     .bind(a.club_id)
-    .bind(a.event_id)
     .bind(second_dog_id)
-    .bind(a.user_id)
-    .bind(second_owner_id)
+    .bind(a.trial_id)
     .execute(&mut *tx)
     .await;
 
-    assert!(
-        duplicate_attempt.is_err(),
-        "duplicate armband on live entries must be rejected"
-    );
+    match duplicate_number {
+        Err(sqlx::Error::Database(dberr)) if dberr.code().as_deref() == Some("23505") => {
+            // Expected: unique violation on
+            // armband_assignments_trial_series_number_uk.
+        }
+        Err(other) => panic!("expected 23505 unique violation, got {other:?}"),
+        Ok(_) => panic!("duplicate (trial, series, number) unexpectedly succeeded"),
+    }
 
-    sqlx::query("ROLLBACK TO SAVEPOINT before_duplicate")
+    sqlx::query("ROLLBACK TO SAVEPOINT before_dup_number")
         .execute(&mut *tx)
         .await
         .expect("rollback savepoint");
 
-    // Soft-delete the seed entry. Armband should be freed.
-    sqlx::query("UPDATE entries SET deleted_at = NOW() WHERE id = $1")
-        .bind(a.entry_id)
-        .execute(&mut *tx)
-        .await
-        .expect("soft-delete seed entry");
-
-    let reuse_attempt = sqlx::query(
-        "INSERT INTO entries (club_id, event_id, dog_id, exhibitor_user_id, owner_id, armband) \
-         VALUES ($1, $2, $3, $4, $5, 42)",
+    // Different number in the same series for a different dog should
+    // succeed.
+    sqlx::query(
+        "INSERT INTO armband_assignments \
+           (club_id, dog_id, trial_id, armband_series, armband_number) \
+         VALUES ($1, $2, $3, '100', 102)",
     )
     .bind(a.club_id)
-    .bind(a.event_id)
     .bind(second_dog_id)
-    .bind(a.user_id)
-    .bind(second_owner_id)
+    .bind(a.trial_id)
+    .execute(&mut *tx)
+    .await
+    .expect("second dog gets a new armband number in the same series");
+
+    // Secondary invariant: UNIQUE (dog_id, trial_id, armband_series).
+    // The seed dog already has one '100' series row. Attempt a
+    // second '100' row for the same dog at the same trial.
+    sqlx::query("SAVEPOINT before_dup_series_for_dog")
+        .execute(&mut *tx)
+        .await
+        .expect("savepoint");
+
+    let duplicate_series_for_dog = sqlx::query(
+        "INSERT INTO armband_assignments \
+           (club_id, dog_id, trial_id, armband_series, armband_number) \
+         VALUES ($1, $2, $3, '100', 999)",
+    )
+    .bind(a.club_id)
+    .bind(a.dog_id)
+    .bind(a.trial_id)
     .execute(&mut *tx)
     .await;
 
-    assert!(
-        reuse_attempt.is_ok(),
-        "after soft-deleting the first entry the partial unique index \
-         must allow armband 42 to be reassigned, got: {reuse_attempt:?}"
-    );
+    match duplicate_series_for_dog {
+        Err(sqlx::Error::Database(dberr)) if dberr.code().as_deref() == Some("23505") => {
+            // Expected: unique violation on
+            // armband_assignments_dog_trial_series_uk.
+        }
+        Err(other) => panic!("expected 23505 unique violation, got {other:?}"),
+        Ok(_) => panic!("same (dog, trial, series) twice unexpectedly succeeded"),
+    }
+
+    sqlx::query("ROLLBACK TO SAVEPOINT before_dup_series_for_dog")
+        .execute(&mut *tx)
+        .await
+        .expect("rollback savepoint");
 }
 
 #[tokio::test]
@@ -548,12 +611,14 @@ async fn waitlist_position_only_attaches_to_waitlisted_lines() {
 
     let bad = sqlx::query(
         "INSERT INTO entry_lines \
-           (club_id, entry_id, trial_class_offering_id, status, waitlist_position) \
-         VALUES ($1, $2, $3, 'active', 5)",
+           (club_id, entry_id, trial_class_offering_id, status, \
+            handler_contact_id, waitlist_position) \
+         VALUES ($1, $2, $3, 'active', $4, 5)",
     )
     .bind(a.club_id)
     .bind(a.entry_id)
     .bind(second_offering_id)
+    .bind(a.owner_id)
     .execute(&mut *tx)
     .await;
 
@@ -569,12 +634,14 @@ async fn waitlist_position_only_attaches_to_waitlisted_lines() {
 
     let good = sqlx::query(
         "INSERT INTO entry_lines \
-           (club_id, entry_id, trial_class_offering_id, status, waitlist_position) \
-         VALUES ($1, $2, $3, 'waitlist', 5)",
+           (club_id, entry_id, trial_class_offering_id, status, \
+            handler_contact_id, waitlist_position) \
+         VALUES ($1, $2, $3, 'waitlist', $4, 5)",
     )
     .bind(a.club_id)
     .bind(a.entry_id)
     .bind(second_offering_id)
+    .bind(a.owner_id)
     .execute(&mut *tx)
     .await;
 
@@ -659,12 +726,14 @@ async fn placement_requires_qualifying_score() {
     .expect("second offering");
 
     let second_line_id: Uuid = sqlx::query_scalar(
-        "INSERT INTO entry_lines (club_id, entry_id, trial_class_offering_id, status) \
-         VALUES ($1, $2, $3, 'active') RETURNING id",
+        "INSERT INTO entry_lines \
+           (club_id, entry_id, trial_class_offering_id, status, handler_contact_id) \
+         VALUES ($1, $2, $3, 'active', $4) RETURNING id",
     )
     .bind(a.club_id)
     .bind(a.entry_id)
     .bind(second_offering_id)
+    .bind(a.owner_id)
     .fetch_one(&mut *tx)
     .await
     .expect("second entry_line");
