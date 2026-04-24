@@ -39,6 +39,8 @@ struct TenantStack {
     dog_id: Uuid,
     entry_id: Uuid,
     entry_line_id: Uuid,
+    payment_id: Uuid,
+    armband_assignment_id: Uuid,
 }
 
 async fn seed_tenant(tx: &mut Transaction<'_, Postgres>, label: &str) -> TenantStack {
@@ -187,6 +189,32 @@ async fn seed_tenant(tx: &mut Transaction<'_, Postgres>, label: &str) -> TenantS
     .await
     .expect("insert entry_line");
 
+    // payments and armband_assignments land in PR 2b; both are FK
+    // targets of future tenant-scoped writes (payments from refunds,
+    // armband_assignments from entry_lines.armband_assignment_id in
+    // PR 2c), so fk_validation covers them too. Seed one of each per
+    // tenant so cross-tenant targeting tests have concrete IDs.
+    let payment_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO payments (club_id, entry_id, amount, method) \
+         VALUES ($1, $2, 10.00, 'check') RETURNING id",
+    )
+    .bind(club_id)
+    .bind(entry_id)
+    .fetch_one(&mut **tx)
+    .await
+    .expect("insert payment");
+
+    let armband_assignment_id: Uuid = sqlx::query_scalar(
+        "INSERT INTO armband_assignments (club_id, dog_id, trial_id, armband_series, armband_number) \
+         VALUES ($1, $2, $3, '500', 509) RETURNING id",
+    )
+    .bind(club_id)
+    .bind(dog_id)
+    .bind(trial_id)
+    .fetch_one(&mut **tx)
+    .await
+    .expect("insert armband_assignment");
+
     TenantStack {
         club_id,
         admin_user_id,
@@ -200,6 +228,8 @@ async fn seed_tenant(tx: &mut Transaction<'_, Postgres>, label: &str) -> TenantS
         dog_id,
         entry_id,
         entry_line_id,
+        payment_id,
+        armband_assignment_id,
     }
 }
 
@@ -480,4 +510,93 @@ async fn empty_targets_list_is_accepted() {
     verify_fk_targets_in_tenant(&mut *tx, &[])
         .await
         .expect("empty batch is a no-op");
+}
+
+#[tokio::test]
+async fn cross_tenant_payment_is_rejected() {
+    // PR 2b introduces refunds.payment_id. A refund created under
+    // qtrial_tenant for club A with a payment_id belonging to
+    // club B would otherwise pass Postgres's FK check because FK
+    // integrity bypasses RLS. The helper closes that hole: under
+    // A's tenant context, B's payment_id is invisible and the
+    // EXISTS check returns false.
+    let pool = testing::pool().await;
+    let mut tx = pool.begin().await.expect("begin");
+
+    let pair = seed_cross_tenant_pair(&mut tx).await;
+    enter_tenant_context(&mut tx, pair.a.admin_user_id, pair.a.club_id).await;
+
+    let targets = vec![FkTarget {
+        table: TenantTable::Payment,
+        id: pair.b.payment_id,
+    }];
+
+    assert_invalid(
+        verify_fk_targets_in_tenant(&mut *tx, &targets).await,
+        TenantTable::Payment,
+        pair.b.payment_id,
+    );
+}
+
+#[tokio::test]
+async fn happy_path_accepts_same_tenant_payment() {
+    let pool = testing::pool().await;
+    let mut tx = pool.begin().await.expect("begin");
+
+    let pair = seed_cross_tenant_pair(&mut tx).await;
+    enter_tenant_context(&mut tx, pair.a.admin_user_id, pair.a.club_id).await;
+
+    verify_fk_targets_in_tenant(
+        &mut *tx,
+        &[FkTarget {
+            table: TenantTable::Payment,
+            id: pair.a.payment_id,
+        }],
+    )
+    .await
+    .expect("same-tenant payment accepted");
+}
+
+#[tokio::test]
+async fn cross_tenant_armband_assignment_is_rejected() {
+    // entry_lines.armband_assignment_id lands in PR 2c, so this
+    // test protects against the same FK-bypass-RLS hole for
+    // armband_assignments that the Payment test covers for
+    // payments. armband_assignments has no deleted_at; the CASE
+    // arm correctly omits the deleted_at filter.
+    let pool = testing::pool().await;
+    let mut tx = pool.begin().await.expect("begin");
+
+    let pair = seed_cross_tenant_pair(&mut tx).await;
+    enter_tenant_context(&mut tx, pair.a.admin_user_id, pair.a.club_id).await;
+
+    let targets = vec![FkTarget {
+        table: TenantTable::ArmbandAssignment,
+        id: pair.b.armband_assignment_id,
+    }];
+
+    assert_invalid(
+        verify_fk_targets_in_tenant(&mut *tx, &targets).await,
+        TenantTable::ArmbandAssignment,
+        pair.b.armband_assignment_id,
+    );
+}
+
+#[tokio::test]
+async fn happy_path_accepts_same_tenant_armband_assignment() {
+    let pool = testing::pool().await;
+    let mut tx = pool.begin().await.expect("begin");
+
+    let pair = seed_cross_tenant_pair(&mut tx).await;
+    enter_tenant_context(&mut tx, pair.a.admin_user_id, pair.a.club_id).await;
+
+    verify_fk_targets_in_tenant(
+        &mut *tx,
+        &[FkTarget {
+            table: TenantTable::ArmbandAssignment,
+            id: pair.a.armband_assignment_id,
+        }],
+    )
+    .await
+    .expect("same-tenant armband_assignment accepted");
 }
