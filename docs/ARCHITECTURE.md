@@ -146,7 +146,7 @@ The document catalog has grown as artifact review progressed. The PDFs QTrial pr
 3. **Running schedule / judging schedule** - per day, pre-trial; reference: `Nov_2025_AKC_Rally_Trial_Judging_schedule.pdf`
 4. **Catalog (pre-trial)** - per trial day
 5. **Marked catalog** - post-trial, one of the three AKC submission artifacts (REQ-SUB-001); reference: `Nov_2025_Sat_Marked_Catalog.pdf`
-6. **Judges books** - pre-trial with cover, post-trial with scores (REQ-SUB-002); reference: `Judges_Book_Cover_Sat.pdf`
+6. **Judges books** - pre-trial with cover, post-trial with scores (REQ-SUB-002); reference: `gfkc_rally_judges_book_cover_2025_11_15_sat.pdf`
 7. **Form JOVRY8 / Obedience equivalent** - post-trial, one of the three AKC submission artifacts (REQ-SUB-003); reference: `Trial_Summary_report.pdf`
 8. **Steward board** - per class, pre-trial; reference: `Stewards_BOard_Sat.pdf`
 9. **Scribe sheets** - Obedience exercise-by-exercise scoring

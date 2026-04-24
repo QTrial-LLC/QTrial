@@ -35,6 +35,26 @@ account setup.
 
 ## Recently completed
 
+### AKC artifact organization and 2026-04-23 Q&A note (2026-04-23)
+
+- 2026-04-23: PR (pending) - chore/akc-artifacts-and-research-2026-04-23 -
+  renamed and organized 11 AKC reference PDFs under
+  `db/seed/akc/akc_forms/` (8 blank AKC forms) and
+  `db/seed/akc/sample_artifacts/` (3 filled GFKC artifacts),
+  added README files for both directories explaining the naming
+  convention and what each file is, renamed the two email-
+  transcript PDFs under `docs/research/attachments/`, and wrote
+  `docs/research/2026-04-23-deborah-round-2-answers.md` distilling
+  Deborah's annotated answers to Robare's eight follow-up
+  questions. Five design-doc references to the old
+  `Judges_Book_Cover_Sat.pdf` filename updated to the new
+  `gfkc_rally_judges_book_cover_2025_11_15_sat.pdf`; the one
+  historical reference in the 2026-04-19 research note is left
+  frozen in time. AEDSQ1 filename correction: Robare's placement
+  filename encoded `0615` but the form is actually the
+  Disqualification for Attacking a Person form revision 11/19;
+  corrected on rename.
+
 ### PR 2a: reference-data foundation (2026-04-23)
 
 - 2026-04-23: PR #12 (pending) - feat/reference-data-foundation -
@@ -132,6 +152,55 @@ post-2a main state.
 Architecture and process decisions made during planning and build,
 with rationale. This section prevents re-litigating settled
 questions.
+
+### 2026-04-23: Cross-tenant dog identity deferred to conformation work
+
+**Decision:** QTrial does NOT maintain a shared cross-club dog
+identity for MVP. Each club's dog directory is standalone for
+the Obedience and Rally MVP. A cross-club dog model is required
+for the post-MVP conformation work and remains on the long-term
+roadmap.
+
+**Rationale:** Per Deborah's Q8 answer (2026-04-23), trial
+secretaries running Obedience and Rally treat dogs as unrelated
+across clubs at the operational level; the data they need lives
+in the entry form for that specific club's trial. The legitimate
+cross-club continuity case she identified is cluster trials,
+which are conformation-only today and run by superintendents
+(two companies have a monopoly on that segment). Conformation
+is a future QTrial release goal, and the cross-club dog model
+is the right thing to build alongside that work, not before it.
+
+For MVP, this means:
+  - Each club's dog directory remains standalone (current
+    Phase 0 model is correct)
+  - The dog dedup-across-tenants concern in DATA_MODEL.md "Open
+    questions / pending decisions" item 3 is deferred, not
+    closed
+  - When conformation work scopes up, the cross-club dog model
+    is part of that scope (likely involving a shared
+    registered_dogs table or similar, with attention to RLS
+    implications)
+
+**Evidence:** docs/research/2026-04-23-deborah-round-2-answers.md
+Q8.
+
+### 2026-04-23: Combined-award discount logic moves to MVP
+
+**Decision:** The combined_award_groups reference table (or
+equivalent modeling) moves from P2 to PR 2c MVP scope.
+
+**Rationale:** Per Deborah's Q4 answer (2026-04-23), the
+additional-entry discount applies to ANY double or triple Q
+in B classes in one trial, including Open B + Utility B
+(going for HC and eventually OTCH). The original premium-list
+wording "Master + Choice, RAE & RACH Title entries" was
+too narrow. Modeling the combined-award groupings as
+reference data is the cleanest way to drive both the fee
+discount logic and the future award computation.
+
+**Evidence:** docs/research/2026-04-23-deborah-round-2-answers.md
+Q4.
 
 ### 2026-04-23: PR 2a reference tables use permissive-read RLS
 
@@ -526,13 +595,32 @@ Consistent with human authorship style across the codebase.
 
 **Table alterations to resolve in PR 2c:**
 
-- dogs column rework
+- dogs column rework (includes retiring `dogs.co_owners_text`
+  now that dog_ownerships lands in PR 2b; the free-text field
+  is superseded by the structured junction per DATA_MODEL.md §4)
 - entries.armband drop
 - entry_lines handler columns
 - entry_line_results timing/scoring
 - events.dogs_per_hour_override + per_series enum value
 - dog_titles.source enum extension (parsed_from_registered_name)
-- breed restrictions on events
+- breed restrictions on events, including an explicit
+  `events.mixed_breeds_allowed` BOOL alongside the breed-list
+  approach (per Deborah's 2026-04-23 item 3 follow-up; the
+  All-American Dog canonical breed is the trigger value for
+  that flag)
+- combined_award_groups reference table (was P2; moved to PR 2c
+  per the 2026-04-23 Decisions log entry above, driven by
+  Deborah's Q4 answer widening the additional-entry discount
+  scope to any B-class combination contributing to a combined
+  award)
+- `events.trial_chair_user_id` and `events.event_secretary_user_id`
+  (per Deborah's Q5 answer; two distinct roles, often two
+  distinct people)
+- `clubs.officers_json` JSONB (per Deborah's Q6; club-level,
+  updated yearly with elections; historical preservation via
+  a future `club_officers` table is post-MVP)
+- `trial_awards.award_type` ENUM extension to include `rhtq`
+  (Rally High Triple Qualifying) per Deborah's Q3 confirmation
 
 **Reference-data follow-ups (small, post-PR 2a):**
 
@@ -559,7 +647,12 @@ Consistent with human authorship style across the codebase.
 
 ### Open Q&A items with Deborah
 
-Tracked in-doc so they survive into future Q&A rounds:
+Tracked in-doc so they survive into future Q&A rounds. The
+2026-04-23 round-2 email addressed Robare's eight design-focused
+follow-up questions (captured in
+`docs/research/2026-04-23-deborah-round-2-answers.md`); most of
+the items in the list below were not part of that round and
+remain open.
 
 - Paper-entry physical workflow (folder/filing, check-stapling,
   incomplete-entry handling)
@@ -567,9 +660,17 @@ Tracked in-doc so they survive into future Q&A rounds:
 - Refund handling for check payments (manual vs bill-pay)
 - Print logistics (home printer vs print shop)
 - Judge communication pattern (email vs mail)
-- AKC move-up deadline regulation specifics for 2026
 - Missing Judges_Book_Sat.pdf body pages (needed for Phase 3
   judges book generation)
+- Obedience judges-book templates from AKC's January 1, 2019 set
+  (link in Deborah's 2026-04-23 email; only the Rally templates
+  are in the repo today)
+
+Resolved in 2026-04-23 round-2 email:
+
+- AKC move-up regulation citation: Rally Regulations Chapter 1,
+  Section Transfers (per Q7 answer; authoritative PDF is
+  `db/seed/akc/akc_forms/akc_rally_move_up_transfer_form_2017_11.pdf`).
 
 ---
 
