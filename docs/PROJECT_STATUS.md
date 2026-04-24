@@ -1,39 +1,36 @@
 # QTrial Project Status
 
-**Last updated:** 2026-04-24
-**Current phase:** Phase 0 + PR 2a + PR 2b complete; PR 2c queued
+**Last updated:** 2026-04-25
+**Current phase:** Phase 0 + PR 2a + PR 2b + PR 2c-surgery complete; PR 2c-beta queued
 **Maintained by:** Robare Pruyn, with Claude assistance
 
 ---
 
 ## Where we are right now
 
-PR 2b (tenant-scoped table gap-fill) is complete. Main now has 42
-migration pairs and 44 tables: the 35 from PR 2a plus nine new
-PR 2b tables (platform_admins, dog_ownerships,
-dog_trial_jump_heights, armband_assignments, email_templates,
-submission_records, payments, refunds, audit_log). The 8
-tenant-scoped tables (all except platform_admins) carry RLS
-policies matching the Phase 0 direct-club_id pattern, and
-`shared/tests/tenant_scoped_gap_fill_rls.rs` gates the 25-assertion
-RLS behavior surface. `shared/src/fk_validation.rs::TenantTable`
-gains Payment and ArmbandAssignment variants closing the FK-bypass
-hole for refunds (PR 2b) and for entry_lines.armband_assignment_id
-(PR 2c). `git grep -i offleash` outside historical research notes
-still returns zero.
+PR 2c-surgery (entry-pipeline reconciliation) is complete. Main
+now has 48 migration pairs and 44 tables: the 42 / 44 from post-
+PR 2b plus six PR 2c-surgery migrations that reshape existing
+tables without adding new ones. Entries sheds armband /
+handler_name / junior_handler_number / is_senior_handler; entry
+lines gain handler_contact_id (NOT NULL), armband_assignment_id
+(nullable, FK to armband_assignments from PR 2b), and
+junior_handler_akc_number; entry_line_results gains time_started,
+time_finished, time_on_course, rach_points; entry_lines.jump_
+height_inches is dropped (jump height now lives on
+dog_trial_jump_heights per (dog, trial) per Deborah's 2026-04-20
+Q1); dog_title_source ENUM gains parsed_from_registered_name.
+DATA_MODEL.md §5 reconciled to fold the migration-authoritative
+transfer_intent columns / coupled CHECK and
+judge_annotation_text into the spec.
 
-PR 2c is the next scheduled work: the seven table alterations
-(dogs column rework including co_owners_text retirement,
-entries.armband drop, entry_lines handler columns including
-armband_assignment_id, entry_line_results timing/scoring,
-events.dogs_per_hour_override + per_series enum value,
-dog_titles.source enum extension, breed restrictions on events),
-plus the items driven by Deborah's 2026-04-23 round-2 answers
-(events.trial_chair_user_id + event_secretary_user_id,
-clubs.officers_json, combined_award_groups, mixed_breeds_allowed,
-trial_awards.award_type rhtq addition), plus the
-trial_class_offerings.judges_book_pdf_object_key column the
-PR 2b DATA_MODEL updates call out.
+The previous "PR 2c" bundle was split into three smaller PRs at
+CHECKPOINT 0: PR 2c-surgery (this, done), PR 2c-beta (dogs
+column rework, queued), and PR 2d (events / clubs / offerings /
+awards + Deborah 2026-04-23 plumbing, queued).
+
+`git grep -i offleash` outside historical research notes and the
+rename Decisions-log entries still returns zero.
 
 Separately, QTrial LLC formation is in flight via Northwest
 Registered Agent (NY domestic, Warren County principal office,
@@ -44,6 +41,32 @@ account setup.
 ---
 
 ## Recently completed
+
+### PR 2c-surgery: entry-pipeline reconciliation (2026-04-25)
+
+- 2026-04-25: PR (pending) - feat/entry-pipeline-surgery -
+  reconciles entries, entry_lines, entry_line_results, and the
+  dog_title_source enum against DATA_MODEL.md §5. Six migrations
+  (48 total, up from 42): two add-column (entry_lines handler +
+  armband columns; entry_line_results timing + rach_points), three
+  drop-column (entries.armband, entries handler columns,
+  entry_lines.jump_height_inches), one enum extension
+  (dog_title_source adds parsed_from_registered_name). Handler
+  identity moves from entries to entry_lines; armband routes
+  through armband_assignments (PR 2b) via
+  entry_lines.armband_assignment_id; jump height lives on
+  dog_trial_jump_heights (PR 2b) keyed by (dog, trial).
+  entry_layer_rls.rs seed helper rewritten to match the new shape;
+  armband_is_unique_among_live_entries_in_an_event replaced by
+  armband_is_unique_within_series_and_trial_on_armband_assignments
+  covering both armband_assignments UNIQUE constraints.
+  tenant_fk_validation.rs seed fixture gains one-line
+  handler_contact_id binding. DATA_MODEL.md §5 reconciled against
+  migration-authoritative extras (transfer_intent columns +
+  coupled CHECK on entry_lines; judge_annotation_text on
+  entry_line_results). Dogs table reconciliation deferred to
+  PR 2c-beta; events/clubs/offerings/awards additive work deferred
+  to PR 2d.
 
 ### PR 2b: tenant-scoped table gap-fill (2026-04-24)
 
@@ -157,10 +180,11 @@ account setup.
 
 ## In flight
 
-PR 2b (tenant-scoped table gap-fill) is open for review on
-feat/tenant-scoped-gap-fill. PR 2c (table alterations + armband
-restructure + combined-award + trial-chair/secretary plumbing) is
-next; prompt to be written against post-2b main.
+PR 2c-surgery (entry-pipeline reconciliation) is open for review
+on feat/entry-pipeline-surgery. PR 2c-beta (dogs column rework)
+and PR 2d (events / clubs / offerings / awards + Deborah 2026-04-23
+plumbing) are queued; prompts to be written against post-2c-surgery
+main.
 
 ---
 
@@ -188,6 +212,84 @@ next; prompt to be written against post-2b main.
 Architecture and process decisions made during planning and build,
 with rationale. This section prevents re-litigating settled
 questions.
+
+### 2026-04-25: Entry-pipeline identity routing (handler, armband, jump height)
+
+**Decision:** Handler identity, armband, and jump height are each
+modeled on the row that carries them correctly:
+
+- Handler identity lives on entry_lines (handler_contact_id +
+  junior_handler_akc_number). Not on entries, because a dog running
+  multiple classes at the same event may have different handlers
+  per class.
+- Armband routes through armband_assignments (PR 2b) via
+  entry_lines.armband_assignment_id. Not as a raw INT on entries,
+  because the per-series modeling supports Obedience's 500-series
+  convention where Advanced B, Excellent B, and Master dogs share
+  armbands within a series.
+- Jump height lives on dog_trial_jump_heights (PR 2b) keyed by
+  (dog, trial). Not on entry_lines, because per Deborah's
+  2026-04-20 Q1 jump height never changes between classes on the
+  same day for the same dog; the rare in-ring judge override must
+  update all of the dog's remaining entries at the trial.
+
+**Rationale:** The Phase 0 migrations (PR #7) predate Deborah's
+2026-04-20 Q&A and landed these three concerns on the wrong rows.
+PR 2c-surgery physically realizes the DATA_MODEL.md §5 shape that
+the Q&A already locked in.
+
+**Evidence:** PR 2c-surgery migrations
+20260425120200_drop_entries_armband,
+20260425120300_drop_entries_handler_columns,
+20260425120400_drop_entry_lines_jump_height,
+20260425120000_add_entry_lines_handler_and_armband_columns;
+DATA_MODEL.md §5.
+
+### 2026-04-25: Postgres ENUM additions are one-way; down migrations are no-ops
+
+**Decision:** When a migration adds a value to a Postgres ENUM type,
+the matching down migration is a no-op with an explanatory comment.
+Postgres provides no DROP VALUE or equivalent mechanism.
+
+**Rationale:** The full workaround (drop type, recreate without the
+value, alter every dependent column to TEXT and back) is heavy,
+risks breaking app code that relies on the ENUM's typed form, and
+is almost never what a rollback actually wants. A no-op down with
+a clear comment is the honest shape and preserves the round-trip
+contract for all other migrations in the same PR.
+
+**Application:** PR 2c-surgery's dog_title_source enum extension
+adds parsed_from_registered_name. The down migration documents the
+one-way behavior. Future ENUM additions follow the same pattern.
+
+**Evidence:** 20260425120500_extend_dog_title_source_parsed_from_registered_name.down.sql.
+
+### 2026-04-25: Migration-authoritative columns folded into DATA_MODEL
+
+**Policy:** When a Phase 0 migration carries columns or constraints
+not present in DATA_MODEL.md, the first move is to evaluate the
+migration's rationale (usually captured in the file's header
+comment). If the rationale holds up, the migration is authoritative
+and DATA_MODEL catches up. If the rationale doesn't hold, the
+migration loses the extra and the spec stays.
+
+**Application to PR 2c-surgery:**
+entry_lines.transfer_intent_target_class_id,
+entry_lines.transfer_intent_trigger_title_code, the
+entry_lines_transfer_intent_coupled CHECK, and
+entry_line_results.judge_annotation_text all had migration-header
+rationale that held up on re-read. All four fold into DATA_MODEL.md
+§5. No migration changes.
+
+**Rationale:** Phase 0 migrations were written before the
+DATA_MODEL was refined via Deborah's Q&A. Some columns that
+landed in migrations are legitimate additions the spec should
+reflect; others are drift. The policy distinguishes.
+
+**Evidence:** DATA_MODEL.md §5 additions in this PR; migration
+header comments on
+20260420120500_create_entry_lines.up.sql lines 33-39 and
+20260420120600_create_entry_line_results.up.sql lines 1-8.
 
 ### 2026-04-24: submission_records scope is electronic submission only
 
@@ -684,51 +786,33 @@ Consistent with human authorship style across the codebase.
 
 **Tenant-scoped tables to resolve in PR 2b:** DONE 2026-04-24.
 
-**Table alterations to resolve in PR 2c:**
+**Table alterations to resolve in PR 2c-surgery (entry pipeline):** DONE 2026-04-25.
 
-- dogs column rework (includes retiring `dogs.co_owners_text`
-  now that dog_ownerships lands in PR 2b; the free-text field
-  is superseded by the structured junction per DATA_MODEL.md §4)
-- entries.armband drop
-- entry_lines handler columns, including the
-  `armband_assignment_id` FK to armband_assignments (the
-  TenantTable variant for ArmbandAssignment already landed in
-  PR 2b in anticipation)
-- entry_line_results timing/scoring
+**Table alterations to resolve in PR 2c-beta (dogs):**
+
+- dogs column rework (add registration_type, parsed_* columns,
+  breed FK constraints, drop co_owners_text now that
+  dog_ownerships from PR 2b has landed)
+
+**Table alterations to resolve in PR 2d (events / clubs / offerings /
+awards):**
+
 - events.dogs_per_hour_override + per_series enum value
-- dog_titles.source enum extension (parsed_from_registered_name)
-- breed restrictions on events, including an explicit
-  `events.mixed_breeds_allowed` BOOL alongside the breed-list
-  approach (per Deborah's 2026-04-23 item 3 follow-up; the
-  All-American Dog canonical breed is the trigger value for
-  that flag)
-- combined_award_groups reference table (was P2; moved to PR 2c
-  per the 2026-04-23 Decisions log entry above, driven by
-  Deborah's Q4 answer widening the additional-entry discount
-  scope to any B-class combination contributing to a combined
-  award)
-- `events.trial_chair_user_id` and `events.event_secretary_user_id`
-  (per Deborah's Q5 answer; two distinct roles, often two
-  distinct people)
-- `clubs.officers_json` JSONB (per Deborah's Q6; club-level,
-  updated yearly with elections; historical preservation via
-  a future `club_officers` table is post-MVP)
-- `trial_awards.award_type` ENUM extension to include `rhtq`
-  (Rally High Triple Qualifying) per Deborah's Q3 confirmation
-- `trial_class_offerings.judges_book_pdf_object_key` TEXT
-  nullable. S3 key for the pre-trial blank judges-book PDF
-  generated by QTrial for printing. Rally Master's PDF also
-  carries the post-Master HIT/HT summary pages (per Q1 working
-  assumption: render as final pages of the Master book PDF; no
-  schema line needed for the summary itself).
-- Post-trial signed-scan handling for judges books: OPEN QUESTION
-  for PR 2c scoping. Options under consideration: (a) overwrite
-  `judges_book_pdf_object_key` at scan time (simplest; MVP loses
-  pre-signing history, acceptable for first-real-use); (b) sibling
-  `judges_book_signed_object_key` column (keeps both artifacts);
-  (c) `judges_book_scanned_at TIMESTAMPTZ` for state-in-place
-  plus sibling column. Working assumption pending PR 2c scope:
-  overwrite (a).
+- events.trial_chair_user_id and events.event_secretary_user_id
+  (per Deborah's Q5 answer)
+- events breed restrictions, including events.mixed_breeds_allowed
+  BOOL alongside the breed-list approach (Deborah's item 3 follow-up)
+- combined_award_groups reference table (was P2; driven by Deborah's
+  Q4 widening of the additional-entry discount scope)
+- clubs.officers_json JSONB (per Deborah's Q6)
+- trial_awards.award_type ENUM extension to include rhtq (Rally High
+  Triple Qualifying; per Deborah's Q3)
+- trial_class_offerings.judges_book_pdf_object_key TEXT (pre-trial
+  blank PDF path; Rally Master book also carries post-Master HIT/HT
+  summary pages)
+- Post-trial signed-scan handling for judges books (OPEN QUESTION for
+  PR 2d scoping; three options described in the 2026-04-24 PROJECT
+  STATUS entry; working assumption: overwrite)
 
 **Reference-data follow-ups (small, post-PR 2a):**
 
@@ -786,18 +870,27 @@ Resolved in 2026-04-23 round-2 email:
 
 In rough priority order:
 
-1. **PR 2b review and merge**: feat/tenant-scoped-gap-fill is open
-   for review. Merge lands once CI passes and review clears.
-2. **PR 2c**: table alterations + armband restructure + breed
-   restrictions + Deborah 2026-04-23 plumbing (trial chair/secretary
-   columns, officers_json, combined_award_groups, mixed_breeds_allowed,
-   rhtq enum, judges_book_pdf_object_key, signed-scan handling
-   decision). Prompt written against post-2b main.
-3. **Phase 1 work begins** (per ROADMAP.md): club creation and
+1. **PR 2c-surgery review and merge**:
+   feat/entry-pipeline-surgery is open for review. Merge lands once
+   CI passes and review clears.
+2. **PR 2c-beta**: feat/dogs-reconciliation (scope: dogs column
+   rework including retiring co_owners_text now that dog_ownerships
+   from PR 2b has landed; add registration_type ENUM,
+   parsed_name_root and parsed_prefix_titles / parsed_suffix_titles /
+   unparsed_title_tokens arrays, FK constraints on breed_id and
+   breed_variety_id). Prompt to be written against post-2c-surgery
+   main.
+3. **PR 2d**: events / clubs / trial_class_offerings / awards
+   additive work, including Deborah 2026-04-23 plumbing (trial
+   chair / secretary columns, officers_json, combined_award_groups,
+   mixed_breeds_allowed, rhtq enum, judges_book_pdf_object_key,
+   signed-scan handling decision). Prompt to be written against
+   post-2c-beta main.
+4. **Phase 1 work begins** (per ROADMAP.md): club creation and
    configuration, user management, event creation, trial class
    offerings, judge directory, fee configuration, basic premium
    list PDF generation.
-4. **Business/legal threadwork** in parallel: EIN, Warren County
+5. **Business/legal threadwork** in parallel: EIN, Warren County
    publication, Operating Agreement, Relay banking, AWS account.
 
 ---
