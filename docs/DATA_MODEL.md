@@ -406,13 +406,18 @@ One row per (entry × class). Each line is one class the dog is entered in at th
 | `waitlist_position` | INT | nullable, populated when on waitlist |
 | `is_alternate` | BOOL | for team alternates |
 | `is_veteran` | BOOL | |
+| `transfer_intent_target_class_id` | UUID | FK to `trial_class_offerings`, nullable. Target offering for pre-entry transfer intent when the trigger title is earned before trial start. |
+| `transfer_intent_trigger_title_code` | TEXT | nullable. Title code that triggers the transfer (e.g., `"CDX"`). |
 | `running_order_position` | INT | nullable until the running order is finalized |
 | `random_order_number` | INT | seeds the randomized portion of running order |
+
+Transfer intent is all-or-nothing: either both `transfer_intent_target_class_id` and `transfer_intent_trigger_title_code` are set, or both are null. A half-configured intent cannot fire correctly when the trigger title is earned. Enforced by the `entry_lines_transfer_intent_coupled` CHECK constraint.
 
 Notes:
 
 - Jump height is NOT on this table. It is joined from `dog_trial_jump_heights` via `(entries.dog_id, trials.id)`. Rally Choice entries do not attempt that lookup.
 - Armband is NOT stored as a raw integer on this row. It is joined from `armband_assignments` via `armband_assignment_id`. Multiple entry lines for the same dog in the same armband series share one assignment row, so they naturally share the armband value.
+- Pre-entry transfer intent is modeled via `transfer_intent_target_class_id` + `transfer_intent_trigger_title_code` rather than as parallel "Transfer to X" canonical class rows. This matches Obedience Solution's dropdown pattern (where the exhibitor pre-declares intent at entry time) while keeping the trigger explicit: the row carries both the target class and the title whose arrival fires the transfer.
 
 #### `armband_assignments`
 
@@ -454,9 +459,12 @@ One row per entry_line after the class is run.
 | `placement` | INT | 1-4 or NULL |
 | `otch_points` | INT | for Obedience qualifying dogs |
 | `om_points` | NUMERIC(5,1) | |
+| `judge_annotation_text` | TEXT | nullable. Free-text reason printed next to NQ, Excused, or DQ entries in the marked catalog ("left ring", "unmanageable", "lack of teamwork"). Distinct from `entry_lines.status_reason`: the annotation is what catalog readers see, the `status_reason` is the state-transition code. |
 | `rach_points` | INT | for Rally qualifying dogs |
 | `entered_at` | TIMESTAMPTZ | when the result was recorded |
 | `entered_by_user_id` | UUID | FK |
+
+`entered_at` and `entered_by_user_id` travel together: either both are set or both are null. A result row that records when a score was entered without recording who entered it is an audit gap. Enforced by the `entry_line_results_entered_by_and_at_together` CHECK constraint.
 
 Tie-breaking rule: placement within a class is computed as `ORDER BY score DESC, time_on_course ASC`. This matches the Nov 2025 marked catalog (Rally Excellent B page: armbands 512 and 524 both scored 100, placed 1st and 2nd respectively on time). Both Obedience and Rally track time; the judges book cover has "Time Started" and "Time Finished" fields that the judge fills in during the run.
 
