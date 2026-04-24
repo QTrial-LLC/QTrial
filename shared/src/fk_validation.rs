@@ -47,6 +47,19 @@ pub enum TenantTable {
     Team,
     Entry,
     EntryLine,
+    /// Added in PR 2b. Covers refunds.payment_id FK targets: a
+    /// refund created under qtrial_tenant with a cross-tenant
+    /// bogus payment_id UUID would otherwise pass Postgres's FK
+    /// check (FK bypasses RLS), leaving only the refund's own
+    /// club_id gated by RLS.
+    Payment,
+    /// Added in PR 2b ahead of entry_lines.armband_assignment_id
+    /// FK landing in PR 2c. Adding it now keeps the validation
+    /// surface complete and removes an easy-to-forget task from
+    /// the PR 2c scope. Unlike most tenant tables,
+    /// armband_assignments has no deleted_at column (per-trial
+    /// ephemeral state), so its CASE arm does not filter on it.
+    ArmbandAssignment,
     /// Special case: users are not tenant-scoped. A user is a valid
     /// FK target for this tenant if they hold an active role grant
     /// at the current club, not if their row has a matching club_id.
@@ -69,6 +82,8 @@ impl TenantTable {
             Self::Team => "teams",
             Self::Entry => "entries",
             Self::EntryLine => "entry_lines",
+            Self::Payment => "payments",
+            Self::ArmbandAssignment => "armband_assignments",
             Self::User => "users",
         }
     }
@@ -85,6 +100,8 @@ impl TenantTable {
             "teams" => Some(Self::Team),
             "entries" => Some(Self::Entry),
             "entry_lines" => Some(Self::EntryLine),
+            "payments" => Some(Self::Payment),
+            "armband_assignments" => Some(Self::ArmbandAssignment),
             "users" => Some(Self::User),
             _ => None,
         }
@@ -194,6 +211,14 @@ pub async fn verify_fk_targets_in_tenant<'c>(
                 WHEN 'entry_lines' THEN
                     EXISTS (SELECT 1 FROM entry_lines
                             WHERE id = t.expected_id AND deleted_at IS NULL)
+                WHEN 'payments' THEN
+                    EXISTS (SELECT 1 FROM payments
+                            WHERE id = t.expected_id AND deleted_at IS NULL)
+                WHEN 'armband_assignments' THEN
+                    -- armband_assignments has no deleted_at (per-trial
+                    -- ephemeral state), so no deleted_at IS NULL filter.
+                    EXISTS (SELECT 1 FROM armband_assignments
+                            WHERE id = t.expected_id)
                 WHEN 'users' THEN
                     EXISTS (
                         SELECT 1 FROM user_club_roles ucr

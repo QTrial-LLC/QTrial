@@ -1,29 +1,39 @@
 # QTrial Project Status
 
-**Last updated:** 2026-04-23
-**Current phase:** Phase 0 (Foundation) + PR 2a (reference-data foundation) - complete; PR 2b and PR 2c queued
+**Last updated:** 2026-04-24
+**Current phase:** Phase 0 + PR 2a + PR 2b complete; PR 2c queued
 **Maintained by:** Robare Pruyn, with Claude assistance
 
 ---
 
 ## Where we are right now
 
-PR 2a (reference-data foundation) is complete. Main now has 33
-migration pairs, 35 tables (21 Phase 0 + 14 reference), the
-qtrial-seed-loader binary populating 14 reference tables
-idempotently, five seed-loader integration tests behind a
-testcontainers fixture, a GitHub Actions CI workflow, and
-db/migrations/README.md. `git grep -i offleash` still returns zero.
-
-PR 2b is the next scheduled work: tenant-scoped tables that the
-Phase 0 schema is missing (platform_admins, dog_ownerships,
+PR 2b (tenant-scoped table gap-fill) is complete. Main now has 42
+migration pairs and 44 tables: the 35 from PR 2a plus nine new
+PR 2b tables (platform_admins, dog_ownerships,
 dog_trial_jump_heights, armband_assignments, email_templates,
-submission_records, audit_log, payments, refunds). PR 2c follows
-with the seven table alterations (dogs column rework,
-entries.armband drop, entry_lines handler columns,
-entry_line_results timing/scoring, events.dogs_per_hour_override +
-per_series enum value, dog_titles.source enum extension, breed
-restrictions on events).
+submission_records, payments, refunds, audit_log). The 8
+tenant-scoped tables (all except platform_admins) carry RLS
+policies matching the Phase 0 direct-club_id pattern, and
+`shared/tests/tenant_scoped_gap_fill_rls.rs` gates the 25-assertion
+RLS behavior surface. `shared/src/fk_validation.rs::TenantTable`
+gains Payment and ArmbandAssignment variants closing the FK-bypass
+hole for refunds (PR 2b) and for entry_lines.armband_assignment_id
+(PR 2c). `git grep -i offleash` outside historical research notes
+still returns zero.
+
+PR 2c is the next scheduled work: the seven table alterations
+(dogs column rework including co_owners_text retirement,
+entries.armband drop, entry_lines handler columns including
+armband_assignment_id, entry_line_results timing/scoring,
+events.dogs_per_hour_override + per_series enum value,
+dog_titles.source enum extension, breed restrictions on events),
+plus the items driven by Deborah's 2026-04-23 round-2 answers
+(events.trial_chair_user_id + event_secretary_user_id,
+clubs.officers_json, combined_award_groups, mixed_breeds_allowed,
+trial_awards.award_type rhtq addition), plus the
+trial_class_offerings.judges_book_pdf_object_key column the
+PR 2b DATA_MODEL updates call out.
 
 Separately, QTrial LLC formation is in flight via Northwest
 Registered Agent (NY domestic, Warren County principal office,
@@ -34,6 +44,33 @@ account setup.
 ---
 
 ## Recently completed
+
+### PR 2b: tenant-scoped table gap-fill (2026-04-24)
+
+- 2026-04-24: PR (pending) - feat/tenant-scoped-gap-fill -
+  nine new tables lifting the schema from 35 to 44 tables and
+  from 33 to 42 migrations. Eight tenant-scoped tables
+  (dog_ownerships, dog_trial_jump_heights, armband_assignments,
+  email_templates, submission_records, payments, refunds,
+  audit_log) with direct-club_id RLS matching the Phase 0
+  pattern; platform_admins deliberately non-tenant with no
+  qtrial_tenant grant. Two new ENUMs (submission_type,
+  submission_status) in the submission_records migration plus
+  refund_reason in the payments-and-refunds migration;
+  payment_method reused from the entries migration.
+  shared/src/fk_validation.rs::TenantTable gains Payment and
+  ArmbandAssignment variants (closed-by-default policy established;
+  other PR 2b tables deferred until a concrete FK target lands).
+  New test binaries: shared/tests/tenant_scoped_gap_fill_rls.rs
+  (7 tests) and 4 new cases in tenant_fk_validation.rs (14 total).
+  DATA_MODEL.md §9 submission_records updated to drop
+  judges_book_object_keys per Deborah's 2026-04-23 correction; §2
+  trial_class_offerings gains a pending judges_book_pdf_object_key
+  column (lands in PR 2c); §4 dog_trial_jump_heights verified
+  in-place (the earlier NUMERIC(4,1) migration was corrected to
+  INT per the elected-bucket semantics). CHECKPOINT 4
+  investigation caught the NUMERIC vs INT drift and the
+  judges_book artifact-location question before merge.
 
 ### AKC artifact organization and 2026-04-23 Q&A note (2026-04-23)
 
@@ -120,11 +157,10 @@ account setup.
 
 ## In flight
 
-PR 2a (reference-data foundation) is open for review on
-feat/reference-data-foundation. PR 2b (tenant-scoped table
-gap-fill) and PR 2c (table alterations + armband restructure) are
-the next two scheduled pieces; prompts to be written against
-post-2a main state.
+PR 2b (tenant-scoped table gap-fill) is open for review on
+feat/tenant-scoped-gap-fill. PR 2c (table alterations + armband
+restructure + combined-award + trial-chair/secretary plumbing) is
+next; prompt to be written against post-2b main.
 
 ---
 
@@ -152,6 +188,71 @@ post-2a main state.
 Architecture and process decisions made during planning and build,
 with rationale. This section prevents re-litigating settled
 questions.
+
+### 2026-04-24: submission_records scope is electronic submission only
+
+**Decision:** submission_records tracks the submission EVENT - the
+marked catalog PDF and the populated AKC form (JOVRY8 / Obedience
+equivalent) attached to the email to AKC. Per-class judges-book
+PDF artifacts do not live on submission_records. Pre-trial blank
+judges-book PDFs will live on trial_class_offerings (column added
+in PR 2c). Post-trial signed-scan handling is explicitly deferred
+to PR 2c scoping.
+
+**Rationale:** The two concerns are different artifacts at different
+times. submission_records is created at submission time and
+represents the email to AKC. Judges books are per-class artifacts
+generated before the trial and signed during it. Collapsing them
+onto one row mixed the concerns and broke the Q2 "AKC requires
+physical original with wet signature" constraint (the electronic
+submission never carries signed books; only the physical mail does).
+
+**Evidence:** db/migrations/20260424120500_create_submission_records.up.sql
+header comment; this PR's DATA_MODEL.md §9 and §2 updates.
+
+### 2026-04-24: dog_trial_jump_heights.jump_height_inches is INT
+
+**Decision:** dog_trial_jump_heights.jump_height_inches uses INT,
+not NUMERIC(4,1). CHECK enumerates the 15 AKC integer buckets.
+
+**Rationale:** Elected jump height is an AKC-defined integer bucket
+set per sport (Obedience: 4, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26,
+28, 30, 32, 34, 36; Rally: 4, 8, 12, 16). This is semantically
+distinct from dogs.jump_height_measured NUMERIC(4,1), which is a
+physical measurement at the withers and can be fractional. The two
+columns share a name root but not a type or meaning. Modeling the
+elected column as NUMERIC added storage cost, added semantic opacity,
+and would have required rewriting the CHECK if the future ever added
+half-inch buckets (which would then deserve their own design
+conversation). INT plus enumerated CHECK is the honest shape.
+
+**Evidence:** This PR's fix commit on
+db/migrations/20260424120200_create_dog_trial_jump_heights.up.sql;
+DOMAIN_GLOSSARY "Jump height" entry.
+
+### 2026-04-24: TenantTable enum is closed by default
+
+**Policy:** shared/src/fk_validation.rs::TenantTable admits a new
+variant only when a concrete tenant-scoped table FKs the row in
+question. New tenant tables do not automatically get variants;
+the enum stays closed at its current set to prevent accidental
+validation gaps, and new variants are added in the same PR that
+introduces the FK pointing at the new target.
+
+**Application to PR 2b:** Payment and ArmbandAssignment added
+(Payment because refunds.payment_id is in PR 2b; ArmbandAssignment
+because entry_lines.armband_assignment_id is in PR 2c). Deferred
+with no variant (no current or PR-2c-scoped FK target): DogOwnership,
+DogTrialJumpHeight, SubmissionRecord, AuditLog, EmailTemplate,
+Refund. platform_admins is non-tenant and will never get a variant.
+
+**Rationale:** Variants that exist "in case someone ever FKs to this
+table" are dead weight and invite drift between the enum and the
+real FK graph. Closed-by-default keeps the validation surface
+honest.
+
+**Evidence:** This PR's commit 2; shared/src/fk_validation.rs enum
+definition post-PR-2b.
 
 ### 2026-04-23: Cross-tenant dog identity deferred to conformation work
 
@@ -581,17 +682,7 @@ Consistent with human authorship style across the codebase.
 
 ### Code/schema gaps
 
-**Tenant-scoped tables to resolve in PR 2b:**
-
-- platform_admins
-- dog_ownerships
-- dog_trial_jump_heights
-- armband_assignments
-- email_templates
-- submission_records
-- audit_log
-- payments
-- refunds
+**Tenant-scoped tables to resolve in PR 2b:** DONE 2026-04-24.
 
 **Table alterations to resolve in PR 2c:**
 
@@ -599,7 +690,10 @@ Consistent with human authorship style across the codebase.
   now that dog_ownerships lands in PR 2b; the free-text field
   is superseded by the structured junction per DATA_MODEL.md §4)
 - entries.armband drop
-- entry_lines handler columns
+- entry_lines handler columns, including the
+  `armband_assignment_id` FK to armband_assignments (the
+  TenantTable variant for ArmbandAssignment already landed in
+  PR 2b in anticipation)
 - entry_line_results timing/scoring
 - events.dogs_per_hour_override + per_series enum value
 - dog_titles.source enum extension (parsed_from_registered_name)
@@ -621,6 +715,20 @@ Consistent with human authorship style across the codebase.
   a future `club_officers` table is post-MVP)
 - `trial_awards.award_type` ENUM extension to include `rhtq`
   (Rally High Triple Qualifying) per Deborah's Q3 confirmation
+- `trial_class_offerings.judges_book_pdf_object_key` TEXT
+  nullable. S3 key for the pre-trial blank judges-book PDF
+  generated by QTrial for printing. Rally Master's PDF also
+  carries the post-Master HIT/HT summary pages (per Q1 working
+  assumption: render as final pages of the Master book PDF; no
+  schema line needed for the summary itself).
+- Post-trial signed-scan handling for judges books: OPEN QUESTION
+  for PR 2c scoping. Options under consideration: (a) overwrite
+  `judges_book_pdf_object_key` at scan time (simplest; MVP loses
+  pre-signing history, acceptable for first-real-use); (b) sibling
+  `judges_book_signed_object_key` column (keeps both artifacts);
+  (c) `judges_book_scanned_at TIMESTAMPTZ` for state-in-place
+  plus sibling column. Working assumption pending PR 2c scope:
+  overwrite (a).
 
 **Reference-data follow-ups (small, post-PR 2a):**
 
@@ -678,19 +786,18 @@ Resolved in 2026-04-23 round-2 email:
 
 In rough priority order:
 
-1. **PR 2a review and merge**: feat/reference-data-foundation is
-   open for review. Merge lands once CI passes and review clears.
-2. **PR 2b**: tenant-scoped table gap-fill (platform_admins,
-   dog_ownerships, dog_trial_jump_heights, armband_assignments,
-   email_templates, submission_records, audit_log, payments,
-   refunds). Prompt written against post-2a main.
-3. **PR 2c**: seven table alterations + armband restructure +
-   breed restrictions on events. Prompt written against post-2b main.
-4. **Phase 1 work begins** (per ROADMAP.md): club creation and
+1. **PR 2b review and merge**: feat/tenant-scoped-gap-fill is open
+   for review. Merge lands once CI passes and review clears.
+2. **PR 2c**: table alterations + armband restructure + breed
+   restrictions + Deborah 2026-04-23 plumbing (trial chair/secretary
+   columns, officers_json, combined_award_groups, mixed_breeds_allowed,
+   rhtq enum, judges_book_pdf_object_key, signed-scan handling
+   decision). Prompt written against post-2b main.
+3. **Phase 1 work begins** (per ROADMAP.md): club creation and
    configuration, user management, event creation, trial class
    offerings, judge directory, fee configuration, basic premium
    list PDF generation.
-5. **Business/legal threadwork** in parallel: EIN, Warren County
+4. **Business/legal threadwork** in parallel: EIN, Warren County
    publication, Operating Agreement, Relay banking, AWS account.
 
 ---
