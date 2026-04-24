@@ -289,7 +289,7 @@ This is a quick index. Details live in `REQUIREMENTS.md` and `WORKFLOWS.md`.
 - **Confirmation / waitlist / cancellation / refund email** - template-driven per club (REQ-EMAIL-001)
 - **Catalog** - PDF, printed for distribution on trial day
 - **Marked catalog** - PDF, the trial catalog with final scores annotated on each entry. One of the three required AKC submission artifacts for Obedience/Rally (REQ-SUB-001). Reference: `Nov_2025_Sat_Marked_Catalog.pdf`.
-- **Judges book** - Per-class scoring book with armband, dog info, score, and Time Started / Time Finished fields. Carbonless four-part form (White: AKC, Yellow: Club, Pink: Judge, Gold: Post). One of the three required AKC submission artifacts (REQ-SUB-002). Reference: `Judges_Book_Cover_Sat.pdf`.
+- **Judges book** - Per-class scoring book with armband, dog info, score, and Time Started / Time Finished fields. Carbonless four-part form (White: AKC, Yellow: Club, Pink: Judge, Gold: Post). One of the three required AKC submission artifacts (REQ-SUB-002). Reference: `gfkc_rally_judges_book_cover_2025_11_15_sat.pdf`.
 - **Steward board** - Large-print ringside posting showing class armband order and scores for spectator and handler reference during the trial.
 - **Scribe sheet** - PDF, for Obedience exercise-by-exercise scoring
 - **Running order / judging schedule** - per class per trial, updated as move-ups and scratches occur

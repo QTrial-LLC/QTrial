@@ -510,7 +510,7 @@ For MVP (Obedience and Rally), AKC submission is PDF-based. XML-based electronic
 After the trial, the secretary assembles a submission package consisting of three artifacts:
 
 1. **Marked catalog PDF** (REQ-SUB-001) - the trial catalog with judge scores annotated on each entry. Reference format: `Nov_2025_Sat_Marked_Catalog.pdf`.
-2. **Judges books** - one per class, with armband + registered name + breed + score + time columns and a cover sheet with judge certification checkboxes. The pink carbon copy goes to AKC per distribution rules (see REQ-SUB-002). Reference: `Judges_Book_Cover_Sat.pdf`.
+2. **Judges books** - one per class, with armband + registered name + breed + score + time columns and a cover sheet with judge certification checkboxes. The pink carbon copy goes to AKC per distribution rules (see REQ-SUB-002). Reference: `gfkc_rally_judges_book_cover_2025_11_15_sat.pdf`.
 3. **AKC Report of Rally Trial (Form JOVRY8 (03/23) v1.0 Edit)** or Obedience equivalent (REQ-SUB-003), populated with event number, date, dog counts, fee calculations, and secretary contact info. Reference: `Trial_Summary_report.pdf`.
 
 Submission requirements:
@@ -605,7 +605,7 @@ Reference artifacts now in the project for downstream development:
 
 - `Nov_2025_AKC_Rally_Trial_Judging_schedule.pdf` - reference judging-schedule format
 - `Nov_2025_Sat_Marked_Catalog.pdf` - reference marked-catalog format (critical for REQ-SUB-001 PDF generation)
-- `Judges_Book_Cover_Sat.pdf` - reference judges-book cover format
+- `gfkc_rally_judges_book_cover_2025_11_15_sat.pdf` - reference judges-book cover format (in `db/seed/akc/sample_artifacts/`)
 - `Stewards_BOard_Sat.pdf` - reference steward-board format
 - `Trial_Summary_report.pdf` - reference AKC Form JOVRY8 population (critical for REQ-SUB-003 PDF form-fill)
 - `Confirmation_Letter.pdf`, `Confirmation_Letter2.pdf` - reference entry-confirmation PDF format (REQ-ENTRY-010)

@@ -138,7 +138,7 @@ Per Deborah's Q4 answer (2026-04-19), AKC Obedience and Rally submission in 2026
 
 XML-based electronic submission is Agility-only and deferred until post-MVP. AKC's Agility XML schema will drive that work when Agility support lands.
 
-**Deliverable:** QTrial produces the three-artifact PDF submission package matching the format AKC expects today (reference PDFs: `Nov_2025_Sat_Marked_Catalog.pdf`, `Judges_Book_Cover_Sat.pdf`, `Trial_Summary_report.pdf`).
+**Deliverable:** QTrial produces the three-artifact PDF submission package matching the format AKC expects today (reference PDFs: `Nov_2025_Sat_Marked_Catalog.pdf`, `gfkc_rally_judges_book_cover_2025_11_15_sat.pdf`, `Trial_Summary_report.pdf`).
 
 **Checkpoint:** Deborah submits her next trial using the QTrial-generated package. If AKC accepts it, we are done for MVP. If there are format issues, we iterate on the PDF rendering.
 
