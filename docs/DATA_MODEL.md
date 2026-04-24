@@ -1,7 +1,7 @@
 # QTrial - Data Model
 
-**Status:** Draft v0.2 - integrates Deborah's Q&A (2026-04-19 / 2026-04-20) and confirmation-letter artifact review.
-**Last updated:** 2026-04-20
+**Status:** Draft v0.3 - entry-subtree reconciliation complete (PR 2a / 2b / 2c).
+**Last updated:** 2026-04-26
 
 ---
 
@@ -285,9 +285,21 @@ Primary ownership is now modeled via `dog_ownerships` (see §3). The `owner_id` 
 | `parsed_prefix_titles` | TEXT[] | recognized prefix title codes extracted from the registered name (e.g., `{CH,GCH}`) |
 | `parsed_suffix_titles` | TEXT[] | recognized suffix title codes extracted from the registered name (e.g., `{CD,RE,JH}`) |
 | `unparsed_title_tokens` | TEXT[] | title-like tokens that did not match the catalog; preserved verbatim for trial-secretary review |
+| `jump_height_measured` | NUMERIC(4,1) | nullable. Fractional measurement from the dog's AKC jump-height card (e.g., 13.5" at the withers). Populated when the card exists. Semantically distinct from the elected integer bucket at trial time. |
+| `has_jump_height_card` | BOOL NOT NULL DEFAULT FALSE | whether the dog has an AKC jump-height card on file. Drives the entry-form default for jump height elected at trial time. |
+| `is_akc_ineligible` | BOOL NOT NULL DEFAULT FALSE | AKC disciplinary ineligibility (REQUIREMENTS §16a.1). Blocks every trial entry, not just certain classes. Distinct from per-class eligibility rules. |
+| `akc_ineligible_reason` | TEXT | nullable. AKC may not disclose the reason. |
+| `akc_ineligible_recorded_at` | TIMESTAMPTZ | nullable. Required when `is_akc_ineligible = true`, enforced by `dogs_ineligible_has_recorded_at` CHECK. |
 | `inactive` | BOOL | |
 
-Jump height is NOT on this table. It is modeled per-(dog, trial) in `dog_trial_jump_heights` (see §4.1). The dog's optional AKC jump-height card, when present, provides a default at entry-time but does not constrain what the handler may elect at a specific trial.
+Two CHECK constraints enforce domain invariants at the DB layer: `dogs_jump_height_nonneg` (`jump_height_measured >= 0`) rejects nonsensical fractional measurements; `dogs_ineligible_has_recorded_at` couples the ineligibility flag and timestamp (if `is_akc_ineligible` is true, `akc_ineligible_recorded_at` must be set; if false, the timestamp must be null). The paired constraint prevents the "flagged ineligible without evidence of when" audit gap.
+
+Two jump-height concepts live on different tables, distinguished by semantics:
+
+- `dogs.jump_height_measured` NUMERIC(4,1) and `dogs.has_jump_height_card` BOOL record the AKC jump-height card on file for the dog. The measured value is a physical withers measurement and can be fractional (13.5"). When the card exists, it provides a default at entry time.
+- `dog_trial_jump_heights.jump_height_inches` INT records the jump height elected per (dog, trial). The elected value is an AKC integer bucket (4, 8, 10, ..., 36 for Obedience; 4, 8, 12, 16 for Rally). Never fractional.
+
+The card provides a default; the elected bucket is what the dog actually jumps at the trial and is what the judges book prints. A judge's in-ring measurement override updates the elected bucket for all remaining entries at that trial (per the 2026-04-20 Decisions-log entry "Jump height per (dog, trial), not per entry or per dog").
 
 Sire and dam names are stored as free text because their titles are not queried often enough to justify denormalization. The catalog renderer parses them at display time against the same title catalog used for the dog itself.
 
