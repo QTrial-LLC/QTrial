@@ -1,0 +1,17 @@
+-- Postgres has no DROP VALUE for an ENUM type. This down migration
+-- is intentionally a no-op: an ENUM value, once added, cannot be
+-- cleanly removed without dropping and recreating the type, which
+-- would require altering every column that uses it. Rolling back
+-- past this point requires a manual recreation path that is
+-- explicitly out of scope for migration reversibility.
+--
+-- ALTER TYPE RENAME VALUE is available (it would rename the value
+-- to a placeholder) but does not actually remove the value from the
+-- enum, so it does not restore the pre-up state either. Better to
+-- be honest about the one-way nature of ENUM extension in Postgres
+-- than to pretend the rollback is clean when it isn't.
+--
+-- If a truly clean rollback is ever required (migrating to a new
+-- database, for instance), drop and recreate dog_title_source
+-- explicitly in a dedicated migration rather than relying on this
+-- down file.
