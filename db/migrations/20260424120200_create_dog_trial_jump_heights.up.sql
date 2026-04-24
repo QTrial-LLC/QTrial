@@ -9,11 +9,15 @@
 -- lives on one row per (dog, trial) rather than per entry line.
 -- Rally Choice entries do not consult this table.
 --
--- jump_height_inches is NUMERIC(4,1) to match
--- jump_heights.height_inches from PR 2a. All 2026 seed values are
--- whole inches; keeping NUMERIC leaves room for future half-inch
--- heights without a later ALTER and avoids a cross-type cast when
--- joining against jump_heights or a future FK validation.
+-- jump_height_inches is INT. Elected jump height is an AKC-defined
+-- integer bucket set (Obedience: 4, 8, 10, 12, 14, 16, 18, 20, 22,
+-- 24, 26, 28, 30, 32, 34, 36; Rally: 4, 8, 12, 16). This is
+-- semantically distinct from dogs.jump_height_measured NUMERIC(4,1),
+-- which is a physical measurement at the withers and can be
+-- fractional (13.5"). The two columns share a name root but not a
+-- type or meaning. If AKC ever adds half-inch elected buckets, that
+-- change deserves its own design conversation; until then, INT plus
+-- the enumerated CHECK is the honest shape.
 --
 -- The CHECK constraint enumerates the legitimate AKC heights.
 -- On-leash classes do not consult this table at all (they have no
@@ -41,7 +45,7 @@ CREATE TABLE dog_trial_jump_heights (
     -- jump-height rows go with it; they are meaningless outside
     -- that trial.
     trial_id                        UUID NOT NULL REFERENCES trials(id) ON DELETE CASCADE,
-    jump_height_inches              NUMERIC(4, 1) NOT NULL,
+    jump_height_inches              INT NOT NULL,
     -- TRUE when a judge doubted the submitted height and measured
     -- the dog in-ring. The override applies to every remaining
     -- entry for this dog at this trial; the app layer UPDATEs the
