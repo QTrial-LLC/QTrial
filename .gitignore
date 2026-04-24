@@ -42,3 +42,4 @@ tmp/
 # Planning and handoff artifacts (not repo content)
 HANDOFF_PACKAGE.md
 planning_notes/
+memory/
