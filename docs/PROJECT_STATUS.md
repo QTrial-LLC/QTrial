@@ -1,33 +1,38 @@
 # QTrial Project Status
 
-**Last updated:** 2026-04-25
-**Current phase:** Phase 0 + PR 2a + PR 2b + PR 2c-surgery complete; PR 2c-beta queued
+**Last updated:** 2026-04-26
+**Current phase:** Phase 0 + PR 2a + PR 2b + PR 2c-surgery + PR 2c-beta complete; PR 2d queued
 **Maintained by:** Robare Pruyn, with Claude assistance
 
 ---
 
 ## Where we are right now
 
-PR 2c-surgery (entry-pipeline reconciliation) is complete. Main
-now has 48 migration pairs and 44 tables: the 42 / 44 from post-
-PR 2b plus six PR 2c-surgery migrations that reshape existing
-tables without adding new ones. Entries sheds armband /
-handler_name / junior_handler_number / is_senior_handler; entry
-lines gain handler_contact_id (NOT NULL), armband_assignment_id
-(nullable, FK to armband_assignments from PR 2b), and
-junior_handler_akc_number; entry_line_results gains time_started,
-time_finished, time_on_course, rach_points; entry_lines.jump_
-height_inches is dropped (jump height now lives on
-dog_trial_jump_heights per (dog, trial) per Deborah's 2026-04-20
-Q1); dog_title_source ENUM gains parsed_from_registered_name.
-DATA_MODEL.md §5 reconciled to fold the migration-authoritative
-transfer_intent columns / coupled CHECK and
-judge_annotation_text into the spec.
+PR 2c-beta (dogs table reconciliation) is complete. Main now has
+53 migration pairs and 44 tables: the 48 / 44 from post-2c-surgery
+plus five PR 2c-beta migrations that reshape dogs without adding
+new tables. dogs gains registration_type (ENUM, nullable), the
+four name-parser columns (parsed_name_root, parsed_prefix_titles,
+parsed_suffix_titles, unparsed_title_tokens; all nullable; parser
+is a future Rust-code PR), and FK constraints on breed_id and
+breed_variety_id (deferred from Phase 0 pending PR 2a's breeds
+catalog). dogs sheds co_owners_text (superseded by dog_ownerships
+from PR 2b) and the four sire/dam prefix/suffix sub-columns
+(collapsed so sire/dam parse at display time via REQ-NAME-001,
+matching the dog's own name). DATA_MODEL.md §4 reconciled to
+fold the remaining migration-authoritative extras
+(jump_height_measured, has_jump_height_card, is_akc_ineligible,
+akc_ineligible_reason, akc_ineligible_recorded_at) plus the two
+CHECK constraints documentation and a rewrite of the jump-height
+paragraph to distinguish card-measured from elected-at-trial.
+Status bumped to v0.3 marking entry-subtree reconciliation
+complete across PR 2a / 2b / 2c.
 
-The previous "PR 2c" bundle was split into three smaller PRs at
-CHECKPOINT 0: PR 2c-surgery (this, done), PR 2c-beta (dogs
-column rework, queued), and PR 2d (events / clubs / offerings /
-awards + Deborah 2026-04-23 plumbing, queued).
+The entry subtree is now fully reconciled. PR 2d covers additive
+events / clubs / trial_class_offerings / awards work including
+Deborah's 2026-04-23 plumbing (trial chair / secretary columns,
+officers_json, combined_award_groups, mixed_breeds_allowed, rhtq
+enum, judges_book_pdf_object_key, signed-scan handling).
 
 `git grep -i offleash` outside historical research notes and the
 rename Decisions-log entries still returns zero.
@@ -41,6 +46,28 @@ account setup.
 ---
 
 ## Recently completed
+
+### PR 2c-beta: dogs table reconciliation (2026-04-26)
+
+- 2026-04-26: PR (pending) - feat/dogs-reconciliation -
+  reconciles dogs against DATA_MODEL.md §4. Five migrations (53
+  total, up from 48): three add-column / constraint
+  (registration_type ENUM + column; parsed_name_root +
+  parsed_prefix_titles + parsed_suffix_titles +
+  unparsed_title_tokens; breed_id and breed_variety_id FK
+  constraints deferred from Phase 0), two drop-column
+  (co_owners_text superseded by dog_ownerships from PR 2b; four
+  sire/dam prefix-suffix columns collapsed so sire and dam names
+  are parsed at render time against the same title catalog used
+  for the dog's own name). No test changes required
+  (registration_type nullable; all four dog-INSERT sites
+  unaffected by the spec reconciliation). DATA_MODEL.md §4
+  reconciled against migration-authoritative extras
+  (jump_height_measured + has_jump_height_card + the
+  dogs_jump_height_nonneg CHECK; is_akc_ineligible +
+  akc_ineligible_reason + akc_ineligible_recorded_at + the
+  dogs_ineligible_has_recorded_at CHECK). DATA_MODEL.md metadata
+  bumped to v0.3 / 2026-04-26.
 
 ### PR 2c-surgery: entry-pipeline reconciliation (2026-04-25)
 
@@ -180,10 +207,10 @@ account setup.
 
 ## In flight
 
-PR 2c-surgery (entry-pipeline reconciliation) is open for review
-on feat/entry-pipeline-surgery. PR 2c-beta (dogs column rework)
-and PR 2d (events / clubs / offerings / awards + Deborah 2026-04-23
-plumbing) are queued; prompts to be written against post-2c-surgery
+PR 2c-beta (dogs table reconciliation) is open for review on
+feat/dogs-reconciliation. PR 2d (events / clubs /
+trial_class_offerings / awards additive work + Deborah 2026-04-23
+plumbing) is queued; prompt to be written against post-2c-beta
 main.
 
 ---
@@ -212,6 +239,75 @@ main.
 Architecture and process decisions made during planning and build,
 with rationale. This section prevents re-litigating settled
 questions.
+
+### 2026-04-26: Sire and dam names are two columns, not six
+
+**Decision:** dogs.sire_registered_name and dogs.dam_registered_name
+store each parent's full registered-name string verbatim. The
+Phase 0 six-column shape (sire_prefix_titles / sire_registered_name
+/ sire_suffix_titles + dam equivalents) is collapsed to two columns
+in PR 2c-beta. Titles within sire/dam strings are parsed at display
+time against the same title catalog used for the dog's own name.
+
+**Rationale:** The dog's OWN registered name is stored in one
+column (registered_name) with companion parsed_* arrays populated
+by the name parser. Storing sire and dam with a different shape
+was philosophical inconsistency - either the parser handles all
+three or it handles none. Direction 2 keeps all three on the
+parse-at-display-time path. The render-time parsing cost is
+per-catalog-page, amortized, and negligible compared to a PDF
+generation pass.
+
+**Evidence:** PR 2c-beta migration
+20260426120400_drop_dogs_sire_and_dam_title_columns; DATA_MODEL.md
+§4 update in this PR.
+
+### 2026-04-26: dogs.registration_type is nullable (NULL means "unknown")
+
+**Decision:** dogs.registration_type is an ENUM
+(akc_purebred, pal, canine_partners, fss, misc) with no NOT NULL
+constraint and no DEFAULT. NULL means "type not yet known."
+
+**Rationale:** NOT NULL with DEFAULT 'akc_purebred' pretends every
+dog is purebred-by-default; an Access import from tblDogData may
+produce rows where the type is genuinely unrecoverable from the
+available fields, and defaulting such rows to akc_purebred invents
+truth. NULL is honest. App layer handles "registration_type is
+NULL" as a first-class state (UI shows "Unknown" plus a correction
+affordance); the data-quality review path can sweep NULL rows for
+manual classification. New dogs entered via the UI are NOT NULL at
+the form layer; the schema permits NULL specifically for the
+import path.
+
+**Evidence:** PR 2c-beta migration
+20260426120000_add_dogs_registration_type; DATA_MODEL.md §4 update
+in this PR; DATA_MODEL.md §11 Access migration mapping.
+
+### 2026-04-26: dog_titles.title_code stays free text; FK conversion deferred
+
+**Decision:** dog_titles.title_code remains TEXT. The "convert to
+FK in the next session" comment on the Phase 0 migration is
+superseded by this decision. The title_prefixes and title_suffixes
+catalogs from PR 2a serve as soft-reference lookups (via
+title_prefixes.code + title_suffixes.code string joins at query
+time) rather than FK targets.
+
+**Rationale:** Numeric-variant titles (RAE2, RAE3, MACH 2, MACH 3)
+are distinct title_codes, enforced by a partial unique index on
+(dog_id, title_code). Converting title_code to an FK requires
+either populating the catalogs with every numeric variant
+(explodes catalog maintenance) or splitting title_code into
+base_code + instance_number (structural change to both dog_titles
+and the title_prefixes/suffixes tables). Neither is
+"reconciliation" scope, and neither is the right move for MVP.
+The free-text column with a soft lookup fits the existing shape.
+Revisit when title-progression automation (REQ-NAME-001 +
+title_prefixes.earning_rules) has concrete requirements.
+
+**Evidence:** Phase 0 migration
+20260420120200_create_dogs_titles_and_participation.up.sql lines
+116-119 (stale comment to be understood as superseded; the
+migration itself is not edited in PR 2c-beta).
 
 ### 2026-04-25: Entry-pipeline identity routing (handler, armband, jump height)
 
@@ -788,11 +884,7 @@ Consistent with human authorship style across the codebase.
 
 **Table alterations to resolve in PR 2c-surgery (entry pipeline):** DONE 2026-04-25.
 
-**Table alterations to resolve in PR 2c-beta (dogs):**
-
-- dogs column rework (add registration_type, parsed_* columns,
-  breed FK constraints, drop co_owners_text now that
-  dog_ownerships from PR 2b has landed)
+**Table alterations to resolve in PR 2c-beta (dogs):** DONE 2026-04-26.
 
 **Table alterations to resolve in PR 2d (events / clubs / offerings /
 awards):**
@@ -870,27 +962,19 @@ Resolved in 2026-04-23 round-2 email:
 
 In rough priority order:
 
-1. **PR 2c-surgery review and merge**:
-   feat/entry-pipeline-surgery is open for review. Merge lands once
-   CI passes and review clears.
-2. **PR 2c-beta**: feat/dogs-reconciliation (scope: dogs column
-   rework including retiring co_owners_text now that dog_ownerships
-   from PR 2b has landed; add registration_type ENUM,
-   parsed_name_root and parsed_prefix_titles / parsed_suffix_titles /
-   unparsed_title_tokens arrays, FK constraints on breed_id and
-   breed_variety_id). Prompt to be written against post-2c-surgery
-   main.
-3. **PR 2d**: events / clubs / trial_class_offerings / awards
+1. **PR 2c-beta review and merge**: feat/dogs-reconciliation is
+   open for review. Merge lands once CI passes and review clears.
+2. **PR 2d**: events / clubs / trial_class_offerings / awards
    additive work, including Deborah 2026-04-23 plumbing (trial
    chair / secretary columns, officers_json, combined_award_groups,
    mixed_breeds_allowed, rhtq enum, judges_book_pdf_object_key,
    signed-scan handling decision). Prompt to be written against
    post-2c-beta main.
-4. **Phase 1 work begins** (per ROADMAP.md): club creation and
+3. **Phase 1 work begins** (per ROADMAP.md): club creation and
    configuration, user management, event creation, trial class
    offerings, judge directory, fee configuration, basic premium
    list PDF generation.
-5. **Business/legal threadwork** in parallel: EIN, Warren County
+4. **Business/legal threadwork** in parallel: EIN, Warren County
    publication, Operating Agreement, Relay banking, AWS account.
 
 ---
