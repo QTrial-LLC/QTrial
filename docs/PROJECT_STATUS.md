@@ -1,6 +1,6 @@
 # QTrial Project Status
 
-**Last updated:** 2026-04-26 (IF NOT EXISTS retrofit for the dog_title_source ENUM-extension migration)
+**Last updated:** 2026-04-26 (Open Q&A items added from for-Deborah review pass)
 **Current phase:** Phase 0 + PR 2a + PR 2b + PR 2c-surgery + PR 2c-beta + PR 2d complete
 **Maintained by:** Robare Pruyn, with Claude assistance
 
@@ -1201,6 +1201,81 @@ remain open.
 - Obedience judges-book templates from AKC's January 1, 2019 set
   (link in Deborah's 2026-04-23 email; only the Rally templates
   are in the repo today)
+
+#### Surfaced 2026-04-26 during the for-Deborah review pass
+
+Eight items raised by the
+`docs/for-deborah/2026-04-26-*.md` document drop. They did not
+block the review itself; logging here so an answer can flow back
+to the relevant work item when one arrives.
+
+- **Co-judging at GFKC.** The schema supports two judges sharing a
+  single class (a co-judge designation on `judge_assignments`), but
+  whether GFKC has ever actually used this pattern is unknown.
+  Raised in `docs/for-deborah/2026-04-26-data-model-walkthrough.md`
+  §3 (What's offered at each trial). An answer of "no, never" does
+  not change the schema; "yes, occasionally" prompts a UI flow check
+  during Phase 1.
+- **Multi-trial-event chair split.** Whether any GFKC weekend, past
+  or upcoming, has had different Trial Chairs across days. PR 2d
+  collapsed `trials.trial_chairperson` into a single
+  `events.trial_chair_user_id` per the Q5 answer that the chair is
+  event-level. Raised in
+  `docs/for-deborah/2026-04-26-data-model-walkthrough.md` §2 and
+  `docs/for-deborah/2026-04-26-decisions-for-your-review.md` item 3.
+  An answer of "yes, occasionally" reopens the per-trial chair
+  override; PR 2d's migration header notes this as an additive future
+  PR if it surfaces.
+- **Day-of-trial dog-pulled-but-after-check-in state.** The
+  `entry_line_status` ENUM covers pending payment, active, waitlist,
+  scratched, withdrawn, transferred, moved up, absent, excused, DQ.
+  None of these cleanly fit "the handler showed up at check-in but
+  pulled the dog before the class started." Raised in
+  `docs/for-deborah/2026-04-26-data-model-walkthrough.md` §5
+  (Entries). An answer might add a new ENUM value or confirm one of
+  the existing values is the right fit (likely `withdrawn` or
+  `scratched`).
+- **Cluster-trial secretarial work.** Whether Deborah has ever
+  served as the trial secretary for a cluster (multiple clubs sharing
+  a venue across consecutive days) rather than as a single-club
+  secretary at one of the cluster's trials. Raised in
+  `docs/for-deborah/2026-04-26-decisions-for-your-review.md` item 6.
+  An answer of "yes" pulls cross-tenant dog identity earlier than
+  the conformation milestone where it is currently scheduled (per
+  the 2026-04-23 Decisions-log entry "Cross-tenant dog identity
+  deferred to conformation work").
+- **Catalog-order convention at GFKC.** Confirms or refutes the
+  rewritten plain-English glossary entry that says catalogs are
+  "often by class and armband number rather than alphabetically by
+  owner." The source `docs/DOMAIN_GLOSSARY.md` had this without an
+  AKC citation; the rewrite is plausible but unverified. Raised in
+  `docs/for-deborah/2026-04-26-glossary-plain-english.md` (Catalog
+  order entry). Either confirms the rewrite or sends it back to the
+  source for correction.
+- **Master + Choice as a club discount versus an AKC award.** The
+  most consequential item: PR 2d's combined-award seed dropped Master
+  + Choice on the reading that AKC Rally Regulations do not define
+  it as a combined-award path (three independent absences cited in
+  the Decisions-log entry). Raised in
+  `docs/for-deborah/2026-04-26-decisions-for-your-review.md` item 4.
+  An answer of "you missed something, here's the AKC reference"
+  triggers a sixth `combined_award_groups` row plus a fee-engine
+  check.
+- **Per-event variations in officer slate within a year.** Whether
+  GFKC ever runs an event whose officer slate on the premium differs
+  from the slate on another event the same year, outside an
+  election. Raised in
+  `docs/for-deborah/2026-04-26-decisions-for-your-review.md` item 7.
+  An answer of "yes, on rare occasions" pulls the
+  `club_officers` historical-preservation table earlier than its
+  currently-deferred post-MVP slot.
+- **AKC submission format changes since April 2026.** Whether
+  anything has shifted in AKC's accepted submission shapes for
+  Obedience or Rally since the 2026-04-19 / 2026-04-23 conversations.
+  Raised in
+  `docs/for-deborah/2026-04-26-decisions-for-your-review.md` item 8
+  as a periodic re-verification. An answer of "they're moving to X"
+  reshapes the §14 submission path before implementation lands.
 
 Resolved in 2026-04-23 round-2 email:
 
