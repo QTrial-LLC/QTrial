@@ -70,6 +70,17 @@ Goal: exhibitors can enter the trial online.
 
 **Checkpoint:** Deborah processes 5-10 real entries in shadow mode (entering them both in QTrial and her Access tool). Discrepancies are investigated and fixed.
 
+### Phase 2+ follow-up: breed-restriction model (post-PR 2d, future PR)
+
+PR 2d landed `events.mixed_breeds_allowed BOOL` for the All-American Dog inclusion / exclusion case, with the broader breed-list deferred per the 2026-04-26 Decisions-log entry "PR 2d: events.mixed_breeds_allowed ships as BOOL only; breed-list model deferred." A future PR adds:
+
+- Allow-list and deny-list semantics on events for `breeds`, `breed_groups`, and `breed_varieties` (the seeded reference catalogs from PR 2a).
+- Junction tables associating events with specific breed entries.
+- Validation at entry time that the dog's breed satisfies the event's restrictions.
+- Premium-list rendering of the breed restrictions ("Only Golden Retrievers" or "All Sporting breeds, no mixed-breed").
+
+The trigger for this PR is gathering a real Specialty (single-breed) or Group show artifact to design against. GFKC's June 2026 Rally has no breed restrictions, so the design has no concrete reference today. When a Specialty premium list lands in `db/seed/akc/sample_artifacts/`, this work unblocks.
+
 ---
 
 ## Phase 3: Pre-Trial Paperwork (Weeks 15-18)
@@ -200,6 +211,11 @@ Each sport requires:
 - AKC XML class codes and submission variations
 
 Agility and Scent Work are the highest-priority additions given their volume in the AKC trial market.
+
+Conformation, in particular, brings two model changes that don't exist in MVP:
+
+- **Cross-club dog identity for cluster trials.** Per Deborah's 2026-04-23 Q8 and the 2026-04-23 Decisions-log entry "Cross-tenant dog identity deferred to conformation work" in `docs/PROJECT_STATUS.md`, cluster trials (multiple clubs hosting on consecutive days at one venue) require the same dog to appear across multiple clubs' tenant boundaries with title history that follows. MVP keeps each club's dog directory standalone; a shared `registered_dogs` (or equivalent) model with its own RLS story lands alongside the conformation scope.
+- **Breed-restricted events.** Specialty conformation shows are single-breed; Group shows are single-group. The breed-list / breed-group / breed-variety model deferred from PR 2d (see Phase 2+ above) lands here at the latest, and probably earlier as soon as a Specialty premium-list artifact is available to design against.
 
 ### UKC and other registries
 

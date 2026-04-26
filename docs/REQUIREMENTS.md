@@ -67,6 +67,10 @@ Each club has default settings that apply across its events unless overridden at
 - Default armband numbering scheme
 - Default running-order sort (short-to-tall, tall-to-short, random, manual)
 
+Club officer slate:
+
+- **REQ-CLUB-001:** QTrial shall store each club's officer slate as `clubs.officers_json JSONB`, shaped as an array of office records (one record per officer, including multi-person offices like "Board Member"). Each record carries an office name (free text, not a controlled list at MVP), the officer's name, email, and phone. The renderer iterates the array and emits each officer in order; array index is the display order on premium lists. Per Deborah's 2026-04-23 Q6, the slate is a club-level concern updated yearly with elections, the same across every event a club runs until the next election cycle. Officer data is admin-tooling-populated, NOT migration-bootstrapped: the data is club-specific and goes stale. Historical preservation (the slate as it existed when a given premium list was printed) is post-MVP and lands as a `club_officers` table with `effective_from` and `effective_to` columns; the array shape is chosen so a future row-per-officer migration is mechanical.
+
 ## 2. Event setup [MVP]
 
 Matches and expands on Deborah's outline section 1.
@@ -84,7 +88,12 @@ A secretary can create a new event with:
 - Entry closing date and time
 - Move-up submission deadline (date and time)
 - Trial entry limit per day per trial (may be set globally or per-trial)
-- Breeds allowed (all breeds, specific group, specialty breed, mixed-breed inclusion) [ASSUMPTION: most events are all-breed; breed restrictions exist per the schema's BreedRestriction, GroupRestriction, BreedExclusion, GroupExclusion fields]
+- Mixed-breed inclusion via the `events.mixed_breeds_allowed BOOL`. Default TRUE: most Obedience and Rally trials accept All-American Dog (the AKC Canine Partners breed-catalog name for mixed-breed dogs). Conformation events and certain Specialty events may set this FALSE. Allow-list and deny-list breed and breed-group restrictions are deferred to a future PR; see `docs/PROJECT_STATUS.md` Known-gaps and `docs/ROADMAP.md` Phase 2+ for the trigger and scope. The 2026-04-26 Decisions-log entry "PR 2d: events.mixed_breeds_allowed ships as BOOL only; breed-list model deferred" captures the rationale.
+
+Per-event personnel:
+
+- **REQ-EVENT-001:** QTrial shall record the Trial Chair as `events.trial_chair_user_id`, an FK to the `users` table that is nullable during the `draft` event status and required before the event status transitions to `open`. Per Deborah's 2026-04-23 Q5, the Trial Chair is a pre-trial-arrangements role distinct from the Trial Secretary: acquires judges, gets AKC approval, arranges judge accommodations, recruits stewards / hospitality crew / timekeeper / course builder, and handles judge and secretary expense payments. The role is event-level (one chair per event, shared across the event's trials) rather than trial-level.
+- **REQ-EVENT-002:** QTrial shall record the Event Secretary as `events.event_secretary_user_id`, an FK to the `users` table that is nullable during `draft` and required before transitioning to `open`. Per Deborah's 2026-04-23 Q5, the Event Secretary handles on-the-day trial operations: paperwork, scores, entries. The role is event-level.
 
 ### 2.2 Entry fees
 
@@ -384,6 +393,11 @@ For each trial, the system computes:
 
 Ties are flagged for the secretary to resolve via run-off.
 
+Combined-award groups and the additional-entry fee discount:
+
+- **REQ-AWARD-001:** QTrial shall use the `combined_award_groups` reference table (parent) and the `combined_award_group_classes` junction (each row carrying `is_required_for_award`) as the source of truth for which canonical classes contribute to which combined award or title-progression path. The seed currently carries five rows: Obedience HC (Open B + Utility B; Obedience Regulations Chapter 1, Section 22, in `db/seed/akc/regulations/akc_obedience_regulations_2025_03.pdf`); Rally RHC (Advanced B + Excellent B; Rally Regulations Chapter 1, Section 31, in `db/seed/akc/regulations/akc_rally_regulations_1217.pdf`); Rally RHTQ (Advanced B + Excellent B + Master; Rally Reg. Ch. 1 §32); Rally RAE title path (Advanced B + Excellent B; Rally Reg. Ch. 3 §15 with combined-entry mechanism per Ch. 1 §24); Rally RACH title path (Advanced B + Excellent B + Master; Rally Reg. Ch. 4 §4 with points per Ch. 4 §2 and combined-entry mechanism per Ch. 1 §24). RAE and RACH have NULL `award_type` because they are title-progression paths, not per-trial ribbons.
+- **REQ-AWARD-002:** QTrial's fee engine shall apply the additional-entry discount to any dog entered in two or more classes in the same `combined_award_groups` row at the same trial, when that row's `is_discount_eligible` flag is TRUE. Per Deborah's 2026-04-23 Q4, the rule applies to ANY double or triple Q in B classes at one trial, including Open B + Utility B (going for HC) - not just the GFKC-listed Master / Choice / RAE / RACH path. The discount is computed at entry-time fee calculation; the per-trial award path consults the same group rows after scoring. AKC Rally Regulations do NOT define a "Master + Choice" combined award; the GFKC June 2026 premium-list wording was a club-side fee discount, not an AKC path.
+
 ### 8.3 Score validation
 
 - Score must be within the valid range for the class
@@ -404,6 +418,12 @@ For each judge, for each class, generate a printable judge's book containing:
 - Page numbering and catalog cross-reference
 
 Format: PDF, one file per judge with all their classes, or one file per class. Secretary chooses.
+
+Per Deborah's 2026-04-23 Q1, the qualifying-score range printed in the score-field hints is sport-dependent: Rally qualifying range is 70-100 (per Rally Regulations Chapter 1, Section 14 in `db/seed/akc/regulations/akc_rally_regulations_1217.pdf`); Obedience qualifying range is 170-200 (per Obedience Regulations Chapter 1 in `db/seed/akc/regulations/akc_obedience_regulations_2025_03.pdf`). The renderer parameterizes by sport rather than hardcoding.
+
+- **REQ-SUB-006:** The Rally Master class judges-book PDF shall additionally carry, after the per-class scoring pages, a post-Master summary block showing the High in Trial winner and the Highest Scoring Triple Qualifying winner for the trial. Per Deborah's 2026-04-23 Q1 follow-up and Rally Regulations Chapter 1, Sections 31 and 32, the HIT and HTQ designations are computed across classes at the trial and rendered in the Rally book after the Master class. The Obedience equivalent is the High Combined block in the Obedience book; the post-class-summary placement matches the AKC convention.
+
+Pre-trial blank PDFs and post-trial signed scans live in two distinct columns on `trial_class_offerings` per the 2026-04-26 Decisions-log entry "PR 2d: judges-book PDF storage uses two columns, not one overwriting column": `pre_trial_blank_pdf_object_key` is the QTrial-generated PDF for printing; `signed_scan_pdf_object_key` is the post-trial scan of the signed-and-completed book uploaded back into QTrial as the durable record of what was mailed to AKC. Re-rendering the blank when a judge changes late does not clobber the signed scan.
 
 ## 10. Catalog generation [MVP]
 
@@ -528,6 +548,19 @@ XML-based electronic submission to AKC (conforming to AKC's Agility schema or an
 ### 14.3 Deferred: AKC email integration [P2]
 
 Automated API or SMTP integration with `rallyresults@akc.org` is deferred. For MVP, QTrial produces the submission package as downloadable PDFs and the secretary attaches them to an email she sends herself. A templated "send to AKC" draft-email workflow may be added at the secretary's request.
+
+### 14.4 Regulation citations [MVP]
+
+QTrial's submission and combined-award computation paths reference the AKC regulation rulebooks committed under `db/seed/akc/regulations/`:
+
+- **`akc_rally_regulations_1217.pdf`** (edition 1217: 2017-12 base, amended through 2024-01-08, with inserts effective 2024-07-01, 2025-11-01, and 2026-01-01). Cited sections include Chapter 1, Section 14 (qualifying score range 70-100), Chapter 1, Section 24 (RAE and RACH combined-entry mechanism), Chapter 1, Sections 31-32 (per-trial RHC and RHTQ awards), Chapter 3, Section 15 (Rally Advanced Excellent title), and Chapter 4, Sections 2 and 4 (RACH points and title).
+- **`akc_obedience_regulations_2025_03.pdf`** (2025-03 amended edition). Cited section: Chapter 1, Section 22 (per-trial Highest Combined for Open B + Utility B, plus Highest Scoring Dog awards).
+
+Migration headers and seed CSV citations name these PDFs by filename so future readers can reproduce the design context even if AKC re-publishes the rulebooks at a new URL.
+
+### 14.5 Incident reporting [MVP]
+
+- **REQ-INCIDENT-001:** When an exhibitor's dog disqualifies for attacking a person at a trial, QTrial shall surface the AKC AEDSQ1 form (in `db/seed/akc/akc_forms/akc_AEDSQ1_disqualification_for_attacking_person_1119.pdf`) for the secretary to complete and attach to a 72-hour incident report submitted to `eventrecords@akc.org`. The submission window starts at the moment of the disqualification and is not negotiable. MVP scope is form surfacing plus a draft-email workflow with the AEDSQ1 PDF attached; full incident-tracking and audit logging are post-MVP. The full incident-reporting workflow narrative lives in `WORKFLOWS.md`.
 
 ## 15. Mailing list management [MVP]
 

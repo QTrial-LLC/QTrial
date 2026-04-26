@@ -1,41 +1,52 @@
 # QTrial Project Status
 
 **Last updated:** 2026-04-26
-**Current phase:** Phase 0 + PR 2a + PR 2b + PR 2c-surgery + PR 2c-beta complete; PR 2d queued
+**Current phase:** Phase 0 + PR 2a + PR 2b + PR 2c-surgery + PR 2c-beta + PR 2d complete
 **Maintained by:** Robare Pruyn, with Claude assistance
 
 ---
 
 ## Where we are right now
 
-PR 2c-beta (dogs table reconciliation) is complete. Main now has
-53 migration pairs and 44 tables: the 48 / 44 from post-2c-surgery
-plus five PR 2c-beta migrations that reshape dogs without adding
-new tables. dogs gains registration_type (ENUM, nullable), the
-four name-parser columns (parsed_name_root, parsed_prefix_titles,
-parsed_suffix_titles, unparsed_title_tokens; all nullable; parser
-is a future Rust-code PR), and FK constraints on breed_id and
-breed_variety_id (deferred from Phase 0 pending PR 2a's breeds
-catalog). dogs sheds co_owners_text (superseded by dog_ownerships
-from PR 2b) and the four sire/dam prefix/suffix sub-columns
-(collapsed so sire/dam parse at display time via REQ-NAME-001,
-matching the dog's own name). DATA_MODEL.md §4 reconciled to
-fold the remaining migration-authoritative extras
-(jump_height_measured, has_jump_height_card, is_akc_ineligible,
-akc_ineligible_reason, akc_ineligible_recorded_at) plus the two
-CHECK constraints documentation and a rewrite of the jump-height
-paragraph to distinguish card-measured from elected-at-trial.
-Status bumped to v0.3 marking entry-subtree reconciliation
-complete across PR 2a / 2b / 2c.
+PR 2d (events / clubs / awards plumbing) is complete. Main now has
+62 migration pairs and 46 tables. The 9 PR 2d migrations land the
+Deborah 2026-04-23 plumbing in three squash commits:
 
-The entry subtree is now fully reconciled. PR 2d covers additive
-events / clubs / trial_class_offerings / awards work including
-Deborah's 2026-04-23 plumbing (trial chair / secretary columns,
-officers_json, combined_award_groups, mixed_breeds_allowed, rhtq
-enum, judges_book_pdf_object_key, signed-scan handling).
+- #18 schema execution: events.mixed_breeds_allowed BOOL,
+  events.trial_chair_user_id and events.event_secretary_user_id,
+  events.dogs_per_hour_override JSONB, armband_scheme.per_series
+  ENUM extension, clubs.officers_json JSONB,
+  trial_class_offerings.pre_trial_blank_pdf_object_key and
+  signed_scan_pdf_object_key (two-column shape, revising the
+  2026-04-24 working assumption), combined_award_groups + the
+  combined_award_group_classes junction with permissive-read RLS,
+  trials.trial_chairperson dropped (replaced by the event-level
+  FK). DATA_MODEL.md bumped to v0.4. AKC Rally and Obedience
+  regulation PDFs committed under db/seed/akc/regulations/ as
+  frozen citation sources.
+- #19 seed loader: 5 combined_award_groups rows (Obedience HC plus
+  Rally RHC, RHTQ, RAE, RACH) and 12 junction rows. Two-pass
+  loader with sport-mismatch validation that rejects bad rows
+  before any insert. 5 new integration tests in
+  workers/tests/seed_loader.rs.
+- #20 spec docs and decisions: this checkpoint. Three new
+  Decisions-log entries (mixed_breeds scope-lock, judges-book
+  two-column shape, rhtq phantom catch). Known-gaps PR-2d block
+  retired. REQUIREMENTS / WORKFLOWS / DOMAIN_GLOSSARY / ROADMAP /
+  db/migrations/README.md updated. RLS tests for the two new
+  reference tables in shared/tests/.
 
-`git grep -i offleash` outside historical research notes and the
-rename Decisions-log entries still returns zero.
+A 2026-04-25 investigation against the committed Rally Regulations
+PDF confirmed that "Master + Choice" is NOT an AKC-recognized
+combined award; that wording on the GFKC June 2026 premium list is
+a club-side fee discount, not a rulebook path. The
+combined_award_groups seed reflects only the AKC paths.
+
+`git grep -i offleash` returns zero hits outside this file. The
+references that remain in `docs/PROJECT_STATUS.md` (the rename
+Decisions-log entries and adjacent narrative) are intentional
+historical record; the verification claim should be read as
+"outside `docs/PROJECT_STATUS.md`."
 
 Separately, QTrial LLC formation is in flight via Northwest
 Registered Agent (NY domestic, Warren County principal office,
@@ -46,6 +57,69 @@ account setup.
 ---
 
 ## Recently completed
+
+### PR 2d: events / clubs / awards plumbing (2026-04-26)
+
+- 2026-04-26: PR #20 (pending) - feat/pr-2d-spec-docs-and-decisions -
+  spec-doc closeout for PR 2d. Three Decisions-log entries
+  (events.mixed_breeds_allowed BOOL-only scope-lock; judges-book
+  two-column shape revising the 2026-04-24 working assumption;
+  rhtq-phantom catch from CHECKPOINT 0 Phase A). Known-gaps PR-2d
+  block retired (entire block done, including the phantom rhtq
+  bullet). REQUIREMENTS.md gains REQ-EVENT-001 / REQ-CLUB-001 /
+  REQ-AWARD-001 / REQ-AWARD-002 plus REQ-SUB-006 / REQ-SUB-007 /
+  REQ-INCIDENT-001 lines and the breed-restriction line at §2.1
+  rewrites to the BOOL-only-defer-list scope. WORKFLOWS.md §10.4
+  variable list extended with chair / secretary contact vars; new
+  §9.7 stub for the AEDSQ1 72-hour incident-reporting path
+  (placed under §9 Post-trial AKC submission rather than as a new
+  top-level section, since AEDSQ1 is itself an AKC submission to a
+  different mailbox). DOMAIN_GLOSSARY
+  refines Trial Chair / Trial Secretary; refines HC / RHC / HTQ
+  (HTQ corrected from "Honor Team Qualifier" to "Highest Triple
+  Qualifying" per Rally Reg. Ch. 1 §32); adds RAE / RACH /
+  Combined Award / All-American Dog. ROADMAP.md gains a Phase 2+
+  breed-list line and a Phase 7+ cross-club-dog-identity line.
+  db/migrations/README.md gains a PR-block list. New RLS test
+  file shared/tests/combined_award_rls.rs (4 tests covering
+  permissive-read SELECT and tenant-INSERT/UPDATE/DELETE denial
+  on both reference tables).
+- 2026-04-26: PR #19 (commit e0a24ca) - feat/pr-2d-combined-award-groups-seed -
+  seed CSVs and qtrial-seed-loader extension for the combined-
+  award reference tables. db/seed/akc/combined_award_groups.csv
+  has 5 rows (akc_obedience_hc, akc_rally_rhc, akc_rally_rhtq,
+  akc_rally_rae, akc_rally_rach with verbatim AKC citations from
+  the regulation PDFs committed in #18).
+  db/seed/akc/combined_award_group_classes.csv has 12 rows with
+  is_required_for_award TRUE on every row. Loader extension is
+  two-pass: pass 1 validates every junction row (group code
+  resolves, canonical class code resolves, sports match) before
+  any insert; pass 2 inserts in a single transaction. Sport
+  mismatch fails the load with a clear error. 5 new integration
+  tests in workers/tests/seed_loader.rs covering load count,
+  idempotency, sport-mismatch rejection, and is_required_for_award
+  fidelity.
+- 2026-04-26: PR #18 (commit 55c9cbd) - feat/pr-2d-events-clubs-awards -
+  PR 2d schema execution. Nine new migrations (62 total, up from
+  53) land Deborah's 2026-04-23 plumbing on events / clubs /
+  trial_class_offerings, plus the combined_award_groups parent +
+  junction reference tables with permissive-read RLS. Adds
+  events.mixed_breeds_allowed BOOL NOT NULL DEFAULT TRUE,
+  events.trial_chair_user_id / event_secretary_user_id (FK to
+  users, ON DELETE SET NULL, both nullable),
+  events.dogs_per_hour_override JSONB, armband_scheme.per_series
+  ENUM value (with IF NOT EXISTS for round-trip safety),
+  clubs.officers_json JSONB,
+  trial_class_offerings.pre_trial_blank_pdf_object_key plus
+  signed_scan_pdf_object_key (two-column shape; the 2026-04-24
+  single-column working assumption is revised). Drops
+  trials.trial_chairperson (no consumers; replaced by the
+  event-level FK). AKC Rally Regulations (edition 1217) and
+  Obedience Regulations (2025-03 amended) PDFs committed under
+  db/seed/akc/regulations/ as frozen citation sources for the
+  CHECKPOINT 2 seed CSVs. DATA_MODEL.md bumped to v0.4 with §1
+  clubs / §2 events / §2 trials / §2 trial_class_offerings / §8
+  combined-award-group entries reconciled.
 
 ### PR 2c-beta: dogs table reconciliation (2026-04-26)
 
@@ -207,11 +281,12 @@ account setup.
 
 ## In flight
 
-PR 2c-beta (dogs table reconciliation) is open for review on
-feat/dogs-reconciliation. PR 2d (events / clubs /
-trial_class_offerings / awards additive work + Deborah 2026-04-23
-plumbing) is queued; prompt to be written against post-2c-beta
-main.
+Nothing in flight. PR 2d is on its third (and final) squash-merge;
+once merged, Phase 0 plus PR 2a / 2b / 2c-surgery / 2c-beta / 2d
+is complete. Phase 1 (per ROADMAP.md) is the next major milestone:
+club creation and configuration, user management, event creation,
+trial class offerings, judge directory, fee configuration, basic
+premium-list PDF generation.
 
 ---
 
@@ -239,6 +314,125 @@ main.
 Architecture and process decisions made during planning and build,
 with rationale. This section prevents re-litigating settled
 questions.
+
+### 2026-04-26: PR 2d - events.mixed_breeds_allowed ships as BOOL only; breed-list model deferred
+
+**Decision:** PR 2d adds `events.mixed_breeds_allowed BOOL NOT NULL
+DEFAULT TRUE`. The breed-list approach (junction tables associating
+events with allowed breeds, breed_groups, or breed_varieties) is
+deferred to a future PR. The two pieces are structurally separate
+work: the BOOL handles the All-American Dog exclusion case
+(predominantly conformation, post-MVP for QTrial); the list model
+handles Specialty single-breed restrictions and breed-group filters.
+
+**Rationale:**
+
+1. PR 2d scope is already non-trivial. Adding a breed-list design
+   adds another migration-ordering question plus three or four
+   sub-questions plus a new junction table.
+2. The mixed-breeds case Deborah called out in Q3 (conformation
+   excluding mixed) is structurally the All-American Dog flag path.
+   The breed-restricted-event case (a Specialty for one breed) is
+   structurally separate work and warrants its own design pass.
+3. The flag-only path is fully additive. The breed-list junction
+   can land in a later PR without touching events again.
+4. We have no real artifact to design breed-list against. GFKC
+   June 2026 Rally has no breed restrictions. Designing on
+   speculation produces a worse model than waiting until a
+   Specialty or Group show artifact is in hand.
+
+**Supersession note:** This decision supersedes the framing in the
+2026-04-23 round-2 research note ("alongside the breed-list
+approach", at
+`docs/research/2026-04-23-deborah-round-2-answers.md` lines 49-57)
+and the corresponding bullet in `docs/REQUIREMENTS.md` §2.1. The
+research note stays unedited as historical evidence; REQUIREMENTS.md
+and the Known-gaps block in this document are updated in the same
+PR that lands this decision.
+
+**Evidence:**
+`docs/research/2026-04-25-pr-2d-checkpoint-0-design-note.md` §B6;
+PR 2d migration
+`db/migrations/20260426120500_add_events_mixed_breeds_allowed.up.sql`.
+
+### 2026-04-26: PR 2d - judges-book PDF storage uses two columns, not one overwriting column
+
+**Decision:** `trial_class_offerings` carries
+`pre_trial_blank_pdf_object_key TEXT` and
+`signed_scan_pdf_object_key TEXT` as two distinct nullable columns
+rather than a single `judges_book_pdf_object_key` overwritten at
+scan time. The pre-trial blank PDF (REQ-SUB-002) and the post-trial
+signed scan are different artifacts at different lifecycle stages
+and live in separate columns.
+
+**Rationale:**
+
+1. Honest about the state machine. The pre-trial blank is generated
+   by QTrial for printing and signing; the signed scan is uploaded
+   back into QTrial after the trial as the durable record of what
+   was mailed to AKC. Different artifacts, different timestamps,
+   different audit roles.
+2. Re-render of the pre-trial blank when a judge changes late in
+   the pre-trial cycle does not clobber a previously-uploaded
+   signed scan. With one overwriting column, regenerating after a
+   scan upload would either silently overwrite the scan or require
+   an "is this a scan?" check before rendering.
+3. Audit trail. The secretary can verify after the fact which
+   artifact was actually mailed to AKC, supporting REQ-SUB-002 and
+   REQ-SUB-004 audit paths. Per the 2026-04-24 Decisions-log entry
+   "submission_records scope is electronic submission only", the
+   signed-mail artifact intentionally does NOT live on
+   `submission_records`; this column pair is its durable home.
+4. The 2026-04-24 working assumption (overwrite the same column at
+   scan time) was a working assumption, not a lock. CHECKPOINT 0
+   Phase B revisited the question now that PR 2d is the PR landing
+   the column; this entry locks the revised shape.
+
+**Evidence:**
+`docs/research/2026-04-25-pr-2d-checkpoint-0-design-note.md` §B3;
+PR 2d migration
+`db/migrations/20260426121100_add_trial_class_offerings_judges_book_columns.up.sql`.
+
+**Supersession note:** Replaces the 2026-04-24 working assumption
+("overwrite the same column at scan time") that was tracked as an
+OPEN QUESTION in this document's Known-gaps PR-2d block. The
+Known-gaps bullet is removed in the same PR that lands this entry.
+
+### 2026-04-26: PR 2d - rhtq already in award_type ENUM since Phase 0; Known-gaps drift caught during CHECKPOINT 0
+
+**Decision:** No ALTER TYPE migration is needed for
+`trial_awards.award_type` to add `rhtq`. The value has been a
+member of the ENUM since Phase 0 (migration
+`20260419140400_create_judge_assignments_and_awards.up.sql` line 52
+defines the type as
+`('hit', 'hc', 'phit', 'phc', 'rhit', 'rhc', 'rhtq', 'htq')`). The
+"add rhtq to ENUM" bullet that appeared in the PR 2d Known-gaps
+block was a phantom - the gap-list drifted from reality at some
+point between Phase 0 and PR 2d scoping.
+
+**Rationale:**
+
+1. Verify before adding. The Known-gaps list is an aspirational
+   forward-looking list of pending work, but it can drift from
+   reality if items are silently completed or were never gaps to
+   begin with. Future audits should re-verify gap-list items
+   against the actual schema rather than trust the list at face
+   value.
+2. The CHECKPOINT 0 verification phase exists for exactly this
+   reason. Documenting the value the verification phase produced
+   keeps the pattern in front of future readers: cheap reads of
+   the actual state catch expensive drift in the docs.
+3. Migration list shorter as a result. The PR 2d kickoff implied
+   two ALTER TYPE migrations (armband_scheme.per_series and
+   award_type.rhtq); only the first is real. One less ENUM
+   ordering interlock to think about.
+
+**Evidence:**
+`docs/research/2026-04-25-pr-2d-checkpoint-0-state-verification.md`
+A4 finding ("rhtq is ALREADY in the `award_type` ENUM as of Phase
+0"); Phase 0 migration
+`db/migrations/20260419140400_create_judge_assignments_and_awards.up.sql`
+line 52.
 
 ### 2026-04-26: Sire and dam names are two columns, not six
 
@@ -649,7 +843,10 @@ that would have been expensive to recover.
 **Evidence:** `git log --oneline --first-parent main` shows the
 linear PR history. 50 files in db/migrations/, 21 tables tracked in
 DATA_MODEL.md, 2,266 lines of integration tests passing in
-shared/tests/. `git grep -i offleash` returns zero.
+shared/tests/. `git grep -i offleash` returns zero hits outside
+`docs/PROJECT_STATUS.md` itself; the residual references in this
+file are the rename Decisions-log entries and the surrounding
+narrative kept as historical record.
 
 ### 2026-04-22: Group 3 merge sequence uses sequential rebase onto main
 
@@ -785,7 +982,9 @@ bug.
 
 **Evidence:** Rebase cookbook documented in planning_notes/pr_review_packet.md.
 Every phase-0 branch merged to main has gone through the rename
-verification (`git grep -i offleash` returns zero after rebase).
+verification (`git grep -i offleash` returns zero after rebase
+outside `docs/PROJECT_STATUS.md`, which preserves these
+Decisions-log entries as historical record).
 
 ### 2026-04-21: Research notes kept in repo with product-name updates applied
 
@@ -887,24 +1086,33 @@ Consistent with human authorship style across the codebase.
 **Table alterations to resolve in PR 2c-beta (dogs):** DONE 2026-04-26.
 
 **Table alterations to resolve in PR 2d (events / clubs / offerings /
-awards):**
+awards):** DONE 2026-04-26. Per the 2026-04-26 Decisions-log entries,
+the BOOL-only-defer-list scope locked
+`events.mixed_breeds_allowed` and the two-column shape locked the
+judges-book PDF storage. The phantom "add rhtq to award_type ENUM"
+bullet was a Known-gaps drift caught during CHECKPOINT 0 Phase A;
+`rhtq` has been a member of the ENUM since Phase 0. The
+breed-list / breed-group / breed-variety allow-list / deny-list
+work is deferred to a future PR; see ROADMAP.md Phase 2+ for the
+trigger and scope.
 
-- events.dogs_per_hour_override + per_series enum value
-- events.trial_chair_user_id and events.event_secretary_user_id
-  (per Deborah's Q5 answer)
-- events breed restrictions, including events.mixed_breeds_allowed
-  BOOL alongside the breed-list approach (Deborah's item 3 follow-up)
-- combined_award_groups reference table (was P2; driven by Deborah's
-  Q4 widening of the additional-entry discount scope)
-- clubs.officers_json JSONB (per Deborah's Q6)
-- trial_awards.award_type ENUM extension to include rhtq (Rally High
-  Triple Qualifying; per Deborah's Q3)
-- trial_class_offerings.judges_book_pdf_object_key TEXT (pre-trial
-  blank PDF path; Rally Master book also carries post-Master HIT/HT
-  summary pages)
-- Post-trial signed-scan handling for judges books (OPEN QUESTION for
-  PR 2d scoping; three options described in the 2026-04-24 PROJECT
-  STATUS entry; working assumption: overwrite)
+**Future PR (post-PR 2d) follow-ups:**
+
+- Cleanup migration adding `IF NOT EXISTS` to migration
+  `20260425120500_extend_dog_title_source_parsed_from_registered_name.up.sql`
+  to make the existing dog_title_source ALTER TYPE round-trip
+  safe under the project's no-op-down ENUM policy. PR 2d's own
+  ALTER TYPE migration (`20260426120900`) already uses the
+  guard; the precedent migration was caught after the fact.
+- App-layer validation for `events.dogs_per_hour_override` JSONB
+  keys against `canonical_classes.code` rows for the event's
+  registry+sport. CHECK constraints cannot reference other
+  tables; the events handler enforces. TODO marker is in the
+  migration header.
+- Cleanup PR for the 20 pre-existing pedantic-clippy warnings
+  surfaced during CHECKPOINT 1's `cargo clippy ... -W
+  clippy::pedantic` run. Pre-existing baseline; not introduced
+  by PR 2d.
 
 **Reference-data follow-ups (small, post-PR 2a):**
 
@@ -962,19 +1170,16 @@ Resolved in 2026-04-23 round-2 email:
 
 In rough priority order:
 
-1. **PR 2c-beta review and merge**: feat/dogs-reconciliation is
-   open for review. Merge lands once CI passes and review clears.
-2. **PR 2d**: events / clubs / trial_class_offerings / awards
-   additive work, including Deborah 2026-04-23 plumbing (trial
-   chair / secretary columns, officers_json, combined_award_groups,
-   mixed_breeds_allowed, rhtq enum, judges_book_pdf_object_key,
-   signed-scan handling decision). Prompt to be written against
-   post-2c-beta main.
-3. **Phase 1 work begins** (per ROADMAP.md): club creation and
+1. **Phase 1 work begins** (per ROADMAP.md): club creation and
    configuration, user management, event creation, trial class
    offerings, judge directory, fee configuration, basic premium
    list PDF generation.
-4. **Business/legal threadwork** in parallel: EIN, Warren County
+2. **Future PR cleanups** (small, can land alongside Phase 1): the
+   `IF NOT EXISTS` guard on the `20260425120500` ENUM-extension
+   migration; the pedantic-clippy cleanup PR; refresh the
+   `currentDate: 2026-04-23` line in `CLAUDE.md` (stale per the
+   actual wall clock).
+3. **Business/legal threadwork** in parallel: EIN, Warren County
    publication, Operating Agreement, Relay banking, AWS account.
 
 ---

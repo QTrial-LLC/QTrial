@@ -438,6 +438,18 @@ All three artifacts are archived in `submission_records` with their S3 object ke
 
 When QTrial adds Agility support, submission moves to an XML-based workflow conforming to the current AKC Agility schema. The `submission_records` table's `submission_type = 'xml'` branch covers this; `xml_payload_object_key` holds the generated XML. Deferred from MVP.
 
+### 9.7 Incident reporting: 72-hour AEDSQ1 path (MVP, stub narrative)
+
+A separate AKC submission path runs when a dog disqualifies for attacking a person at a trial. AKC requires the club to submit a 72-hour incident report on form AEDSQ1 to `eventrecords@akc.org` (a different mailbox from the per-trial results submission). The form is committed at `db/seed/akc/akc_forms/akc_AEDSQ1_disqualification_for_attacking_person_1119.pdf`. Per REQ-INCIDENT-001, the MVP scope is:
+
+1. The secretary marks the entry's disqualification reason as "attacking a person" during scoring (§8.1 Score entry surfaces the reason field).
+2. QTrial detects this DQ reason at the per-trial submission stage and surfaces the AEDSQ1 form alongside the standard JOVRY8 / Obedience-equivalent package.
+3. The secretary fills out AEDSQ1 (paper or digital fill-in) with the trial / dog / handler / incident details.
+4. QTrial drafts an email to `eventrecords@akc.org` with the AEDSQ1 attached and the trial context pre-populated in the body. The secretary reviews and sends.
+5. QTrial records the submission attempt; tracking the 72-hour clock against `submitted_at` is post-MVP.
+
+This section is a stub. Structured incident records, automated 72-hour reminders, retention policies, and follow-up documentation are post-MVP and land when incident handling becomes a feature priority.
+
 ---
 
 ## 10. Mailing list and communication workflows
@@ -476,10 +488,12 @@ Variable substitution is simple `{{variable_name}}`. Jinja-style conditionals ar
 
 Variables available per template:
 
-- **`entry_confirmation`**: `{{exhibitor_name}}`, `{{dog_call_name}}`, `{{dog_registered_name}}`, `{{classes_entered}}` (list), `{{armbands}}` (list, one per series), `{{jump_height}}`, `{{fees_breakdown}}`, `{{total_paid}}`, `{{trial_dates}}`, `{{venue}}`, `{{club_contact}}`, `{{secretary_signature}}`
-- **`post_closing_reminder`**: `{{owner_name}}`, `{{dogs}}` (list of `{call_name, registered_name, entries_by_day, armbands}`), `{{schedule}}` (per-day running schedule), `{{registration_numbers}}` (for subject-line threading), `{{trial_dates}}`, `{{venue}}`, `{{club_contact}}`
-- **`cancellation_notice`**: `{{exhibitor_name}}`, `{{trial_dates}}`, `{{cancellation_reason}}`, `{{refund_policy}}`, `{{club_contact}}`
-- **`refund_confirmation`**: `{{exhibitor_name}}`, `{{dog_call_name}}`, `{{refund_amount}}`, `{{refund_reason}}`, `{{original_payment_method}}`, `{{club_contact}}`
+- **`entry_confirmation`**: `{{exhibitor_name}}`, `{{dog_call_name}}`, `{{dog_registered_name}}`, `{{classes_entered}}` (list), `{{armbands}}` (list, one per series), `{{jump_height}}`, `{{fees_breakdown}}`, `{{total_paid}}`, `{{trial_dates}}`, `{{venue}}`, `{{club_contact}}`, `{{secretary_signature}}`, `{{trial_chair_name}}`, `{{trial_chair_contact}}`, `{{event_secretary_name}}`, `{{event_secretary_contact}}`
+- **`post_closing_reminder`**: `{{owner_name}}`, `{{dogs}}` (list of `{call_name, registered_name, entries_by_day, armbands}`), `{{schedule}}` (per-day running schedule), `{{registration_numbers}}` (for subject-line threading), `{{trial_dates}}`, `{{venue}}`, `{{club_contact}}`, `{{trial_chair_name}}`, `{{trial_chair_contact}}`, `{{event_secretary_name}}`, `{{event_secretary_contact}}`
+- **`cancellation_notice`**: `{{exhibitor_name}}`, `{{trial_dates}}`, `{{cancellation_reason}}`, `{{refund_policy}}`, `{{club_contact}}`, `{{trial_chair_name}}`, `{{trial_chair_contact}}`, `{{event_secretary_name}}`, `{{event_secretary_contact}}`
+- **`refund_confirmation`**: `{{exhibitor_name}}`, `{{dog_call_name}}`, `{{refund_amount}}`, `{{refund_reason}}`, `{{original_payment_method}}`, `{{club_contact}}`, `{{event_secretary_name}}`, `{{event_secretary_contact}}`
+
+The chair / secretary variables resolve from `events.trial_chair_user_id` and `events.event_secretary_user_id` (per Deborah's 2026-04-23 Q5; see REQ-EVENT-001 / REQ-EVENT-002). The contact variants render the user's name + email + phone in a single block suitable for an email signature; the bare name variants are for inline reference.
 
 Default templates are seeded on club creation; clubs override via the settings UI.
 
