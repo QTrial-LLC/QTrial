@@ -886,6 +886,179 @@ pub async fn load_rally_rach_points(
     Ok(stats)
 }
 
+/// Load the AKC-recognized combined-award groupings (parent reference
+/// table). The 5 CHECKPOINT 2 seed rows cover Obedience HC, Rally RHC,
+/// Rally RHTQ (per-trial awards) and the Rally RAE / RACH title-
+/// progression paths (no per-trial award; `award_type` is NULL in the
+/// CSV and binds as SQL NULL). Per Deborah's Q4 every current row is
+/// `is_discount_eligible = TRUE`.
+///
+/// Idempotent via `(registry_id, sport, code)` unique key. Re-running
+/// produces zero new inserts and leaves `updated_at` unchanged on rows
+/// whose values did not drift, matching the project's seed-loader
+/// pattern.
+pub async fn load_combined_award_groups(
+    pool: &PgPool,
+    seed_dir: &Path,
+    akc_registry_id: Uuid,
+) -> Result<TableStats, LoaderError> {
+    let table = "combined_award_groups";
+    let path = seed_dir.join("combined_award_groups.csv");
+    let mut reader = open_csv(&path)?;
+    let mut stats = TableStats::default();
+
+    let mut tx = pool.begin().await.map_err(db_err(table))?;
+    for (idx, result) in reader.deserialize::<CombinedAwardGroupRow>().enumerate() {
+        let row = decode(&path, idx as u64 + 1, result)?;
+        stats.rows_read += 1;
+
+        // The sport and award_type ENUMs are bound as TEXT and cast at
+        // SQL level; this matches the canonical_classes seed migration
+        // pattern and avoids depending on a Rust-side ENUM type per
+        // value.
+        let inserted: bool = sqlx::query_scalar(
+            "INSERT INTO combined_award_groups
+                 (registry_id, sport, code, display_name,
+                  award_type, is_discount_eligible, regulation_citation)
+             VALUES ($1, $2::sport, $3, $4, $5::award_type, $6, $7)
+             ON CONFLICT (registry_id, sport, code) DO UPDATE SET
+                 display_name = EXCLUDED.display_name,
+                 award_type = EXCLUDED.award_type,
+                 is_discount_eligible = EXCLUDED.is_discount_eligible,
+                 regulation_citation = EXCLUDED.regulation_citation
+             RETURNING (xmax = 0) AS inserted",
+        )
+        .bind(akc_registry_id)
+        .bind(&row.sport)
+        .bind(&row.code)
+        .bind(&row.display_name)
+        .bind(row.award_type.as_deref())
+        .bind(row.is_discount_eligible)
+        .bind(row.regulation_citation.as_deref())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(db_err(table))?;
+
+        stats.rows_upserted += 1;
+        if inserted {
+            stats.rows_inserted += 1;
+        }
+    }
+    tx.commit().await.map_err(db_err(table))?;
+    Ok(stats)
+}
+
+/// Load the combined-award group/class junction rows.
+///
+/// Two-pass design: every row is validated against the database (group
+/// code resolves, canonical class code resolves, sport matches) BEFORE
+/// any insert runs. A mismatch returns Err without touching the table,
+/// satisfying the design note's "no partial loads on validation
+/// failure" rule. Once all rows validate, a single transaction inserts
+/// every row idempotently via ON CONFLICT (combined_award_group_id,
+/// canonical_class_id) DO UPDATE.
+pub async fn load_combined_award_group_classes(
+    pool: &PgPool,
+    seed_dir: &Path,
+) -> Result<TableStats, LoaderError> {
+    let table = "combined_award_group_classes";
+    let path = seed_dir.join("combined_award_group_classes.csv");
+    let mut reader = open_csv(&path)?;
+    let mut stats = TableStats::default();
+
+    // Pre-fetch parent (combined_award_groups) and canonical
+    // (canonical_classes) lookups, both keyed by code with the sport
+    // included so the validation pass can compare without an extra
+    // round trip per row.
+    let group_lookup: HashMap<String, (Uuid, String)> =
+        sqlx::query_as::<_, (String, Uuid, String)>(
+            "SELECT code, id, sport::text FROM combined_award_groups",
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(db_err(table))?
+        .into_iter()
+        .map(|(code, id, sport)| (code, (id, sport)))
+        .collect();
+
+    let canonical_lookup: HashMap<String, (Uuid, String)> =
+        sqlx::query_as::<_, (String, Uuid, String)>(
+            "SELECT code, id, sport::text FROM canonical_classes",
+        )
+        .fetch_all(pool)
+        .await
+        .map_err(db_err(table))?
+        .into_iter()
+        .map(|(code, id, sport)| (code, (id, sport)))
+        .collect();
+
+    // Pass 1: read every row and resolve. A failure here returns Err
+    // immediately; nothing has been written yet.
+    let mut resolved: Vec<(Uuid, Uuid, bool)> = Vec::new();
+    for (idx, result) in reader
+        .deserialize::<CombinedAwardGroupClassRow>()
+        .enumerate()
+    {
+        let csv_row = idx as u64 + 1;
+        let row = decode(&path, csv_row, result)?;
+        stats.rows_read += 1;
+
+        let (group_id, group_sport) = group_lookup.get(&row.group_code).ok_or_else(|| {
+            LoaderError::CombinedAwardGroupCodeMissing {
+                csv_row,
+                group_code: row.group_code.clone(),
+            }
+        })?;
+
+        let (canonical_id, canonical_sport) = canonical_lookup
+            .get(&row.canonical_class_code)
+            .ok_or_else(|| LoaderError::CombinedAwardCanonicalClassCodeMissing {
+                csv_row,
+                canonical_class_code: row.canonical_class_code.clone(),
+            })?;
+
+        if group_sport != canonical_sport {
+            return Err(LoaderError::CombinedAwardSportMismatch {
+                csv_row,
+                group_code: row.group_code,
+                group_sport: group_sport.clone(),
+                canonical_class_code: row.canonical_class_code,
+                canonical_class_sport: canonical_sport.clone(),
+            });
+        }
+
+        resolved.push((*group_id, *canonical_id, row.is_required_for_award));
+    }
+
+    // Pass 2: insert. Validation is complete, so a transactional load
+    // here only fails on database errors (lost connection, etc.), not
+    // on data-shape problems.
+    let mut tx = pool.begin().await.map_err(db_err(table))?;
+    for (group_id, canonical_id, is_required) in resolved {
+        let inserted: bool = sqlx::query_scalar(
+            "INSERT INTO combined_award_group_classes
+                 (combined_award_group_id, canonical_class_id, is_required_for_award)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (combined_award_group_id, canonical_class_id) DO UPDATE SET
+                 is_required_for_award = EXCLUDED.is_required_for_award
+             RETURNING (xmax = 0) AS inserted",
+        )
+        .bind(group_id)
+        .bind(canonical_id)
+        .bind(is_required)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(db_err(table))?;
+
+        stats.rows_upserted += 1;
+        if inserted {
+            stats.rows_inserted += 1;
+        }
+    }
+    tx.commit().await.map_err(db_err(table))?;
+    Ok(stats)
+}
+
 pub async fn load_sport_time_defaults(
     pool: &PgPool,
     seed_dir: &Path,

@@ -225,3 +225,34 @@ pub struct SportTimeDefaultRow {
     pub class_change_seconds: i32,
     pub event_change_seconds: i32,
 }
+
+/// One AKC-recognized combined-award grouping. Drives both the
+/// additional-entry fee discount logic (per Deborah's Q4: any double
+/// or triple Q in B classes earns the discount) and, for groups with
+/// a non-NULL `award_type`, the per-trial combined-award computation.
+///
+/// `award_type` is left empty in the CSV for title-progression paths
+/// (RAE, RACH) that do NOT produce a per-trial ribbon. The csv crate
+/// deserializes empty fields into `Option<String>::None`, which the
+/// loader then binds as SQL NULL.
+#[derive(Debug, Deserialize)]
+pub struct CombinedAwardGroupRow {
+    pub code: String,
+    pub sport: String,
+    pub display_name: String,
+    pub award_type: Option<String>,
+    pub is_discount_eligible: bool,
+    pub regulation_citation: Option<String>,
+}
+
+/// One canonical-class membership in one combined-award group.
+/// Joins `combined_award_groups.code` to `canonical_classes.code`.
+/// `is_required_for_award` is TRUE for every CHECKPOINT 2 seed row;
+/// the schema retains the flag for future groups whose semantics
+/// require optional contributors.
+#[derive(Debug, Deserialize)]
+pub struct CombinedAwardGroupClassRow {
+    pub group_code: String,
+    pub canonical_class_code: String,
+    pub is_required_for_award: bool,
+}

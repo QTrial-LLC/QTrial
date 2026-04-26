@@ -319,6 +319,211 @@ async fn test_rollup_rows() {
     );
 }
 
+/// CHECKPOINT 2 row count: combined_award_groups.csv loads exactly
+/// the 5 AKC-recognized combined awards in scope (Obedience HC,
+/// Rally RHC, Rally RHTQ, Rally RAE, Rally RACH). A future seed
+/// addition that changes the count must update this assertion
+/// deliberately, not silently.
+#[tokio::test]
+async fn test_combined_award_groups_load_count() {
+    let pool = testing::pool().await;
+    ensure_seeded(&pool).await;
+
+    let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM combined_award_groups")
+        .fetch_one(&pool)
+        .await
+        .expect("count combined_award_groups");
+    assert_eq!(
+        count, 5,
+        "expected 5 combined_award_groups rows from CHECKPOINT 2 seed; got {count}",
+    );
+}
+
+/// CHECKPOINT 2 row count: combined_award_group_classes.csv loads
+/// exactly 12 junction rows: HC=2, RHC=2, RHTQ=3, RAE=2, RACH=3.
+#[tokio::test]
+async fn test_combined_award_group_classes_load_count() {
+    let pool = testing::pool().await;
+    ensure_seeded(&pool).await;
+
+    let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM combined_award_group_classes")
+        .fetch_one(&pool)
+        .await
+        .expect("count combined_award_group_classes");
+    assert_eq!(
+        count, 12,
+        "expected 12 combined_award_group_classes rows from CHECKPOINT 2 seed; got {count}",
+    );
+}
+
+/// Idempotency: a second run of the loader produces zero new inserts
+/// for both combined-award tables and leaves the parent's
+/// MAX(updated_at) unchanged. The junction table has no updated_at
+/// column (one-shot reference data; never re-stamped on conflict),
+/// so the junction's idempotency check is row-count stability plus
+/// zero-inserted from the loader stats.
+#[tokio::test]
+async fn test_combined_award_seed_idempotent() {
+    let pool = testing::pool().await;
+    ensure_seeded(&pool).await;
+
+    // Snapshot before the extra run.
+    let parent_count_before: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM combined_award_groups")
+        .fetch_one(&pool)
+        .await
+        .expect("parent count before");
+    let parent_max_updated_before: Option<String> =
+        sqlx::query_scalar("SELECT MAX(updated_at)::text FROM combined_award_groups")
+            .fetch_one(&pool)
+            .await
+            .expect("parent max(updated_at) before");
+    let junction_count_before: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM combined_award_group_classes")
+            .fetch_one(&pool)
+            .await
+            .expect("junction count before");
+
+    // Extra run; ensure_seeded already gated the first run, so this
+    // is the only run that could mutate the database during the test.
+    let stats = seed_loader::run_all(&pool, &seed_dir())
+        .await
+        .expect("second run should succeed");
+
+    let parent_stats = stats
+        .get("combined_award_groups")
+        .expect("parent stats present");
+    let junction_stats = stats
+        .get("combined_award_group_classes")
+        .expect("junction stats present");
+    assert_eq!(
+        parent_stats.rows_inserted, 0,
+        "combined_award_groups must report zero new inserts on re-run; got {parent_stats:?}",
+    );
+    assert_eq!(
+        junction_stats.rows_inserted, 0,
+        "combined_award_group_classes must report zero new inserts on re-run; got {junction_stats:?}",
+    );
+
+    let parent_count_after: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM combined_award_groups")
+        .fetch_one(&pool)
+        .await
+        .expect("parent count after");
+    let parent_max_updated_after: Option<String> =
+        sqlx::query_scalar("SELECT MAX(updated_at)::text FROM combined_award_groups")
+            .fetch_one(&pool)
+            .await
+            .expect("parent max(updated_at) after");
+    let junction_count_after: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM combined_award_group_classes")
+            .fetch_one(&pool)
+            .await
+            .expect("junction count after");
+
+    assert_eq!(parent_count_after, parent_count_before);
+    assert_eq!(junction_count_after, junction_count_before);
+    assert_eq!(
+        parent_max_updated_after, parent_max_updated_before,
+        "combined_award_groups MAX(updated_at) advanced on re-run (idempotency broken)",
+    );
+}
+
+/// Sport-mismatch validation: the junction loader rejects a row whose
+/// canonical_class.sport does not match the parent group's sport.
+/// The bad row is fed via a tempdir CSV; the loader returns the
+/// CombinedAwardSportMismatch variant with both codes and both sport
+/// strings; no junction insert lands.
+#[tokio::test]
+async fn test_combined_award_seed_sport_mismatch_rejected() {
+    let pool = testing::pool().await;
+    ensure_seeded(&pool).await;
+
+    let count_before: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM combined_award_group_classes")
+        .fetch_one(&pool)
+        .await
+        .expect("count before");
+
+    // Build a per-test temp seed directory with a deliberately bad
+    // junction CSV: rally group + obedience class. Stdlib temp_dir
+    // plus pid + nanos keeps the path collision-free across parallel
+    // test binaries and avoids adding a tempfile dependency.
+    let nanos = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let temp_dir = std::env::temp_dir().join(format!(
+        "qtrial-seed-mismatch-{}-{}",
+        std::process::id(),
+        nanos
+    ));
+    std::fs::create_dir_all(&temp_dir).expect("create temp seed dir");
+    let bad_csv = temp_dir.join("combined_award_group_classes.csv");
+    std::fs::write(
+        &bad_csv,
+        "group_code,canonical_class_code,is_required_for_award\n\
+         akc_rally_rhc,akc_obed_open_b,true\n",
+    )
+    .expect("write bad junction csv");
+
+    let result = seed_loader::tables::load_combined_award_group_classes(&pool, &temp_dir).await;
+
+    // Cleanup before any potential panic so a future test re-running
+    // with the same nanos does not collide.
+    let _ = std::fs::remove_dir_all(&temp_dir);
+
+    match result {
+        Err(seed_loader::LoaderError::CombinedAwardSportMismatch {
+            csv_row,
+            group_code,
+            group_sport,
+            canonical_class_code,
+            canonical_class_sport,
+        }) => {
+            assert_eq!(csv_row, 1, "bad row should be CSV row 1");
+            assert_eq!(group_code, "akc_rally_rhc");
+            assert_eq!(group_sport, "rally");
+            assert_eq!(canonical_class_code, "akc_obed_open_b");
+            assert_eq!(canonical_class_sport, "obedience");
+        }
+        other => panic!("expected LoaderError::CombinedAwardSportMismatch, got {other:?}",),
+    }
+
+    let count_after: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM combined_award_group_classes")
+        .fetch_one(&pool)
+        .await
+        .expect("count after");
+    assert_eq!(
+        count_after, count_before,
+        "sport-mismatch load must not insert any junction rows; before={count_before} after={count_after}",
+    );
+}
+
+/// is_required_for_award fidelity: the CHECKPOINT 2 seed has every
+/// junction row at TRUE because every AKC-recognized combined entry
+/// in scope requires Q's in all listed classes. A future seed that
+/// adds a FALSE row (optional contributors for a new group) updates
+/// this assertion deliberately.
+#[tokio::test]
+async fn test_combined_award_is_required_for_award_all_true() {
+    let pool = testing::pool().await;
+    ensure_seeded(&pool).await;
+
+    let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM combined_award_group_classes")
+        .fetch_one(&pool)
+        .await
+        .expect("count total");
+    let true_rows: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM combined_award_group_classes WHERE is_required_for_award = TRUE",
+    )
+    .fetch_one(&pool)
+    .await
+    .expect("count true rows");
+    assert_eq!(
+        true_rows, total,
+        "every CHECKPOINT 2 junction row must have is_required_for_award = TRUE; \
+         total={total} true_rows={true_rows}",
+    );
+}
+
 /// NOT_YET_SEEDED guard: non_akc_title_suffixes.csv and
 /// non_akc_title_suffix_breed_restrictions.csv sit in the seed
 /// directory but must not load. The negative assertion: zero

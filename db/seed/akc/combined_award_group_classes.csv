@@ -1,0 +1,13 @@
+group_code,canonical_class_code,is_required_for_award
+akc_obedience_hc,akc_obed_open_b,true
+akc_obedience_hc,akc_obed_utility_b,true
+akc_rally_rhc,akc_rally_advanced_b,true
+akc_rally_rhc,akc_rally_excellent_b,true
+akc_rally_rhtq,akc_rally_advanced_b,true
+akc_rally_rhtq,akc_rally_excellent_b,true
+akc_rally_rhtq,akc_rally_master,true
+akc_rally_rae,akc_rally_advanced_b,true
+akc_rally_rae,akc_rally_excellent_b,true
+akc_rally_rach,akc_rally_advanced_b,true
+akc_rally_rach,akc_rally_excellent_b,true
+akc_rally_rach,akc_rally_master,true

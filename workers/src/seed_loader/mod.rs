@@ -122,6 +122,48 @@ pub enum LoaderError {
 
     #[error("required canonical_classes row missing: {name}")]
     CanonicalClassLookupFailed { name: String },
+
+    /// Junction CSV refers to a combined_award_groups.code that is not
+    /// in the database. Surfaces when the parent CSV is out of sync
+    /// with the junction CSV; the seed loader is structured so the
+    /// parent loads first, so this should only fire on a mistyped row.
+    #[error(
+        "combined_award_group_classes row {csv_row} references combined_award_groups.code \
+         '{group_code}' which is not loaded; check db/seed/akc/combined_award_groups.csv"
+    )]
+    CombinedAwardGroupCodeMissing { csv_row: u64, group_code: String },
+
+    /// Junction CSV refers to a canonical_classes.code that is not in
+    /// the database. Either the canonical_classes seed migration did
+    /// not load this code or the junction CSV has a typo.
+    #[error(
+        "combined_award_group_classes row {csv_row} references canonical_classes.code \
+         '{canonical_class_code}' which is not loaded"
+    )]
+    CombinedAwardCanonicalClassCodeMissing {
+        csv_row: u64,
+        canonical_class_code: String,
+    },
+
+    /// Junction row links a combined_award_groups parent to a
+    /// canonical_classes child whose sport differs from the parent's.
+    /// The schema does not enforce this with a DDL trigger; the seed
+    /// loader is the enforcement point per the CHECKPOINT 0 design
+    /// note's combined_award_groups validation rule. Validation runs
+    /// over every CSV row before any junction insert, so a mismatch
+    /// produces no partial loads.
+    #[error(
+        "combined_award_group_classes row {csv_row} links group {group_code} (sport={group_sport}) \
+         to canonical_class {canonical_class_code} (sport={canonical_class_sport}); \
+         sports must match"
+    )]
+    CombinedAwardSportMismatch {
+        csv_row: u64,
+        group_code: String,
+        group_sport: String,
+        canonical_class_code: String,
+        canonical_class_sport: String,
+    },
 }
 
 /// Resolve the AKC registry UUID once at startup. Every registry-scoped
@@ -217,6 +259,20 @@ pub async fn run_all(pool: &PgPool, seed_dir: &Path) -> Result<RunStats, LoaderE
     stats.insert(
         "sport_time_defaults",
         tables::load_sport_time_defaults(pool, seed_dir).await?,
+    );
+
+    // Combined-award groups land after every other reference table so
+    // the canonical_classes lookup the junction loader needs is
+    // guaranteed in place. The parent loads before the junction
+    // because the junction's group-code FK lookup reads from the
+    // parent rows.
+    stats.insert(
+        "combined_award_groups",
+        tables::load_combined_award_groups(pool, seed_dir, akc_registry_id).await?,
+    );
+    stats.insert(
+        "combined_award_group_classes",
+        tables::load_combined_award_group_classes(pool, seed_dir).await?,
     );
 
     Ok(stats)
