@@ -425,14 +425,6 @@ conformation shows. The volunteer trial secretary segment (Glens
 Falls and most other Obedience and Rally clubs) is QTrial's
 target market, not the superintendent segment.
 
-**Senior Handler**
-In some contexts, a handler over a specified age; some clubs
-offer Senior Handler classes. **Verification needed:** when this
-came up in your April 23 email you said the concept doesn't
-apply in your workflow and to drop it from MVP. We did. Flagging
-the entry here in case there's a club practice we'd want this
-back for.
-
 ---
 
 ## AKC identifiers

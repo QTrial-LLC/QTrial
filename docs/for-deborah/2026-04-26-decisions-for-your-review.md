@@ -106,11 +106,18 @@ in Obedience Reg. Ch. 1 §22; RHC in Rally Reg. Ch. 1 §31; RHTQ
 in Rally Reg. Ch. 1 §32; RAE in Rally Reg. Ch. 3 §15; RACH in
 Rally Reg. Ch. 4 §§2 and 4. Master + Choice does not appear in
 the AKC Rally Regulations as a combined-award path, despite the
-"Master + Choice" wording on your June 2026 premium. Reading the
-rulebook, my interpretation is that Master + Choice is a
-club-side discount you offer (paying $25 per additional entry
-when a dog is entered in both Master and Choice the same day) but
-not an AKC-recognized combined award.
+"Master + Choice" wording on your June 2026 premium. A direct
+text search of the current Rally Regulations confirmed three
+independent absences: Chapter 1 Section 24 lists the AKC-recognized
+combined entries (RAE = Advanced B + Excellent B; RACH = Advanced B
++ Excellent B + Master) and Master + Choice is not among them;
+Chapter 1 Section 32 defines HTQ as Advanced B + Excellent B +
+Master only, with Choice not in the triple; and Chapter 3 Sections
+18 and 19 define Choice as a standalone class with no combined-
+award role. The reading is that Master + Choice is a GFKC fee-
+discount line on the premium, offered as a courtesy to handlers
+who are running a RACH-track dog and adding Choice the same day,
+but not an AKC award path.
 
 **What we want from you.** This is the most important push-back
 item in this list. You know the rulebook in practice better than

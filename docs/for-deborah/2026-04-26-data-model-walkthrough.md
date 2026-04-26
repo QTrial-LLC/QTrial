@@ -64,9 +64,12 @@ election changes who's on the board, you update one record and
 every premium list QTrial generates afterwards picks up the change.
 The list as it stood when an older premium list was printed is not
 preserved; if you need that history later, it's something we'd add
-as a separate table down the road. (You mentioned the timing of
-your departure from the GFKC board on the email back in April, and
-that's the example that prompts the historical-preservation question.)
+as a separate table down the road. (In your April note about
+officers you mentioned having just left the GFKC board; that's the
+concrete example that motivates the historical-preservation
+question. A premium list QTrial generates today shows the current
+slate, not the slate at the time an older premium was originally
+printed.)
 
 Separately from the officer slate, QTrial knows about the people
 who actually use the software at GFKC: club admins (who can change
