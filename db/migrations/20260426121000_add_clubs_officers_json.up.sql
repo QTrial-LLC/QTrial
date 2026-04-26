@@ -1,0 +1,50 @@
+-- Add clubs.officers_json JSONB.
+--
+-- Per Deborah's 2026-04-23 round-2 Q6, the officers list on a
+-- premium list is a club-level concern updated yearly with elections,
+-- not an event-level concern. Clubs print their officers (President,
+-- Vice President, Treasurer, Recording Secretary, AKC Delegate,
+-- plus Board of Directors members) on every event's premium list,
+-- with the same officer list across events at that club until the
+-- next election cycle.
+--
+-- Document shape (typed via serde at the app layer, not validated
+-- in DDL):
+--
+--   [
+--     {"office": "President",          "name": "...", "email": "...", "phone": "..."},
+--     {"office": "Vice President",     "name": "...", "email": "...", "phone": "..."},
+--     {"office": "Treasurer",          "name": "...", ...},
+--     {"office": "Recording Secretary","name": "...", ...},
+--     {"office": "AKC Delegate",       "name": "...", ...},
+--     {"office": "Board Member",       "name": "Pat Prutsman", ...},
+--     {"office": "Board Member",       "name": "Lois Hammond", ...}
+--   ]
+--
+-- Array-of-records, NOT object-keyed-by-office, because real club
+-- officer lists mix singular roles (President, VP, etc.) with
+-- multi-person roles (Board of Directors). The GFKC June 2026 Rally
+-- premium list (db/seed/akc/sample_artifacts/gfkc_rally_premium_2026_06.pdf)
+-- demonstrates eight Board members alongside five singular officers.
+-- Object-keyed-by-office cannot represent multiple Board members
+-- without contortion. Array-of-records is uniform and preserves
+-- premium-list display order via array index.
+--
+-- Free-form office names (TEXT). MVP accepts any office string; a
+-- controlled list is YAGNI for MVP. The renderer iterates the array
+-- and emits each row in order.
+--
+-- Nullable, no DEFAULT. Existing club rows take NULL on this
+-- migration; the renderer treats NULL as "no officers configured."
+-- Officer data is admin-tooling-populated, NOT migration-bootstrapped:
+-- the data is club-specific and goes stale (Deborah's 2026-04-23
+-- "I just left the board" example), so seeding it inside a migration
+-- is the wrong path.
+--
+-- Future club_officers historical-preservation table (post-MVP per
+-- the 2026-04-23 Q6 long-term plan) maps each array element to a
+-- row with (office, name, email, phone, effective_from, effective_to).
+-- The shape here is chosen to make that future migration mechanical.
+
+ALTER TABLE clubs
+    ADD COLUMN officers_json JSONB;

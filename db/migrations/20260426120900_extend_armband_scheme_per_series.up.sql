@@ -1,0 +1,47 @@
+-- Extend the armband_scheme ENUM with per_series.
+--
+-- Per Deborah's 2026-04-23 round-2 confirmation, armband series
+-- groupings are driven by which classes qualify for combined
+-- awards (HIT, HC, HTQ). Classes that share eligibility for the
+-- same combined award share an armband series; classes outside
+-- that series get separate armband numbers. Rally Choice is
+-- outside Rally's HTQ series (HTQ = Advanced B + Excellent B +
+-- Master per Rally Regulations Chapter 1, Section 32; Choice is
+-- defined separately in Chapter 3 Section 18 and Chapter 3
+-- Section 19). At a Rally trial running both, Choice gets its
+-- own armband series and the other four (Novice / Intermediate /
+-- Advanced / Excellent / Master) typically share one or more
+-- per the trial's armband configuration.
+--
+-- DATA_MODEL.md §2 events already lists per_series in the
+-- armband_scheme ENUM value list (line 142). This migration
+-- aligns the actual ENUM type with that documentation; the doc
+-- was forward-referencing the value before this migration landed.
+--
+-- Postgres 16 permits ALTER TYPE ADD VALUE inside a transaction
+-- block as long as the new value is not USED in the same
+-- transaction. This migration only adds the value; no rows are
+-- inserted that reference per_series here. So the migration runs
+-- transactionally; no -- no-transaction directive is needed.
+-- Precedent: 20260425120500_extend_dog_title_source_parsed_from_registered_name.up.sql.
+--
+-- Per the project ENUM-extension policy
+-- (PROJECT_STATUS.md Decisions log, 2026-04-25 entry "Postgres
+-- ENUM additions are one-way; down migrations are no-ops"), the
+-- down migration for this ALTER TYPE is a no-op with an
+-- explanatory comment. Postgres has no DROP VALUE; cleanly
+-- removing an ENUM value would require dropping and recreating
+-- the type, which is heavy and almost never what a rollback
+-- actually wants.
+--
+-- IF NOT EXISTS is required for the migration to be round-trip
+-- safe under the project's no-op-down ENUM policy: a forward,
+-- revert, forward-again sequence leaves the value in the ENUM
+-- after the first forward (the revert no-ops it). Without the
+-- guard, the second forward would error with "enum label
+-- 'per_series' already exists." The IF NOT EXISTS clause
+-- (Postgres 9.6+) makes the ALTER idempotent, satisfying both
+-- the "down is no-op" policy and the "up/down pairs are
+-- inverses" round-trip test from CHECKPOINT 1.
+
+ALTER TYPE armband_scheme ADD VALUE IF NOT EXISTS 'per_series';
