@@ -15,5 +15,26 @@
 -- inserting rows that reference it, a standard transactional
 -- migration is sufficient; no -- no-transaction directive is
 -- required.
+--
+-- IF NOT EXISTS is required for round-trip safety under the
+-- project's no-op-down ENUM policy: a forward, revert,
+-- forward-again sequence leaves the value in the ENUM after the
+-- first forward (the revert no-ops it, since Postgres has no
+-- DROP VALUE). Without the guard, the second forward would error
+-- with "enum label 'parsed_from_registered_name' already exists."
+-- The IF NOT EXISTS clause (Postgres 9.6+) makes the ALTER
+-- idempotent, which satisfies both the "down is no-op" policy
+-- and the "up/down pairs are inverses" round-trip test from PR
+-- 2d's CHECKPOINT 1.
+--
+-- This guard was added in a follow-up cleanup after PR 2d's
+-- 20260426120900_extend_armband_scheme_per_series.up.sql
+-- established the project convention. The original migration
+-- was authored before that convention was established, hence
+-- the deferred fix. Modifying this file changes its sqlx-cli
+-- checksum; on a dev database with the old checksum recorded
+-- in _sqlx_migrations, sqlx-cli warns about the mismatch. Wipe
+-- and re-run the dev database to clear. QTrial has no production
+-- database yet, so this is dev-only fallout.
 
-ALTER TYPE dog_title_source ADD VALUE 'parsed_from_registered_name';
+ALTER TYPE dog_title_source ADD VALUE IF NOT EXISTS 'parsed_from_registered_name';
