@@ -5,6 +5,54 @@
 **Phase A report:** `docs/research/2026-04-25-pr-2d-checkpoint-0-state-verification.md`
 **Date:** 2026-04-25 (wall-clock per `date` command)
 
+**CHECKPOINT 1 update (2026-04-25):** Robare resolved the 8 open
+questions in §6 and added two corrections that supersede the prose
+below (preserved in place for the audit trail):
+
+- **B3 column rename.** The judges-book column names land as
+  `pre_trial_blank_pdf_object_key` and `signed_scan_pdf_object_key`
+  (NOT `judges_book_pdf_object_key` as written in §B3 below). The
+  rename makes the pre/post split explicit at the column level. The
+  migration uses the new names.
+- **B1 RAE/RACH membership corrections.** The verified AKC Rally
+  Regulations text (committed at `db/seed/akc/regulations/akc_rally_regulations_1217.pdf`)
+  shows:
+  - RAE membership is `[Rally Advanced B, Rally Excellent B]`, NOT
+    the four-class set (Adv A, Adv B, Ex A, Ex B) listed in §B1
+    below. Per Chapter 3 Section 15, RAE is earned by Q's in
+    Advanced B AND Excellent B specifically.
+  - RACH membership is `[Rally Advanced B, Rally Excellent B,
+    Rally Master]`, NOT the `[Master, Choice]` set listed in §B1
+    below. Per Chapter 4 Section 2, RACH points are recorded for
+    Q's in Advanced B, Excellent B, AND Master on the same day at
+    the same trial.
+  - **Master + Choice is dropped entirely** from the seed plan; the
+    AKC Rally Regulations do not define any "Master + Choice"
+    combined award. The "Master + Choice" wording on the GFKC June
+    2026 Rally premium list is a club-side fee discount, not an
+    AKC-recognized combined-award path.
+  - All junction rows are `is_required_for_award = TRUE` (every AKC
+    combined entry in this seed requires Q's in all listed
+    classes). The "FALSE for RAE/RACH" framing in §B1 below is
+    superseded.
+- **B1 citation corrections.** The verified citations are: HC =
+  Obedience Regulations Ch. 1 §22; RHC = Rally Reg. Ch. 1 §31;
+  RHTQ = Rally Reg. Ch. 1 §32; RAE = Rally Reg. Ch. 3 §15
+  (combined-entry mechanism per Ch. 1 §24); RACH = Rally Reg. Ch.
+  4 §4 (points per Ch. 4 §2; combined-entry mechanism per Ch. 1
+  §24). The §27/§28 best-guess in §B1 below is superseded.
+- **Migration timestamps.** The §3 sequence used `20260425120000+`
+  timestamps which collide with PR 2c-surgery's existing
+  migrations. CHECKPOINT 1 used `20260426120500` through
+  `20260426121300` (continuing the 2026-04-26 sequence after PR
+  2c-beta's `20260426120400`). The §3 list below has the original
+  timestamps preserved for audit; the actual filenames on the
+  branch use the bumped sequence.
+
+The body below (§B1 through §B7, §3, §6, §7) is the original Phase
+B/C output. Read the corrections above as overlay; they apply
+before any conflicting prose in the body.
+
 ---
 
 ## 1. Scope summary

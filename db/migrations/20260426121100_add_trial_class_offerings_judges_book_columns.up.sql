@@ -1,0 +1,45 @@
+-- Add trial_class_offerings.pre_trial_blank_pdf_object_key and
+-- trial_class_offerings.signed_scan_pdf_object_key.
+--
+-- Per the 2026-04-23 round-2 Q2 confirmation that AKC requires the
+-- physical original judges book with wet signature (not an
+-- electronic submission), the judges book lifecycle has two
+-- distinct artifacts:
+--
+--   1. pre_trial_blank_pdf_object_key: the blank judges-book PDF
+--      QTrial generates pre-trial for the judge to score on paper.
+--      One PDF per class. The Rally Master class PDF additionally
+--      carries the post-Master HIT / HT summary block per Rally
+--      Regulations Chapter 1 Sections 31 and 32.
+--
+--   2. signed_scan_pdf_object_key: the scan of the signed-and-
+--      completed judges book uploaded back into QTrial after the
+--      trial. This is the artifact that confirms what was mailed
+--      to AKC. submission_records.marked_catalog_object_key and
+--      .form_jovry8_object_key cover the electronic submission
+--      package; the physical-mail signed book lives here.
+--
+-- Two columns, not one with overwrite. Two reasons:
+--   * If a judge changes late in the pre-trial cycle, the renderer
+--     regenerates the blank PDF without clobbering an already-
+--     uploaded signed scan. With one column, regenerating after a
+--     scan upload would either silently overwrite the scan or
+--     require a "is this a scan?" check before rendering.
+--   * The 2026-04-24 Decisions-log entry "submission_records scope
+--     is electronic submission only" intentionally excludes
+--     physical-mail artifacts from submission_records, so the
+--     signed scan must live elsewhere; here is the cleanest place.
+--
+-- This pair of columns supersedes the 2026-04-24 working assumption
+-- that the same column would be overwritten at scan time. The
+-- supersession note and a new Decisions-log entry land in CHECKPOINT
+-- 3.
+--
+-- Both columns are TEXT NULL. An offering with no blank yet generated
+-- has both NULL. An offering with the blank generated but not yet
+-- run has only the first column populated. An offering whose signed
+-- book has been scanned and uploaded post-trial has both populated.
+
+ALTER TABLE trial_class_offerings
+    ADD COLUMN pre_trial_blank_pdf_object_key  TEXT,
+    ADD COLUMN signed_scan_pdf_object_key      TEXT;

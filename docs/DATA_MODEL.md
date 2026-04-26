@@ -1,7 +1,7 @@
 # QTrial - Data Model
 
-**Status:** Draft v0.3 - entry-subtree reconciliation complete (PR 2a / 2b / 2c).
-**Last updated:** 2026-04-26
+**Status:** Draft v0.4 - PR 2d events / clubs / awards plumbing migrations landed.
+**Last updated:** 2026-04-25
 
 ---
 
@@ -77,6 +77,7 @@ All column types expressed in PostgreSQL syntax. All timestamp columns use `TIME
 | `logo_object_key` | TEXT | S3 key for the logo image |
 | `primary_contact_user_id` | UUID | FK to `users` |
 | `billing_status` | ENUM | `active`, `comped`, `suspended` |
+| `officers_json` | JSONB | nullable. Array of office records describing the club's officer slate as it appears on premium lists. Shape: `[{"office": "President", "name": "...", "email": "...", "phone": "..."}, ...]`. Free-form `office` strings; mixed-cardinality offices (one President, many Board Members) are uniform array elements. App-layer typed via serde; no DDL CHECK. NULL means the renderer treats the club as having no officers configured. Updated yearly with elections per Deborah's Q6; future `club_officers` table preserves history (post-MVP). |
 | `created_at` / `updated_at` / `deleted_at` | TIMESTAMPTZ | |
 
 #### `users`
@@ -143,7 +144,10 @@ Not tenant-scoped. No RLS policy. Access is via platform-admin authorization che
 | `armband_start_number` | INT | |
 | `armband_interval` | INT | |
 | `catalog_fee` | NUMERIC(10,2) | |
-| `dogs_per_hour_override` | JSONB | nullable; shape `{"obedience": 3.5, "rally-choice": 4.3}`; absence means fall back to `sport_time_defaults` |
+| `dogs_per_hour_override` | JSONB | nullable. Shape `{"<canonical_classes.code>": <minutes_per_dog as number>}`, e.g. `{"rally_choice": 4.3, "rally_master": 3.5, "rally_excellent_b": 3.1}`. Per-class override only; sport-level pacing belongs on `sport_time_defaults`. Schedule generator fallback chain: this column, then `trial_class_offerings.per_dog_minutes`, then `canonical_classes.dogs_per_hour_default`, then `sport_time_defaults.minutes_per_dog`. Validation that keys resolve to known canonical classes for the event's `(registry_id, sport)` is enforced at the application layer (CHECK constraints cannot reference other tables). |
+| `mixed_breeds_allowed` | BOOL | NOT NULL DEFAULT TRUE. Whether All-American Dog (Canine Partners) registrations may enter the event. Most Obedience and Rally trials accept All-American Dog (default TRUE); conformation events typically opt out (set FALSE). Per Deborah's Q3, this BOOL is the structural flag for the All-American-Dog exclusion case. The broader breed/breed-group/breed-variety allow-list / deny-list model is deferred to a future PR. |
+| `trial_chair_user_id` | UUID | FK to `users` ON DELETE SET NULL, nullable. Per-event chair role; pre-trial arrangements (judge acquisition, accommodations, steward recruitment, expense payments). Deborah's Q5 distinction. NULL during draft state; API layer enforces non-NULL before status transitions to `open`. |
+| `event_secretary_user_id` | UUID | FK to `users` ON DELETE SET NULL, nullable. Per-event secretary role; on-the-day operations (paperwork, scores, entries). Deborah's Q5 distinction. NULL during draft state; API layer enforces non-NULL before `open`. |
 | `waitlist_accepted` | BOOL | whether this event accepts waitlist entries |
 | `status` | ENUM | `draft`, `open`, `closed`, `in_progress`, `complete`, `archived` |
 | `registry_id` | UUID | FK to `registries` |
@@ -168,7 +172,6 @@ Not tenant-scoped. No RLS policy. Access is via platform-admin authorization che
 | `trial_number` | INT | 1 or 2 within the day (typically AM/PM) |
 | `sport` | ENUM | `obedience`, `rally`, `agility`, etc. |
 | `akc_event_number` | TEXT | registry-assigned event number |
-| `trial_chairperson` | TEXT | |
 | `start_time` | TIME | |
 | `entry_limit` | INT | nullable; no limit if null |
 | `first_class_fee` | NUMERIC(10,2) | |
@@ -182,6 +185,8 @@ Not tenant-scoped. No RLS policy. Access is via platform-admin authorization che
 | `first_class_fee_jr` | NUMERIC(10,2) | junior handler rate |
 | `additional_class_fee_jr` | NUMERIC(10,2) | |
 | `status` | ENUM | `draft`, `open`, `closed`, `running`, `complete` |
+
+The Phase 0 `trial_chairperson` TEXT column was dropped in PR 2d. The chair role is event-level per Deborah's Q5 and lives on `events.trial_chair_user_id` instead. Multiple trials within one event share one chair, matching the GFKC June 2026 Rally premium list pattern. A per-trial override may be added back in a future PR if a real-world case (e.g., a cluster running Obedience and Rally with separate chairs) surfaces.
 
 #### `trial_class_offerings`
 
@@ -197,7 +202,8 @@ Which canonical classes are being offered at a given trial. This is the join bet
 | `scheduled_start_time` | TIME | |
 | `running_order_strategy` | ENUM | `short_to_tall`, `tall_to_short`, `random`, `manual` |
 | `jump_start_height` | INT | for the short-to-tall order |
-| `judges_book_pdf_object_key` | TEXT | **(pending, lands in PR 2c)** S3 key for the pre-trial blank judges-book PDF generated by QTrial for printing. One PDF per class; the Rally Master class PDF also carries the post-Master HIT/HT summary pages. Post-trial signed-scan storage handling is an open question for PR 2c scoping (overwrite this column, sibling column, or separate state-in-place column are the options under consideration). |
+| `pre_trial_blank_pdf_object_key` | TEXT | nullable. S3 key for the pre-trial blank judges-book PDF generated by QTrial for printing. One PDF per class; the Rally Master class PDF additionally carries the post-Master HIT / HT summary block per Rally Regulations Chapter 1 Sections 31 and 32. Regenerated as needed when judge assignments change pre-trial; see `signed_scan_pdf_object_key` for the post-trial counterpart. |
+| `signed_scan_pdf_object_key` | TEXT | nullable. S3 key for the post-trial scan of the signed-and-completed judges book uploaded back into QTrial. Populated after the trial when the secretary scans the wet-signed physical book before mailing the original to AKC. The two columns (blank + scan) are kept separate so a late-cycle judge change can regenerate the blank without clobbering an already-uploaded signed scan. Per the 2026-04-24 Decisions-log entry "submission_records scope is electronic submission only", the signed-mail artifact intentionally does NOT live on `submission_records`; this column is its durable home. |
 
 #### `judge_assignments`
 
@@ -689,6 +695,52 @@ Platform-level pacing defaults per sport; per-event overrides live on `events.do
 | `event_change_seconds` | INT | |
 
 Seeded from `trial_time_calculations.csv` (6 rows).
+
+#### `combined_award_groups` and `combined_award_group_classes`
+
+Reference data describing AKC-recognized combined-award groupings: which canonical classes contribute to which combined award (HC, RHC, RHTQ) or title-progression path (RAE, RACH). Drives both the additional-entry fee discount logic (per Deborah's Q4: any double or triple Q in B classes earns the discount) and the per-trial combined-award computation. Permissive-read RLS, identical to the other reference tables.
+
+**`combined_award_groups`** (parent):
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | UUID | PK |
+| `registry_id` | UUID | FK to `registries` |
+| `sport` | ENUM `sport` | `obedience` or `rally` |
+| `code` | TEXT | stable code for app references and seed idempotency, e.g. `akc_obedience_hc`, `akc_rally_rhtq` |
+| `display_name` | TEXT | human-readable name for premium-list and UI rendering |
+| `award_type` | ENUM `award_type` | nullable. Set when the group produces a per-trial award (HC, RHC, RHTQ); NULL for title-progression paths (RAE, RACH) where points or qualifying scores accumulate across trials with no per-trial ribbon. |
+| `is_discount_eligible` | BOOL | NOT NULL DEFAULT TRUE. When TRUE, a dog entered in 2+ classes from this group at the same trial qualifies for the additional-entry fee discount. |
+| `regulation_citation` | TEXT | nullable verbatim AKC citation, e.g. `"Rally Regulations Chapter 1, Section 32"`. |
+| `created_at` / `updated_at` | TIMESTAMPTZ | |
+
+Unique on `(registry_id, sport, code)`.
+
+**`combined_award_group_classes`** (junction):
+
+| Column | Type | Notes |
+|---|---|---|
+| `id` | UUID | PK |
+| `combined_award_group_id` | UUID | FK ON DELETE CASCADE |
+| `canonical_class_id` | UUID | FK to `canonical_classes` |
+| `is_required_for_award` | BOOL | NOT NULL. When TRUE, the dog must Q in this class at the trial for the group's per-trial award or the group's per-trial title-progression leg. All five PR 2d seed rows have TRUE on every junction row, because every AKC-recognized combined entry currently in scope requires Q's in all listed classes. The flag stays in the schema for future groups whose semantics require optional contributors. |
+| `created_at` | TIMESTAMPTZ | |
+
+Unique on `(combined_award_group_id, canonical_class_id)`. Index on `canonical_class_id` for the fee-engine query "given the dog's entered set, which combined_award_groups are in play?"
+
+**Sport-mismatch enforcement.** A junction row's `canonical_class_id` must reference a `canonical_classes` row whose `sport` matches the parent `combined_award_groups.sport`. No DDL trigger enforces this; the seed loader validates on each row.
+
+**Initial seed (lands in CHECKPOINT 2; based on AKC rulebooks committed at `db/seed/akc/regulations/`):**
+
+| code | display_name | award_type | members | citation |
+|---|---|---|---|---|
+| `akc_obedience_hc` | Highest Combined (Open B + Utility B) | `hc` | Open B, Utility B | Obedience Regulations Chapter 1, Section 22 |
+| `akc_rally_rhc` | Rally Highest Combined (Advanced B + Excellent B) | `rhc` | Rally Advanced B, Rally Excellent B | Rally Regulations Chapter 1, Section 31 |
+| `akc_rally_rhtq` | Rally Highest Scoring Triple Qualifying | `rhtq` | Rally Advanced B, Rally Excellent B, Rally Master | Rally Regulations Chapter 1, Section 32 |
+| `akc_rally_rae` | Rally Advanced Excellent (title path) | NULL | Rally Advanced B, Rally Excellent B | Rally Regulations Chapter 3, Section 15; combined-entry mechanic per Chapter 1, Section 24 |
+| `akc_rally_rach` | Rally Champion (title path) | NULL | Rally Advanced B, Rally Excellent B, Rally Master | Rally Regulations Chapter 4, Section 4; points per Chapter 4, Section 2; combined-entry mechanic per Chapter 1, Section 24 |
+
+A 2026-04-25 investigation against the committed Rally Regulations PDF confirmed that Master + Choice is NOT an AKC-recognized combined-award path. The "Master + Choice" wording on the GFKC June 2026 Rally premium list is a club-side fee discount GFKC chose to offer; it does not match any rulebook section.
 
 #### `email_templates`
 

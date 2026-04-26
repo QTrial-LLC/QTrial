@@ -1,0 +1,46 @@
+-- Add events.dogs_per_hour_override JSONB.
+--
+-- Per Deborah's 2026-04-23 round-2 Q5 follow-up and her actual GFKC
+-- November 2025 numbers, the schedule generator's per-class pacing
+-- needs to be overridable per event because real pacing varies by
+-- class (Rally Choice ~4.3 min/dog, Rally Master ~3.5, Rally
+-- Excellent B ~3.1). The platform-level fallback in
+-- sport_time_defaults assumes a single number per sport (3.0 min/dog
+-- for Obedience and Rally), which is a sensible last resort but
+-- never matches a single trial's actual mix.
+--
+-- Document shape:
+--
+--   { "<canonical_classes.code>": <minutes_per_dog as number>, ... }
+--
+-- Example:
+--
+--   {
+--     "rally_choice": 4.3,
+--     "rally_master": 3.5,
+--     "rally_excellent_b": 3.1
+--   }
+--
+-- The schedule generator's fallback chain is:
+--   1. events.dogs_per_hour_override[class.code] (this column)
+--   2. trial_class_offerings.per_dog_minutes (per-offering override)
+--   3. canonical_classes.dogs_per_hour_default (catalog default)
+--   4. sport_time_defaults.minutes_per_dog (sport-level default)
+--
+-- Key namespace is canonical_classes.code only. The natural unique
+-- key on canonical_classes is (registry_id, sport, code); the event
+-- row already pins registry_id, so code alone is unambiguous within
+-- an event. Sport-level keys are NOT permitted in this column; they
+-- belong on sport_time_defaults at the platform level.
+--
+-- Validation: keys must resolve to canonical_classes.code rows for
+-- the event's (registry_id, sport) combination. A CHECK constraint
+-- cannot enforce this (Postgres CHECKs cannot reference other
+-- tables); the events handler in api/ enforces it on write.
+-- TODO: app-layer validation in the events handler is the
+-- enforcement point. API-layer tests required when the events
+-- handler lands. Schedule generator falls through to the next
+-- fallback level on unknown keys (logged at WARN, not error).
+
+ALTER TABLE events
+    ADD COLUMN dogs_per_hour_override JSONB;
