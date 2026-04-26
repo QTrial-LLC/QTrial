@@ -1142,12 +1142,6 @@ trigger and scope.
 
 **Future PR (post-PR 2d) follow-ups:**
 
-- Cleanup migration adding `IF NOT EXISTS` to migration
-  `20260425120500_extend_dog_title_source_parsed_from_registered_name.up.sql`
-  to make the existing dog_title_source ALTER TYPE round-trip
-  safe under the project's no-op-down ENUM policy. PR 2d's own
-  ALTER TYPE migration (`20260426120900`) already uses the
-  guard; the precedent migration was caught after the fact.
 - App-layer validation for `events.dogs_per_hour_override` JSONB
   keys against `canonical_classes.code` rows for the event's
   registry+sport. CHECK constraints cannot reference other
@@ -1293,11 +1287,9 @@ In rough priority order:
    configuration, user management, event creation, trial class
    offerings, judge directory, fee configuration, basic premium
    list PDF generation.
-2. **Future PR cleanups** (small, can land alongside Phase 1): the
-   `IF NOT EXISTS` guard on the `20260425120500` ENUM-extension
-   migration; the pedantic-clippy cleanup PR; refresh the
-   `currentDate: 2026-04-23` line in `CLAUDE.md` (stale per the
-   actual wall clock).
+2. **Future PR cleanups** (small, can land alongside Phase 1):
+   the pedantic-clippy cleanup PR (the 20 pre-existing warnings
+   surfaced during PR 2d's CHECKPOINT 1).
 3. **Business/legal threadwork** in parallel: EIN, Warren County
    publication, Operating Agreement, Relay banking, AWS account.
 
