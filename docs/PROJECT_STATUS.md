@@ -1,6 +1,6 @@
 # QTrial Project Status
 
-**Last updated:** 2026-04-26
+**Last updated:** 2026-04-26 (IF NOT EXISTS retrofit for the dog_title_source ENUM-extension migration)
 **Current phase:** Phase 0 + PR 2a + PR 2b + PR 2c-surgery + PR 2c-beta + PR 2d complete
 **Maintained by:** Robare Pruyn, with Claude assistance
 
@@ -314,6 +314,50 @@ premium-list PDF generation.
 Architecture and process decisions made during planning and build,
 with rationale. This section prevents re-litigating settled
 questions.
+
+### 2026-04-26: ENUM-extension migrations use IF NOT EXISTS by convention; precedent migration retrofitted
+
+**Decision:** ALTER TYPE ... ADD VALUE migrations carry an IF NOT
+EXISTS guard. The 2026-04-25 precedent migration
+`20260425120500_extend_dog_title_source_parsed_from_registered_name.up.sql`
+was retrofitted to add the guard; it had been authored before the
+convention was established.
+
+**Rationale:** ENUM-extension migrations have no clean down. The
+project's no-op-down ENUM policy (the 2026-04-25 Decisions-log
+entry "Postgres ENUM additions are one-way; down migrations are
+no-ops") means a forward, revert, forward-again sequence leaves
+the value in the ENUM after the first forward and the second
+forward then errors with "enum label '<value>' already exists."
+PR 2d's CHECKPOINT 1 round-trip verification surfaced this on
+its own ALTER TYPE migration
+(`20260426120900_extend_armband_scheme_per_series.up.sql`) and
+introduced the IF NOT EXISTS guard there as the fix. The guard
+makes the migration idempotent, satisfying both the no-op-down
+policy and the "up/down pairs are inverses" round-trip
+contract.
+
+**Application:** The PR 2d migration carried the guard from the
+start; the precedent dog_title_source migration did not, and
+this cleanup adds it. Future ENUM-extension migrations follow
+the pattern: `ALTER TYPE <type> ADD VALUE IF NOT EXISTS
+'<value>';`. The migration header should explain why (round-trip
+safety under no-op down).
+
+**Implication for existing dev databases:** modifying the
+migration file changes its sqlx-cli checksum. On a database
+that has the old checksum recorded in `_sqlx_migrations`,
+sqlx-cli warns about the mismatch. Wipe the dev database and
+re-run from scratch to clear. QTrial has no production database
+yet, so this is dev-only fallout.
+
+**Evidence:** Updated migration file
+`db/migrations/20260425120500_extend_dog_title_source_parsed_from_registered_name.up.sql`;
+PR 2d precedent at
+`db/migrations/20260426120900_extend_armband_scheme_per_series.up.sql`;
+PR 2d CHECKPOINT 1 end-of-checkpoint summary §6 deviation 5
+("Two further self-initiated changes flagged here so the trail
+is complete... 5. IF NOT EXISTS on the ALTER TYPE migration").
 
 ### 2026-04-26: PR 2d - events.mixed_breeds_allowed ships as BOOL only; breed-list model deferred
 
