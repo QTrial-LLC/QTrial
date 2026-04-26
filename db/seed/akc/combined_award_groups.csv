@@ -1,0 +1,6 @@
+code,sport,display_name,award_type,is_discount_eligible,regulation_citation
+akc_obedience_hc,obedience,Highest Combined Score in Open B and Utility B,hc,true,"Obedience Regulations Chapter 1, Section 22, akc_obedience_regulations_2025_03.pdf"
+akc_rally_rhc,rally,Highest Combined Score in the Advanced B and Excellent B Classes,rhc,true,"Rally Regulations Chapter 1, Section 31, akc_rally_regulations_1217.pdf"
+akc_rally_rhtq,rally,Highest Scoring Triple Qualifying Score,rhtq,true,"Rally Regulations Chapter 1, Section 32, akc_rally_regulations_1217.pdf"
+akc_rally_rae,rally,Rally Advanced Excellent,,true,"Rally Regulations Chapter 3, Section 15 (title); Chapter 1, Section 24 (combined-entry mechanism); akc_rally_regulations_1217.pdf"
+akc_rally_rach,rally,Rally Champion,,true,"Rally Regulations Chapter 4, Section 4 (title); Chapter 4, Section 2 (point requirements and same-trial triple-Q rule); akc_rally_regulations_1217.pdf"
