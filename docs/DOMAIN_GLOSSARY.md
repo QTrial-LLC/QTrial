@@ -80,17 +80,26 @@ AKC titles are rendered either as prefixes before the registered name (CH, GCH, 
 **HIT (High in Trial)**
 The top overall Obedience score across all regular classes at a trial. One HIT is awarded per trial.
 
-**HC (High Combined)**
-Awarded to the dog with the highest combined Open B and Utility B scores at a trial, when that dog qualifies in both.
+**HC (Highest Combined)**
+The Obedience per-trial award for the highest combined Open B + Utility B score among dogs that qualified in both classes. Defined in AKC Obedience Regulations Chapter 1, Section 22 (`db/seed/akc/regulations/akc_obedience_regulations_2025_03.pdf`). Modeled in QTrial as a `combined_award_groups` row with `code = 'akc_obedience_hc'` and `award_type = 'hc'`; the junction lists Open B and Utility B with `is_required_for_award = TRUE`.
 
 **PHIT / PHC (Preferred HIT / Preferred HC)**
 The Preferred-class equivalents of HIT and HC.
 
-**RHIT / RHC (Rally HIT / Rally HC)**
-Rally-specific honors analogous to the Obedience versions.
+**RHIT / RHC (Rally HIT / Rally Highest Combined)**
+Rally-specific honors. RHIT is the highest qualifying Rally score across all regular classes at a trial. RHC is the per-trial award for the highest combined Advanced B + Excellent B score among dogs that qualified in both, defined in AKC Rally Regulations Chapter 1, Section 31 (`db/seed/akc/regulations/akc_rally_regulations_1217.pdf`). Modeled as a `combined_award_groups` row with `code = 'akc_rally_rhc'` and `award_type = 'rhc'`.
 
-**HTQ (Honor Team Qualifier)**
-A Rally-specific recognition awarded to qualifying team entries.
+**HTQ / RHTQ (Highest Triple Qualifying / Rally HTQ)**
+The Rally per-trial award for the highest combined triple score across Advanced B + Excellent B + Master among dogs that qualified in all three at the same trial. Defined in AKC Rally Regulations Chapter 1, Section 32. Modeled as a `combined_award_groups` row with `code = 'akc_rally_rhtq'` and `award_type = 'rhtq'`. The schema's `award_type` ENUM has both `htq` and `rhtq` values; only the Rally form is currently seeded. (Earlier glossary editions translated HTQ as "Honor Team Qualifier"; the rulebook makes clear it is "Highest Triple Qualifying", a per-trial combined-score award, not a team-eligibility marker.)
+
+**RAE (Rally Advanced Excellent)**
+A Rally title earned by qualifying scores in BOTH Advanced B and Excellent B at 10 separate licensed or member rally trials. Defined in AKC Rally Regulations Chapter 3, Section 15. The same trial's combined entry fee for both classes is paid as one bundled entry under the combined-entry mechanism in Chapter 1, Section 24. Numeric variants (RAE2, RAE3, ...) accumulate as the dog meets the requirements again. Modeled as a `combined_award_groups` row with `code = 'akc_rally_rae'` and `award_type = NULL` (title-progression path; no per-trial ribbon).
+
+**RACH (Rally Champion)**
+A Rally championship title earned by qualifying scores in Advanced B, Excellent B, AND Master on the same day at the same trial across 20 separate licensed or member rally trials, plus 300 RACH points (minimum 150 from Master). Defined in AKC Rally Regulations Chapter 4, Sections 2 and 4. The combined-entry mechanism in Chapter 1, Section 24 lets exhibitors pay one bundled fee for the three-class entry. Numeric variants (RACH2 = 40 triple-qualifying scores + 600 points, RACH3 = 60 + 900, ...) accumulate. RACH is a prefix title; it appears before the dog's registered name. Modeled as a `combined_award_groups` row with `code = 'akc_rally_rach'` and `award_type = NULL` (title-progression path).
+
+**Combined award**
+An AKC-recognized award computed across multiple classes at the same trial, requiring the dog to qualify in every contributing class. Examples: Obedience HC (Open B + Utility B), Rally RHC (Adv B + Ex B), Rally RHTQ (Adv B + Ex B + Master). Distinct from a *combined-entry mechanism* (RAE / RACH), which is the entry-fee bundling AKC Rally Regulations Chapter 1, Section 24 defines for paying once for two or three classes that contribute to a title-progression path; the title itself accumulates across multiple trials. QTrial models both shapes through `combined_award_groups`: per-trial awards have a non-NULL `award_type`; title-progression paths have `award_type = NULL`. The fee engine applies the additional-entry discount to any dog entered in two or more classes from the same `is_discount_eligible` group at the same trial, regardless of whether the group produces a per-trial ribbon.
 
 **Run-off**
 When two or more dogs tie for HIT, HC, or a class placement, they may be required to repeat an exercise to determine the winner.
@@ -219,10 +228,10 @@ Specialty Rally variants with team and individual versions.
 ## People and administration
 
 **Trial Secretary**
-The volunteer (or paid individual) responsible for running the trial's administrative side: entries, money, paperwork, communication, AKC reporting. Our primary user.
+The volunteer (or paid individual) responsible for the trial's on-the-day administrative side: paperwork, scores, entries, money handling, AKC reporting. Per Deborah's 2026-04-23 Q5, the secretary's responsibilities are operational and run from check-in through awards and post-trial submission. Modeled in QTrial as `events.event_secretary_user_id` (an FK to the user who holds the role for the event); the role is event-level, shared across the event's trials. QTrial's primary user.
 
 **Trial Chair / Trial Chairperson**
-The club's designated lead for the event, often different from the secretary. Handles day-of operations, decisions, and disputes.
+The club's designated lead for pre-trial arrangements: acquires judges, gets AKC approval, arranges judge accommodations, recruits stewards / hospitality crew / timekeeper / course builder, and handles judge and secretary expense payments. Distinct from the Trial Secretary; usually a different person. Per Deborah's 2026-04-23 Q5, the chair "can be off-site during the trial in a pinch" but the expectation is they are present. Modeled as `events.trial_chair_user_id`; role is event-level. The free-text `trials.trial_chairperson` column from the Phase 0 scaffold was dropped in PR 2d in favor of this typed FK.
 
 **Club**
 The AKC-affiliated or AKC-licensed dog club hosting the event. Clubs have member status, license status, or an AKC club number (4-digit).
@@ -249,6 +258,9 @@ AKC registration category for spayed or neutered purebred dogs whose owners lack
 
 **Canine Partners**
 AKC's registration program for mixed-breed dogs, allowing them to compete in companion events. Listed as breed "All American Dog" in catalogs. Registration-number prefix "MA" or "MB" (e.g., `MB11524001`, `MA92798101`).
+
+**All-American Dog (AAD)**
+The breed name AKC's canonical breed catalog uses for mixed-breed dogs registered through the Canine Partners program. Treated as a regular breed for entry, scoring, and submission purposes in AKC Obedience and Rally trials. The `events.mixed_breeds_allowed BOOL` (default TRUE) controls whether All-American Dogs may enter a given event. Most Obedience and Rally trials accept AAD; conformation events and certain Specialty events typically do not. Per Deborah's 2026-04-23 Q3, the BOOL flag is the right shape for the AAD-exclusion case because the alternative (enumerating all 288 recognized breeds in an exclude-list to opt AAD out) is unwieldy and the alternative-alternative (treating AAD as a special case in the renderer) is brittle. The broader breed-list / breed-group / breed-variety allow-list / deny-list model is post-MVP; see `docs/PROJECT_STATUS.md` Known-gaps and `docs/ROADMAP.md` Phase 2+.
 
 **FSS (Foundation Stock Service)**
 AKC's registration program for breeds working toward full AKC recognition. FSS breeds compete in the Miscellaneous group.

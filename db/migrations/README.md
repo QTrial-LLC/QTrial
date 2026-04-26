@@ -149,3 +149,95 @@ The one exception: fixing an up-only migration before anyone else
 has pulled. If you are sure no one else has applied the migration,
 `sqlx migrate revert` locally, edit, and reapply is acceptable.
 Anything beyond that: write a new migration.
+
+## Migration history by PR
+
+A non-exhaustive index of how migrations group into the PRs that
+landed them. Useful for orienting against `git log` without reading
+every file. The complete list lives in the directory itself; the
+PR-by-PR view below gives one-line summaries of the major blocks.
+
+### Phase 0 (PRs #3-#7, 2026-04-22)
+
+Foundational schema across five PRs: registries / akc_fee_schedules
+/ canonical_classes plus the migration tooling and up/down convention
+(PR #3); clubs / users / user_club_roles with RLS plus the
+qtrial_tenant role (PR #4); events / event_days / trials /
+trial_class_offerings / judges / judge_assignments / trial_awards
+with RLS and the parent_club_id helper (PR #6); owners / dogs /
+dog_titles / dog_sport_participation / teams / entries / entry_lines
+/ entry_line_results with RLS and the entry-line state machine
+(PR #7); the cross-tenant FK validation helper
+(`shared/src/fk_validation.rs::TenantTable`, PR #10).
+
+### PR 2a: reference-data foundation (2026-04-23)
+
+14 reference tables (countries, states, breed_groups, breeds,
+breed_varieties, title_prefixes, title_suffixes, jump_heights,
+obedience_exercises, obedience_class_exercises, otch_points,
+om_points, rally_rach_points, sport_time_defaults) with
+permissive-read RLS, plus the `qtrial-seed-loader` binary that
+populates them idempotently from `db/seed/akc/` CSVs. Anchor
+migration: `20260423120700_enable_rls_on_reference_data_foundation.up.sql`.
+
+### PR 2b: tenant-scoped table gap-fill (2026-04-24)
+
+Eight tenant-scoped tables (dog_ownerships, dog_trial_jump_heights,
+armband_assignments, email_templates, submission_records, payments,
+refunds, audit_log) with direct-club_id RLS, plus `platform_admins`
+which is non-tenant and has no qtrial_tenant grant. Two new ENUMs
+(`submission_type`, `submission_status`) plus `refund_reason`.
+Anchor migration:
+`20260424121000_enable_rls_on_tenant_scoped_gap_fill.up.sql`.
+
+### PR 2c-surgery: entry-pipeline reconciliation (2026-04-25)
+
+Six migrations reshaping entries / entry_lines / entry_line_results
+plus a dog_title_source ENUM extension. Handler identity moves from
+entries to entry_lines (`handler_contact_id`,
+`junior_handler_akc_number`); armband routes through
+`armband_assignments` via `entry_lines.armband_assignment_id`; jump
+height moves to `dog_trial_jump_heights` per (dog, trial). Adds
+`entry_line_results` timing columns and `rach_points`. Files
+`20260425120000` through `20260425120500`.
+
+### PR 2c-beta: dogs reconciliation (2026-04-26)
+
+Five migrations reconciling the dogs table against DATA_MODEL §4.
+Adds `registration_type` ENUM, four name-parser columns
+(`parsed_name_root`, `parsed_prefix_titles`, `parsed_suffix_titles`,
+`unparsed_title_tokens`), and FK constraints on `breed_id` and
+`breed_variety_id` deferred from Phase 0. Drops `co_owners_text`
+(superseded by `dog_ownerships`) and the four sire/dam
+prefix/suffix sub-columns (sire and dam parse at display time
+against the same title catalog as the dog's own name). Files
+`20260426120000` through `20260426120400`.
+
+### PR 2d: events / clubs / awards plumbing (2026-04-26)
+
+Nine migrations + two seed CSVs landing Deborah's 2026-04-23
+plumbing. Files `20260426120500` through `20260426121300`:
+
+| Filename | Description |
+|---|---|
+| `20260426120500_add_events_mixed_breeds_allowed` | `events.mixed_breeds_allowed BOOL NOT NULL DEFAULT TRUE`. Per the 2026-04-26 Decisions-log "BOOL only, defer breed-list" scope-lock. |
+| `20260426120600_add_events_trial_chair_and_secretary_fks` | `events.trial_chair_user_id` and `events.event_secretary_user_id`, FK to users with ON DELETE SET NULL, both nullable; partial indexes on `deleted_at IS NULL`. Per Q5. |
+| `20260426120700_drop_trials_trial_chairperson` | Drops the unused Phase 0 free-text column; replaced by the event-level FK in the previous migration. Down recreates as TEXT NULL. |
+| `20260426120800_add_events_dogs_per_hour_override` | `events.dogs_per_hour_override JSONB`, nullable. Keys are `canonical_classes.code` strings; values are minutes-per-dog. App-layer validation enforces key resolution (CHECK cannot reference other tables); migration header carries the TODO. |
+| `20260426120900_extend_armband_scheme_per_series` | `ALTER TYPE armband_scheme ADD VALUE IF NOT EXISTS 'per_series'`. The `IF NOT EXISTS` guard satisfies the round-trip contract under the project's no-op-down ENUM policy (see the 2026-04-25 Decisions-log "Postgres ENUM additions are one-way" entry). |
+| `20260426121000_add_clubs_officers_json` | `clubs.officers_json JSONB`, nullable. Array-of-records shape; serde-typed at the app layer; no DDL CHECK. Per Q6. |
+| `20260426121100_add_trial_class_offerings_judges_book_columns` | `pre_trial_blank_pdf_object_key` and `signed_scan_pdf_object_key`, both nullable TEXT. Two-column shape per the 2026-04-26 Decisions-log entry "PR 2d: judges-book PDF storage uses two columns, not one overwriting column" (revising the 2026-04-24 working assumption). |
+| `20260426121200_create_combined_award_groups` | Creates `combined_award_groups` (parent) and `combined_award_group_classes` (junction). Reference data, registry-scoped. RLS lands in the next migration. |
+| `20260426121300_enable_rls_on_combined_award_groups` | Permissive-read RLS plus SELECT-only grant to qtrial_tenant for both new tables. Pattern matches the PR 2a reference-table RLS migration. |
+
+Non-migration deliverables landed alongside:
+
+- `db/seed/akc/regulations/akc_rally_regulations_1217.pdf` and
+  `db/seed/akc/regulations/akc_obedience_regulations_2025_03.pdf` -
+  frozen citation sources for migration headers and the seed CSV
+  citations. Verified URLs at `images.akc.org` on 2026-04-25.
+- `db/seed/akc/combined_award_groups.csv` (5 rows) and
+  `db/seed/akc/combined_award_group_classes.csv` (12 rows) - loaded
+  by the seed loader extension in workers/src/seed_loader/. Citations
+  reference the regulation PDFs above.
+- DATA_MODEL.md bumped to v0.4.
